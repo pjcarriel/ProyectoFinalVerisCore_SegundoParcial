@@ -1,0 +1,175 @@
+@model MoldeMVC_Core.Models.Recetas
+
+@{
+    ViewData["Title"] = "Nueva Receta";
+    var pacientes = ViewBag.PacientesList as List<MoldeMVC_Core.Models.Pacientes> ?? new();
+}
+
+<div class="veris-form-card veris-form-card-wide">
+    <div class="veris-form-header">
+        <div class="veris-form-icon">&#128203;</div>
+        <h1>Nueva Receta</h1>
+    </div>
+
+    <form asp-action="Create" method="post" id="formReceta">
+        <div class="veris-form-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- ── PASO 1: Paciente ──────────────────────────────────────── -->
+            <div class="veris-receta-paso">
+                <div class="veris-receta-paso-num">1</div>
+                <div class="veris-receta-paso-body">
+                    <label class="veris-form-label">Selecciona el paciente</label>
+                    <select id="selectPaciente" class="veris-form-control" onchange="cargarConsultas()">
+                        <option value="">-- Seleccione un paciente --</option>
+                        @foreach (var p in pacientes)
+                        {
+                            <option value="@p._id">@p.nombre</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- ── PASO 2: Consulta ──────────────────────────────────────── -->
+            <div class="veris-receta-paso" id="pasoDosWrapper" style="opacity:0.45; pointer-events:none;">
+                <div class="veris-receta-paso-num">2</div>
+                <div class="veris-receta-paso-body">
+                    <label class="veris-form-label">Selecciona la consulta</label>
+                    <select id="selectConsulta" name="consultaId" class="veris-form-control" onchange="cargarDiagnostico()">
+                        <option value="">-- Primero seleccione un paciente --</option>
+                    </select>
+                    <span asp-validation-for="consultaId" class="veris-form-error"></span>
+                </div>
+            </div>
+
+            <!-- ── PASO 3: Diagnóstico ───────────────────────────────────── -->
+            <div class="veris-receta-paso" id="pasoTresWrapper" style="opacity:0.45; pointer-events:none;">
+                <div class="veris-receta-paso-num">3</div>
+                <div class="veris-receta-paso-body">
+                    <label class="veris-form-label">Diagnóstico de la consulta</label>
+                    <textarea id="txtDiagnostico" class="veris-form-control" rows="3"
+                              readonly style="background:#f8faff; cursor:default;"
+                              placeholder="El diagnóstico aparecerá aquí..."></textarea>
+
+                    <div id="alertaPendiente" class="veris-alerta-receta veris-alerta-warn" style="display:none;">
+                        &#9888; Esta consulta aún no tiene diagnóstico registrado. Edite la consulta y registre el diagnóstico antes de crear una receta.
+                    </div>
+                    <div id="alertaOk" class="veris-alerta-receta veris-alerta-ok" style="display:none;">
+                        &#10003; Diagnóstico registrado. Puede continuar con la receta.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── PASO 4: Medicamento y cantidad ───────────────────────── -->
+            <div class="veris-receta-paso" id="pasosCuatroWrapper" style="opacity:0.45; pointer-events:none;">
+                <div class="veris-receta-paso-num">4</div>
+                <div class="veris-receta-paso-body">
+                    <div class="veris-form-grid-2">
+                        <div class="veris-form-group">
+                            <label asp-for="medicamentoId" class="veris-form-label">Medicamento</label>
+                            <select asp-for="medicamentoId" asp-items="ViewBag.Medicamentos" class="veris-form-control">
+                                <option value="">-- Seleccione un medicamento --</option>
+                            </select>
+                            <span asp-validation-for="medicamentoId" class="veris-form-error"></span>
+                        </div>
+                        <div class="veris-form-group">
+                            <label asp-for="cantidad" class="veris-form-label">Cantidad</label>
+                            <input asp-for="cantidad" type="number" min="1" class="veris-form-control" placeholder="Ej: 10" />
+                            <span asp-validation-for="cantidad" class="veris-form-error"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="veris-form-footer">
+            <button type="submit" id="btnGuardar" class="veris-btn-submit" disabled>&#128203; Crear Receta</button>
+            <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+    function cargarConsultas() {
+        const pacienteId = document.getElementById('selectPaciente').value;
+        const selCon = document.getElementById('selectConsulta');
+        const paso2 = document.getElementById('pasoDosWrapper');
+        const paso3 = document.getElementById('pasoTresWrapper');
+        const paso4 = document.getElementById('pasosCuatroWrapper');
+
+        // Resetear pasos siguientes
+        selCon.innerHTML = '<option value="">-- Cargando consultas... --</option>';
+        document.getElementById('txtDiagnostico').value = '';
+        document.getElementById('alertaPendiente').style.display = 'none';
+        document.getElementById('alertaOk').style.display = 'none';
+        document.getElementById('btnGuardar').disabled = true;
+        paso3.style.opacity = '0.45'; paso3.style.pointerEvents = 'none';
+        paso4.style.opacity = '0.45'; paso4.style.pointerEvents = 'none';
+
+        if (!pacienteId) {
+            selCon.innerHTML = '<option value="">-- Primero seleccione un paciente --</option>';
+            paso2.style.opacity = '0.45'; paso2.style.pointerEvents = 'none';
+            return;
+        }
+
+        paso2.style.opacity = '1'; paso2.style.pointerEvents = 'auto';
+
+        fetch(`/Recetas/GetConsultasPaciente?pacienteId=${encodeURIComponent(pacienteId)}`)
+            .then(r => r.json())
+            .then(data => {
+                selCon.innerHTML = '<option value="">-- Seleccione una consulta --</option>';
+                if (data.length === 0) {
+                    selCon.innerHTML = '<option value="">Sin consultas registradas</option>';
+                    return;
+                }
+                data.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = c.texto;
+                    if (c.pendiente) opt.style.color = '#b45309';
+                    selCon.appendChild(opt);
+                });
+            })
+            .catch(() => { selCon.innerHTML = '<option value="">Error al cargar</option>'; });
+    }
+
+    function cargarDiagnostico() {
+        const consultaId = document.getElementById('selectConsulta').value;
+        const paso3 = document.getElementById('pasoTresWrapper');
+        const paso4 = document.getElementById('pasosCuatroWrapper');
+        const txt = document.getElementById('txtDiagnostico');
+
+        document.getElementById('alertaPendiente').style.display = 'none';
+        document.getElementById('alertaOk').style.display = 'none';
+        document.getElementById('btnGuardar').disabled = true;
+        paso4.style.opacity = '0.45'; paso4.style.pointerEvents = 'none';
+
+        if (!consultaId) {
+            paso3.style.opacity = '0.45'; paso3.style.pointerEvents = 'none';
+            txt.value = '';
+            return;
+        }
+
+        paso3.style.opacity = '1'; paso3.style.pointerEvents = 'auto';
+        txt.value = 'Cargando diagnóstico...';
+
+        fetch(`/Recetas/GetDiagnostico?consultaId=${encodeURIComponent(consultaId)}`)
+            .then(r => r.json())
+            .then(data => {
+                txt.value = data.diagnostico;
+                if (data.pendiente) {
+                    document.getElementById('alertaPendiente').style.display = 'flex';
+                    document.getElementById('btnGuardar').disabled = true;
+                    paso4.style.opacity = '0.45'; paso4.style.pointerEvents = 'none';
+                } else {
+                    document.getElementById('alertaOk').style.display = 'flex';
+                    document.getElementById('btnGuardar').disabled = false;
+                    paso4.style.opacity = '1'; paso4.style.pointerEvents = 'auto';
+                }
+            })
+            .catch(() => { txt.value = 'Error al cargar diagnóstico.'; });
+    }
+    </script>
+}

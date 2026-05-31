@@ -1,0 +1,34 @@
+@model MoldeMVC_Core.Models.Recetas
+
+@{
+    ViewData["Title"] = "Detalles de Receta";
+}
+
+<div class="veris-detail-card">
+    <div class="veris-detail-header">
+        <div class="veris-form-icon">&#128203;</div>
+        <h1>Detalles de Receta</h1>
+    </div>
+
+    <div class="veris-detail-body">
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Consulta</span>
+            <span class="veris-detail-value">@ViewBag.ConsultaNombre</span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Medicamento</span>
+            <span class="veris-detail-value">
+                <span class="veris-badge-tipo">@ViewBag.MedicamentoNombre</span>
+            </span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Cantidad</span>
+            <span class="veris-detail-value">@Html.DisplayFor(m => m.cantidad) unidad@(Model.cantidad != 1 ? "es" : "")</span>
+        </div>
+    </div>
+
+    <div class="veris-detail-footer">
+        <a asp-action="Edit" asp-route-id="@Model._id" class="veris-btn-edit">&#9998; Editar</a>
+        <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+﻿@model MoldeMVC_Core.Models.Medicamentos
+
+@{
+    ViewData["Title"] = "Eliminar Medicamento";
+}
+
+<h1>Eliminar Medicamento</h1>
+
+<h3>¿Está seguro que desea eliminar este registro?</h3>
+
+<div>
+    <h4>Medicamentos</h4>
+    <hr />
+
+    <dl class="row">
+        <dt class="col-sm-3">
+            ID
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model._id)
+        </dd>
+
+        <dt class="col-sm-3">
+            Nombre
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.nombre)
+        </dd>
+
+        <dt class="col-sm-3">
+            Tipo
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.tipo)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="_id" />
+
+        <input type="submit" value="Eliminar" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Volver</a>
+    </form>
+</div>

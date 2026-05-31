@@ -1,0 +1,488 @@
+@model MoldeMVC_Core.Models.Consultas
+
+@{
+    ViewData["Title"] = "Editar Consulta";
+    var especialidades = ViewBag.Especialidades as List<MoldeMVC_Core.Models.Especialidades> ?? new();
+    var pacientes = ViewBag.PacientesList as List<MoldeMVC_Core.Models.Pacientes> ?? new();
+    var medicoEspId = (string)(ViewBag.MedicoEspecialidadId ?? "");
+}
+
+<div class="veris-agenda-wrapper">
+
+    <div class="veris-agenda-header">
+        <div class="veris-form-icon">&#9998;</div>
+        <div>
+            <h1 class="veris-agenda-title">Editar Consulta</h1>
+            <p class="veris-agenda-subtitle">Modifica el médico, paciente, fecha y hora de la consulta</p>
+        </div>
+        <a asp-action="Index" class="veris-btn-back ms-auto">&#8592; Volver</a>
+    </div>
+
+    <div id="editAlerta" class="veris-agenda-alerta" style="display:none;"></div>
+
+    <form asp-action="Edit" asp-route-id="@Model._id" method="post" id="formEditConsulta">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="_id" />
+        <input type="hidden" name="medicoId"       id="hiddenMedicoId"   value="@Model.medicoId" />
+        <input type="hidden" name="pacienteId"     id="hiddenPacienteId" value="@Model.pacienteId" />
+        <input type="hidden" name="fechaConsulta"  id="hiddenFecha"      value="@Model.fechaConsulta.ToString("yyyy-MM-dd")" />
+        <input type="hidden" name="hi"             id="hiddenHi"         value="@Model.hi" />
+        <input type="hidden" name="hf"             id="hiddenHf"         value="@Model.hf" />
+
+        <div class="veris-agenda-body">
+
+            <!-- PANEL IZQUIERDO -->
+            <div class="veris-agenda-panel-left">
+
+                <div class="veris-form-group">
+                    <label class="veris-form-label">Paciente</label>
+                    <select id="selectPaciente" class="veris-form-control" onchange="onPacienteChange()">
+                        <option value="">-- Seleccione un paciente --</option>
+                        @foreach (var p in pacientes)
+                        {
+                            <option value="@p._id">@p.nombre</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="veris-form-group">
+                    <label class="veris-form-label">Especialidad</label>
+                    <select id="selectEspecialidad" class="veris-form-control" onchange="onEspecialidadChange()">
+                        <option value="">-- Seleccione una especialidad --</option>
+                        @foreach (var e in especialidades)
+                        {
+                            <option value="@e._id">@e.descripcion</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="veris-form-group">
+                    <label class="veris-form-label">Médico</label>
+                    <select id="selectMedico" class="veris-form-control" disabled onchange="onMedicoChange()">
+                        <option value="">-- Primero seleccione especialidad --</option>
+                    </select>
+                </div>
+
+                <!-- Slots de hora -->
+                <div id="seccionHoras" style="display:none;">
+                    <div class="veris-agenda-seccion-titulo">
+                        Horas disponibles — <span id="fechaSelLabel" class="veris-hora"></span>
+                    </div>
+                    <div id="contenedorHoras" class="veris-slots-grid"></div>
+                </div>
+
+                <!-- Resumen -->
+                <div id="resumenCita" class="veris-resumen-cita" style="display:none;">
+                    <div class="veris-resumen-titulo">Resumen actualizado</div>
+                    <div class="veris-resumen-fila"><span>Paciente:</span> <strong id="res-paciente"></strong></div>
+                    <div class="veris-resumen-fila"><span>Médico:</span>   <strong id="res-medico"></strong></div>
+                    <div class="veris-resumen-fila"><span>Fecha:</span>    <strong id="res-fecha"></strong></div>
+                    <div class="veris-resumen-fila"><span>Hora:</span>     <strong id="res-hora"></strong></div>
+                    <div class="veris-resumen-fila"><span>Duración:</span> <strong>1 hora</strong></div>
+                </div>
+
+                <!-- Diagnóstico -->
+                <div class="veris-form-group" style="margin-top:1rem;">
+                    <label class="veris-form-label">Diagnóstico</label>
+                    <textarea name="diagnostico" class="veris-form-control" rows="3"
+                              placeholder="Ingrese el diagnóstico...">@Model.diagnostico</textarea>
+                </div>
+
+                <div style="margin-top:1rem; display:flex; gap:0.6rem;">
+                    <button type="submit" id="btnGuardar" class="veris-btn-submit">&#10003; Guardar Cambios</button>
+                    <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
+                </div>
+
+            </div>
+
+            <!-- PANEL DERECHO: CALENDARIO -->
+            <div class="veris-agenda-panel-right">
+
+                <div id="calendarioPlaceholder" class="veris-calendario-placeholder">
+                    <div style="font-size:2.5rem; margin-bottom:0.5rem; opacity:0.4;">&#128197;</div>
+                    <p>Selecciona un médico para cambiar la fecha</p>
+                </div>
+
+                <div id="calendarioContenido" style="display:none;">
+                    <div class="veris-semana-nav">
+                        <button type="button" id="btnSemanaAnterior" class="veris-btn-nav" onclick="cambiarSemana(-1)">&#8592;</button>
+                        <div class="veris-semana-info">
+                            <span class="veris-semana-label">
+                                Semana <span id="semanaNumLabel"></span> —
+                                <span id="anioBtn" class="veris-anio-btn" onclick="toggleAnioPicker()" title="Cambiar año">
+                                    <span id="anioLabel"></span>
+                                    <span class="veris-anio-caret">&#9660;</span>
+                                </span>
+                            </span>
+                            <div id="anioPicker" class="veris-anio-picker" style="display:none;">
+                                <div class="veris-anio-picker-grid" id="anioGrid"></div>
+                            </div>
+                            <span id="semanaFechas" class="veris-semana-fechas"></span>
+                        </div>
+                        <button type="button" id="btnSemanaSiguiente" class="veris-btn-nav" onclick="cambiarSemana(1)">&#8594;</button>
+                    </div>
+
+                    <div class="veris-dias-header">
+                        <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div>
+                    </div>
+                    <div id="gridDias" class="veris-dias-grid"></div>
+
+                    <div class="veris-leyenda">
+                        <span class="veris-leyenda-item veris-leyenda-libre">Disponible</span>
+                        <span class="veris-leyenda-item veris-leyenda-lleno">Sin turnos</span>
+                        <span class="veris-leyenda-item veris-leyenda-nolab">No laboral</span>
+                        <span class="veris-leyenda-item veris-leyenda-pasado">Pasado</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+// ── Datos de la consulta existente ────────────────────────────────────────────
+const consultaExistente = {
+    medicoId:    "@Model.medicoId",
+    espId:       "@medicoEspId",
+    pacienteId:  "@Model.pacienteId",
+    fecha:       "@Model.fechaConsulta.ToString("yyyy-MM-dd")",
+    hi:          "@Model.hi",
+    hf:          "@Model.hf"
+};
+
+let semanaActual, anioActual;
+let fechaSeleccionada = consultaExistente.fecha;
+let horaSeleccionada  = consultaExistente.hi;
+const ANIO_MIN = 2000, ANIO_MAX = 2030;
+
+// ── ISO Week helpers ──────────────────────────────────────────────────────────
+function getISOWeek(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return { week: Math.ceil((((d - yearStart) / 86400000) + 1) / 7), year: d.getUTCFullYear() };
+}
+function getMondayOfISOWeek(year, week) {
+    const simple = new Date(year, 0, 1 + (week - 1) * 7);
+    const dow = simple.getDay() || 7;
+    if (dow !== 1) simple.setDate(simple.getDate() + (8 - dow));
+    return simple;
+}
+function getMaxWeek(year) {
+    const dec31 = new Date(year, 11, 31);
+    const iso = getISOWeek(dec31);
+    return iso.year === year ? iso.week : 52;
+}
+function formatDateDisplay(dateStr) {
+    const [y, m, d] = dateStr.split('-');
+    return `${d}/${m}/${y}`;
+}
+function calcularHoraFin(hora) {
+    const [h, m] = hora.split(':').map(Number);
+    const total = h * 60 + m + 60;
+    return `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
+}
+const MESES_ES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+// ── Init: pre-poblar con datos existentes ─────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function () {
+    // Calcular semana inicial a partir de la fecha de la consulta
+    const fechaConsulta = new Date(consultaExistente.fecha + 'T00:00:00');
+    const iso = getISOWeek(fechaConsulta);
+    semanaActual = iso.week;
+    anioActual   = iso.year;
+
+    // Pre-seleccionar paciente
+    const selPac = document.getElementById('selectPaciente');
+    if (consultaExistente.pacienteId) {
+        selPac.value = consultaExistente.pacienteId;
+    }
+
+    // Pre-seleccionar especialidad
+    const selEsp = document.getElementById('selectEspecialidad');
+    if (consultaExistente.espId) {
+        selEsp.value = consultaExistente.espId;
+        // Cargar médicos de esa especialidad y luego pre-seleccionar el médico
+        cargarMedicosYSeleccionar(consultaExistente.espId, consultaExistente.medicoId);
+    }
+
+    // Cerrar picker al clic fuera
+    document.addEventListener('click', function(e) {
+        const picker = document.getElementById('anioPicker');
+        const btn = document.getElementById('anioBtn');
+        if (picker && !picker.contains(e.target) && btn && !btn.contains(e.target))
+            picker.style.display = 'none';
+    });
+
+    // Validar antes de enviar
+    document.getElementById('formEditConsulta').addEventListener('submit', function(e) {
+        if (!document.getElementById('hiddenMedicoId').value) {
+            e.preventDefault(); mostrarAlerta('Selecciona un médico.', 'error'); return;
+        }
+        if (!document.getElementById('hiddenPacienteId').value) {
+            e.preventDefault(); mostrarAlerta('Selecciona un paciente.', 'error'); return;
+        }
+        if (!document.getElementById('hiddenFecha').value) {
+            e.preventDefault(); mostrarAlerta('Selecciona una fecha en el calendario.', 'error'); return;
+        }
+        if (!document.getElementById('hiddenHi').value) {
+            e.preventDefault(); mostrarAlerta('Selecciona una hora disponible.', 'error'); return;
+        }
+    });
+});
+
+// ── Cambios de selects ────────────────────────────────────────────────────────
+function onPacienteChange() {
+    document.getElementById('hiddenPacienteId').value = document.getElementById('selectPaciente').value;
+    actualizarResumen();
+}
+
+function onEspecialidadChange() {
+    const espId = document.getElementById('selectEspecialidad').value;
+    const selMedico = document.getElementById('selectMedico');
+    selMedico.innerHTML = '<option value="">-- Cargando... --</option>';
+    selMedico.disabled = true;
+    ocultarCalendario();
+    if (!espId) { selMedico.innerHTML = '<option value="">-- Primero seleccione especialidad --</option>'; return; }
+    cargarMedicosYSeleccionar(espId, null);
+}
+
+function cargarMedicosYSeleccionar(espId, preseleccionarId) {
+    const selMedico = document.getElementById('selectMedico');
+    fetch(`/AgendarConsulta/GetMedicos?especialidadId=${encodeURIComponent(espId)}`)
+        .then(r => r.json())
+        .then(data => {
+            selMedico.innerHTML = '<option value="">-- Seleccione un médico --</option>';
+            data.forEach(m => {
+                selMedico.innerHTML += `<option value="${m.id}">${m.nombre}</option>`;
+            });
+            selMedico.disabled = false;
+            if (preseleccionarId) {
+                selMedico.value = preseleccionarId;
+                document.getElementById('hiddenMedicoId').value = preseleccionarId;
+                mostrarCalendario();
+                cargarCalendario();
+            }
+        })
+        .catch(() => { selMedico.innerHTML = '<option value="">-- Error --</option>'; });
+}
+
+function onMedicoChange() {
+    const medicoId = document.getElementById('selectMedico').value;
+    document.getElementById('hiddenMedicoId').value = medicoId;
+    fechaSeleccionada = null; horaSeleccionada = null;
+    ocultarHoras(); ocultarResumen();
+    if (!medicoId) { ocultarCalendario(); return; }
+    mostrarCalendario();
+    cargarCalendario();
+}
+
+// ── Calendario ────────────────────────────────────────────────────────────────
+function mostrarCalendario() {
+    document.getElementById('calendarioPlaceholder').style.display = 'none';
+    document.getElementById('calendarioContenido').style.display = 'block';
+}
+function ocultarCalendario() {
+    document.getElementById('calendarioPlaceholder').style.display = 'flex';
+    document.getElementById('calendarioContenido').style.display = 'none';
+}
+
+function cambiarSemana(delta) {
+    let lunes = getMondayOfISOWeek(anioActual, semanaActual);
+    lunes.setDate(lunes.getDate() + delta * 7);
+    const iso = getISOWeek(lunes);
+    if (iso.year < ANIO_MIN || iso.year > ANIO_MAX) return;
+    semanaActual = iso.week; anioActual = iso.year;
+    fechaSeleccionada = null; horaSeleccionada = null;
+    ocultarHoras(); ocultarResumen();
+    cargarCalendario();
+}
+
+function cargarCalendario() {
+    const medicoId = document.getElementById('selectMedico').value;
+    if (!medicoId) return;
+
+    document.getElementById('semanaNumLabel').textContent = semanaActual;
+    document.getElementById('anioLabel').textContent = anioActual;
+
+    const lunes = getMondayOfISOWeek(anioActual, semanaActual);
+    const viernes = new Date(lunes); viernes.setDate(lunes.getDate() + 4);
+    document.getElementById('semanaFechas').textContent =
+        `${lunes.getDate()} ${MESES_ES[lunes.getMonth()]} al ${viernes.getDate()} ${MESES_ES[viernes.getMonth()]}`;
+
+    document.getElementById('btnSemanaAnterior').disabled = (anioActual === ANIO_MIN && semanaActual === 1);
+    document.getElementById('btnSemanaSiguiente').disabled = (anioActual === ANIO_MAX && semanaActual >= 52);
+
+    const grid = document.getElementById('gridDias');
+    grid.innerHTML = '<div class="veris-dias-loading">Cargando...</div>';
+
+    fetch(`/AgendarConsulta/GetCalendario?medicoId=${encodeURIComponent(medicoId)}&anio=${anioActual}&semana=${semanaActual}`)
+        .then(r => r.json())
+        .then(data => renderizarDias(data))
+        .catch(() => { grid.innerHTML = '<div style="color:#dc3545;padding:1rem;">Error al cargar.</div>'; });
+}
+
+function renderizarDias(data) {
+    const grid = document.getElementById('gridDias');
+    grid.innerHTML = '';
+    if (data.error) { grid.innerHTML = `<div style="color:#dc3545;padding:1rem;">${data.error}</div>`; return; }
+
+    data.dias.forEach(dia => {
+        const card = document.createElement('div');
+        card.className = 'veris-dia-card';
+        const fecha = new Date(dia.fecha + 'T00:00:00');
+        const esSeleccionado = dia.fecha === fechaSeleccionada;
+        if (esSeleccionado) card.classList.add('seleccionado');
+
+        if (dia.esPasado) {
+            card.classList.add('pasado');
+            card.innerHTML = `<span class="veris-dia-num">${fecha.getDate()}</span><span class="veris-dia-estado pasado-txt">Pasado</span>`;
+        } else if (!dia.disponible && dia.slotsLibres === 0) {
+            card.classList.add('no-laboral');
+            card.innerHTML = `<span class="veris-dia-num">${fecha.getDate()}</span><span class="veris-dia-estado">No laboral</span>`;
+        } else if (dia.slotsLibres === 0) {
+            card.classList.add('lleno');
+            card.innerHTML = `<span class="veris-dia-num">${fecha.getDate()}</span><span class="veris-dia-estado">Sin turnos</span>`;
+        } else {
+            card.classList.add('libre');
+            card.innerHTML = `<span class="veris-dia-num">${fecha.getDate()}</span><span class="veris-dia-slots">${dia.slotsLibres} turno${dia.slotsLibres!==1?'s':''}</span>`;
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => seleccionarDia(dia.fecha, card));
+        }
+
+        // Si es el día actual de la consulta, marcarlo aunque esté "pasado" (para edición)
+        if (dia.fecha === consultaExistente.fecha && esSeleccionado) {
+            card.classList.remove('pasado');
+            card.classList.add('libre', 'seleccionado');
+        }
+
+        grid.appendChild(card);
+    });
+
+    // Si la fecha seleccionada está en esta semana, cargar sus horas automáticamente
+    if (fechaSeleccionada) {
+        const card = grid.querySelector('.seleccionado');
+        if (card) cargarHorasParaFecha(fechaSeleccionada);
+    }
+}
+
+function seleccionarDia(fecha, card) {
+    fechaSeleccionada = fecha;
+    horaSeleccionada = null;
+    document.getElementById('hiddenFecha').value = fecha;
+    document.getElementById('hiddenHi').value = '';
+    document.getElementById('hiddenHf').value = '';
+    ocultarResumen();
+    document.querySelectorAll('.veris-dia-card').forEach(c => c.classList.remove('seleccionado'));
+    card.classList.add('seleccionado');
+    cargarHorasParaFecha(fecha);
+}
+
+function cargarHorasParaFecha(fecha) {
+    const medicoId = document.getElementById('selectMedico').value;
+    const seccion = document.getElementById('seccionHoras');
+    const contenedor = document.getElementById('contenedorHoras');
+    document.getElementById('fechaSelLabel').textContent = formatDateDisplay(fecha);
+    contenedor.innerHTML = '<span style="color:#7fa8d8;font-size:0.9rem;">Cargando horarios...</span>';
+    seccion.style.display = 'block';
+
+    // Para la consulta existente, necesitamos incluir su hora aunque ya esté ocupada
+    fetch(`/AgendarConsulta/GetHoras?medicoId=${encodeURIComponent(medicoId)}&fecha=${encodeURIComponent(fecha)}`)
+        .then(r => r.json())
+        .then(horas => {
+            // Incluir la hora original si no está en la lista (porque era de esta consulta)
+            if (fecha === consultaExistente.fecha && consultaExistente.hi &&
+                !horas.includes(consultaExistente.hi)) {
+                horas.unshift(consultaExistente.hi);
+                horas.sort();
+            }
+            renderizarHoras(horas);
+        })
+        .catch(() => { contenedor.innerHTML = '<span style="color:#dc3545;">Error.</span>'; });
+}
+
+function renderizarHoras(horas) {
+    const contenedor = document.getElementById('contenedorHoras');
+    contenedor.innerHTML = '';
+    if (!horas || horas.length === 0) {
+        contenedor.innerHTML = '<span style="color:#7fa8d8;font-size:0.9rem;">No hay turnos disponibles.</span>';
+        return;
+    }
+    horas.forEach(hora => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'veris-slot-btn';
+        if (hora === horaSeleccionada) btn.classList.add('activo');
+        btn.textContent = hora;
+        btn.addEventListener('click', () => seleccionarHora(hora, btn));
+        contenedor.appendChild(btn);
+    });
+}
+
+function seleccionarHora(hora, btn) {
+    horaSeleccionada = hora;
+    document.getElementById('hiddenHi').value = hora;
+    document.getElementById('hiddenHf').value = calcularHoraFin(hora);
+    document.querySelectorAll('.veris-slot-btn').forEach(b => b.classList.remove('activo'));
+    btn.classList.add('activo');
+    actualizarResumen();
+}
+
+function actualizarResumen() {
+    if (!fechaSeleccionada || !horaSeleccionada) return;
+    const selPac = document.getElementById('selectPaciente');
+    const selMed = document.getElementById('selectMedico');
+    document.getElementById('res-paciente').textContent = selPac.options[selPac.selectedIndex]?.text || '';
+    document.getElementById('res-medico').textContent   = selMed.options[selMed.selectedIndex]?.text || '';
+    document.getElementById('res-fecha').textContent    = formatDateDisplay(fechaSeleccionada);
+    document.getElementById('res-hora').textContent     = `${horaSeleccionada} – ${calcularHoraFin(horaSeleccionada)}`;
+    document.getElementById('resumenCita').style.display = 'block';
+}
+
+function ocultarHoras()  { document.getElementById('seccionHoras').style.display = 'none'; }
+function ocultarResumen(){ document.getElementById('resumenCita').style.display = 'none'; }
+
+// ── Picker de año ─────────────────────────────────────────────────────────────
+function toggleAnioPicker() {
+    const picker = document.getElementById('anioPicker');
+    if (picker.style.display === 'none') {
+        const grid = document.getElementById('anioGrid');
+        if (!grid.hasChildNodes()) {
+            for (let y = ANIO_MIN; y <= ANIO_MAX; y++) {
+                const btn = document.createElement('button');
+                btn.type = 'button'; btn.className = 'veris-anio-opcion';
+                btn.textContent = y; btn.dataset.year = y;
+                btn.addEventListener('click', () => seleccionarAnio(y));
+                grid.appendChild(btn);
+            }
+        }
+        grid.querySelectorAll('.veris-anio-opcion').forEach(b =>
+            b.classList.toggle('activo', parseInt(b.dataset.year) === anioActual));
+        picker.style.display = 'block';
+        const activo = grid.querySelector('.veris-anio-opcion.activo');
+        if (activo) activo.scrollIntoView({ block: 'center', behavior: 'instant' });
+    } else { picker.style.display = 'none'; }
+}
+
+function seleccionarAnio(year) {
+    anioActual = year;
+    const maxSemana = getMaxWeek(year);
+    if (semanaActual > maxSemana) semanaActual = 1;
+    document.getElementById('anioPicker').style.display = 'none';
+    fechaSeleccionada = null; horaSeleccionada = null;
+    ocultarHoras(); ocultarResumen();
+    cargarCalendario();
+}
+
+// ── Alerta ────────────────────────────────────────────────────────────────────
+function mostrarAlerta(msg, tipo) {
+    const el = document.getElementById('editAlerta');
+    el.className = `veris-agenda-alerta veris-alerta-${tipo}`;
+    el.textContent = msg; el.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => { el.style.display = 'none'; }, 5000);
+}
+</script>
+}

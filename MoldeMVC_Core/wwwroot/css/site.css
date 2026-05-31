@@ -1,0 +1,1124 @@
+html,
+body {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+/* ===== Veris Medical Tables ===== */
+.veris-table-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(47, 109, 246, 0.10), 0 1px 4px rgba(0,0,0,0.07);
+    overflow: hidden;
+    margin: 0 2rem 2rem 2rem;
+}
+
+.veris-table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.5rem;
+    background: linear-gradient(90deg, #142946 0%, #1e3a5f 100%);
+    color: #fff;
+    border-bottom: 3px solid #2f6df6;
+}
+
+.veris-table-header h1 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin: 0;
+    color: #fff;
+}
+
+.veris-badge-count {
+    background: rgba(47, 109, 246, 0.25);
+    color: #a8c8ff;
+    border: 1px solid rgba(47, 109, 246, 0.45);
+    border-radius: 20px;
+    padding: 0.2em 0.9em;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+.veris-table-toolbar {
+    padding: 0.75rem 1.5rem;
+    background: #f4f8ff;
+    border-bottom: 1px solid #dce8f7;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.veris-table-wrapper {
+    overflow-x: auto;
+}
+
+.veris-table {
+    margin-bottom: 0;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.veris-table thead th {
+    background: #2f6df6;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.80rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1rem;
+    border: none;
+    white-space: nowrap;
+}
+
+.veris-table tbody tr:nth-child(odd) td {
+    background: #fff;
+}
+
+.veris-table tbody tr:nth-child(even) td {
+    background: #f6f9ff;
+}
+
+.veris-table tbody tr:hover td {
+    background: #deeaff !important;
+}
+
+.veris-table tbody td {
+    padding: 0.72rem 1rem;
+    vertical-align: middle;
+    border-top: 1px solid #e4edf8;
+    color: #2d3a4a;
+    font-size: 0.95rem;
+}
+
+.veris-foto-circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #2f6df6;
+    box-shadow: 0 2px 6px rgba(47,109,246,0.18);
+    display: block;
+}
+
+.veris-sin-foto {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #e8f0fb;
+    color: #7fa8d8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 2px dashed #b3cdf5;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: 1.2;
+}
+
+.veris-actions {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.veris-btn-edit,
+.veris-btn-details,
+.veris-btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-radius: 6px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+
+.veris-btn-edit:hover,
+.veris-btn-details:hover,
+.veris-btn-delete:hover {
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+/* Editar — ámbar */
+.veris-btn-edit {
+    background: #fff7ed;
+    color: #b45309;
+    border-color: #fcd34d;
+}
+.veris-btn-edit:hover {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #92400e;
+    box-shadow: 0 2px 8px rgba(245,158,11,0.25);
+}
+
+/* Detalles — azul */
+.veris-btn-details {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #93c5fd;
+}
+.veris-btn-details:hover {
+    background: #dbeafe;
+    border-color: #3b82f6;
+    color: #1e40af;
+    box-shadow: 0 2px 8px rgba(59,130,246,0.25);
+}
+
+/* Eliminar — rojo */
+.veris-btn-delete {
+    background: #fff1f2;
+    color: #be123c;
+    border-color: #fda4af;
+}
+.veris-btn-delete:hover {
+    background: #ffe4e6;
+    border-color: #f43f5e;
+    color: #9f1239;
+    box-shadow: 0 2px 8px rgba(244,63,94,0.25);
+}
+
+.veris-table-footer {
+    padding: 0.6rem 1.5rem;
+    background: #f4f8ff;
+    border-top: 1px solid #dce8f7;
+    font-size: 0.83rem;
+    color: #5a7fa8;
+}
+
+.veris-badge-tipo {
+    display: inline-block;
+    padding: 0.2em 0.7em;
+    border-radius: 12px;
+    font-size: 0.80rem;
+    font-weight: 500;
+    background: #e8f0fb;
+    color: #2f6df6;
+    border: 1px solid #b3cdf5;
+}
+
+.veris-badge-diagnostico {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+
+.veris-hora {
+    font-size: 0.88rem;
+    color: #3a5a82;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* ===== Veris Form Cards ===== */
+.veris-form-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(47, 109, 246, 0.10), 0 1px 4px rgba(0,0,0,0.07);
+    overflow: hidden;
+    margin: 0 auto 2rem auto;
+    max-width: 640px;
+}
+
+.veris-form-card-wide {
+    max-width: 860px;
+}
+
+.veris-form-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.1rem 1.6rem;
+    background: linear-gradient(90deg, #142946 0%, #1e3a5f 100%);
+    border-bottom: 3px solid #2f6df6;
+}
+
+.veris-form-header h1 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+    color: #fff;
+}
+
+.veris-form-header .veris-form-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(47,109,246,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.veris-form-body {
+    padding: 1.6rem 2rem;
+}
+
+.veris-form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1.2rem;
+}
+
+.veris-form-grid-2 .veris-col-full {
+    grid-column: 1 / -1;
+}
+
+.veris-form-group {
+    margin-bottom: 1.1rem;
+}
+
+.veris-form-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #3a5a82;
+    margin-bottom: 0.38rem;
+}
+
+.veris-form-control {
+    width: 100%;
+    border: 1.5px solid #d0dff4;
+    border-radius: 8px;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.95rem;
+    color: #2d3a4a;
+    background: #f8faff;
+    transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+    display: block;
+}
+
+.veris-form-control:focus {
+    border-color: #2f6df6;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(47,109,246,0.13);
+    outline: none;
+}
+
+.veris-form-control::placeholder {
+    color: #a8bcd8;
+    font-size: 0.9rem;
+}
+
+textarea.veris-form-control {
+    resize: vertical;
+    min-height: 90px;
+}
+
+.veris-form-error {
+    font-size: 0.78rem;
+    color: #dc3545;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.veris-form-footer {
+    padding: 1rem 2rem 1.4rem;
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+}
+
+.veris-btn-submit {
+    background: #2f6df6;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.55rem 1.6rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, box-shadow 0.18s;
+}
+
+.veris-btn-submit:hover {
+    background: #1a56d6;
+    box-shadow: 0 2px 8px rgba(47,109,246,0.3);
+}
+
+.veris-btn-back {
+    background: #f0f4fb;
+    color: #3a5a82;
+    border: 1.5px solid #c8d9f0;
+    border-radius: 8px;
+    padding: 0.5rem 1.3rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.15s;
+    display: inline-block;
+}
+
+.veris-btn-back:hover {
+    background: #dce8f7;
+    color: #142946;
+    text-decoration: none;
+}
+
+.veris-foto-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    background: #f0f6ff;
+    border: 1.5px solid #b3cdf5;
+    border-radius: 10px;
+}
+
+.veris-foto-preview-label {
+    font-size: 0.82rem;
+    color: #3a5a82;
+    font-weight: 500;
+}
+
+/* ===== Veris Detail Cards ===== */
+.veris-detail-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(47,109,246,0.10), 0 1px 4px rgba(0,0,0,0.07);
+    overflow: hidden;
+    margin: 0 auto 2rem auto;
+    max-width: 680px;
+}
+
+.veris-detail-card-wide {
+    max-width: 860px;
+}
+
+.veris-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.1rem 1.6rem;
+    background: linear-gradient(90deg, #142946 0%, #1e3a5f 100%);
+    border-bottom: 3px solid #2f6df6;
+}
+
+.veris-detail-header h1 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+    color: #fff;
+}
+
+.veris-detail-foto-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.6rem 2rem 0.8rem;
+    background: #f8faff;
+    border-bottom: 1px solid #e4edf8;
+}
+
+.veris-detail-foto-lg {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #2f6df6;
+    box-shadow: 0 4px 14px rgba(47,109,246,0.22);
+}
+
+.veris-detail-sin-foto-lg {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #e8f0fb;
+    border: 3px dashed #b3cdf5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7fa8d8;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.veris-detail-nombre-top {
+    margin-top: 0.6rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #142946;
+}
+
+.veris-detail-body {
+    padding: 0.5rem 0;
+}
+
+.veris-detail-row {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.7rem 2rem;
+    border-bottom: 1px solid #f0f5fc;
+    gap: 1rem;
+}
+
+.veris-detail-row:last-child { border-bottom: none; }
+
+.veris-detail-label {
+    flex: 0 0 160px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #5a7fa8;
+    padding-top: 0.1rem;
+}
+
+.veris-detail-value {
+    flex: 1;
+    font-size: 0.95rem;
+    color: #1e293b;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+.veris-detail-footer {
+    padding: 1rem 2rem 1.4rem;
+    background: #f4f8ff;
+    border-top: 1px solid #dce8f7;
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+}
+
+.veris-badge-diagnostico-pill {
+    display: inline-block;
+    padding: 0.25em 0.9em;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.veris-badge-pendiente {
+    background: #fef9c3;
+    color: #854d0e;
+    border: 1px solid #fde047;
+}
+
+.veris-badge-atendido {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+/* ===== Botón Atender ===== */
+.veris-btn-atender {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-radius: 6px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1.5px solid #86efac;
+    background: #dcfce7;
+    color: #166534;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    animation: veris-pulse 2s infinite;
+}
+
+.veris-btn-atender:hover {
+    background: #bbf7d0;
+    border-color: #4ade80;
+    color: #14532d;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(34,197,94,0.3);
+    animation: none;
+}
+
+@keyframes veris-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+    50%       { box-shadow: 0 0 0 4px rgba(34,197,94,0); }
+}
+
+/* ===== Vista Atender ===== */
+.veris-atender-personas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 1.6rem 2rem;
+    background: #f8faff;
+    border-bottom: 1px solid #e4edf8;
+}
+
+.veris-atender-persona-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.veris-atender-persona-rol {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #5a7fa8;
+}
+
+.veris-atender-persona-nombre {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #142946;
+}
+
+.veris-atender-flecha {
+    font-size: 1.8rem;
+    color: #b3cdf5;
+    margin-top: -1.5rem;
+}
+
+.veris-atender-hint {
+    font-size: 0.78rem;
+    color: #5a7fa8;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+/* ===== Selector de días ===== */
+.veris-dias-check-grid {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.3rem;
+}
+
+.veris-dia-check {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 8px;
+    border: 1.5px solid #d0dff4;
+    background: #f8faff;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+}
+
+.veris-dia-check:hover {
+    border-color: #2f6df6;
+    background: #eff6ff;
+}
+
+.veris-dia-check.activo {
+    background: #2f6df6;
+    border-color: #1a56d6;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(47,109,246,0.25);
+}
+
+.veris-dia-check input[type="checkbox"] {
+    display: none;
+}
+
+.veris-dia-check-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ===== Módulo Recetas ===== */
+.veris-receta-paso {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #eef3fb;
+    transition: opacity 0.2s;
+}
+
+.veris-receta-paso:last-child { border-bottom: none; }
+
+.veris-receta-paso-num {
+    flex: 0 0 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #2f6df6;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+}
+
+.veris-receta-paso-body {
+    flex: 1;
+}
+
+.veris-alerta-receta {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.veris-alerta-warn {
+    background: #fef9c3;
+    color: #854d0e;
+    border: 1px solid #fde047;
+}
+
+.veris-alerta-ok {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+/* ===== Módulo Agendar Consulta ===== */
+.veris-agenda-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(47,109,246,0.10), 0 1px 4px rgba(0,0,0,0.07);
+    overflow: hidden;
+    margin: 0 2rem 2rem 2rem;
+}
+
+.veris-agenda-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.6rem;
+    background: linear-gradient(90deg, #142946 0%, #1e3a5f 100%);
+    border-bottom: 3px solid #2f6df6;
+}
+
+.veris-agenda-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+}
+
+.veris-agenda-subtitle {
+    font-size: 0.78rem;
+    color: #8ab0d8;
+    margin: 0;
+}
+
+.veris-agenda-alerta {
+    margin: 1rem 1.6rem 0;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.veris-alerta-error {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+}
+
+.veris-alerta-exito {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #86efac;
+}
+
+.veris-agenda-body {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 0;
+    min-height: 520px;
+}
+
+.veris-agenda-panel-left {
+    padding: 1.4rem 1.4rem;
+    border-right: 1px solid #e4edf8;
+    background: #fafcff;
+    overflow-y: auto;
+}
+
+.veris-agenda-panel-right {
+    padding: 1.4rem 1.6rem;
+}
+
+.veris-agenda-seccion-titulo {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #3a5a82;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #dce8f7;
+}
+
+/* Slots de hora */
+.veris-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.veris-slot-btn {
+    background: #f0f6ff;
+    border: 1.5px solid #b3cdf5;
+    border-radius: 8px;
+    color: #2f6df6;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.4rem 0.3rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.veris-slot-btn:hover {
+    background: #deeaff;
+    border-color: #2f6df6;
+}
+
+.veris-slot-btn.activo {
+    background: #2f6df6;
+    color: #fff;
+    border-color: #1a56d6;
+    box-shadow: 0 2px 8px rgba(47,109,246,0.3);
+}
+
+/* Resumen */
+.veris-resumen-cita {
+    background: #f0f6ff;
+    border: 1.5px solid #b3cdf5;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    margin-top: 0.5rem;
+}
+
+.veris-resumen-titulo {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #3a5a82;
+    margin-bottom: 0.5rem;
+}
+
+.veris-resumen-fila {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #2d3a4a;
+    padding: 0.18rem 0;
+    border-bottom: 1px solid #dce8f7;
+}
+
+.veris-resumen-fila:last-child { border-bottom: none; }
+.veris-resumen-fila span { color: #5a7fa8; }
+
+/* Calendario placeholder */
+.veris-calendario-placeholder {
+    height: 100%;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #8ab0d8;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* Navegación semana */
+.veris-semana-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid #dce8f7;
+}
+
+.veris-semana-info {
+    flex: 1;
+    text-align: center;
+    position: relative;
+}
+
+.veris-semana-label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #142946;
+}
+
+.veris-semana-fechas {
+    display: block;
+    font-size: 0.78rem;
+    color: #5a7fa8;
+}
+
+.veris-anio-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    cursor: pointer;
+    color: #2f6df6;
+    border-bottom: 2px dashed #2f6df6;
+    padding-bottom: 1px;
+    transition: color 0.15s;
+    position: relative;
+}
+
+.veris-anio-btn:hover { color: #1a56d6; }
+
+.veris-anio-caret {
+    font-size: 0.6rem;
+    transition: transform 0.2s;
+}
+
+.veris-anio-picker {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border: 1.5px solid #b3cdf5;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(47,109,246,0.18);
+    z-index: 100;
+    padding: 0.6rem;
+    max-height: 220px;
+    overflow-y: auto;
+    min-width: 220px;
+}
+
+.veris-anio-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.3rem;
+}
+
+.veris-anio-opcion {
+    background: #f4f8ff;
+    border: 1px solid #dce8f7;
+    border-radius: 6px;
+    color: #2d3a4a;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 0.35rem 0.2rem;
+    cursor: pointer;
+    transition: background 0.12s;
+    text-align: center;
+}
+
+.veris-anio-opcion:hover { background: #deeaff; border-color: #2f6df6; color: #2f6df6; }
+
+.veris-anio-opcion.activo {
+    background: #2f6df6;
+    border-color: #1a56d6;
+    color: #fff;
+    font-weight: 700;
+}
+
+.veris-btn-nav {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1.5px solid #b3cdf5;
+    background: #f0f6ff;
+    color: #2f6df6;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.veris-btn-nav:hover:not(:disabled) { background: #deeaff; }
+.veris-btn-nav:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Grid días */
+.veris-dias-header {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.veris-dias-header > div {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #5a7fa8;
+}
+
+.veris-dias-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.veris-dias-loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #7fa8d8;
+    font-size: 0.9rem;
+    padding: 1.5rem;
+}
+
+.veris-dia-card {
+    border-radius: 10px;
+    padding: 0.75rem 0.4rem;
+    text-align: center;
+    border: 1.5px solid transparent;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.veris-dia-num {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.veris-dia-slots {
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.veris-dia-estado {
+    font-size: 0.68rem;
+}
+
+.veris-dia-card.libre {
+    background: #dcfce7;
+    border-color: #86efac;
+    color: #166534;
+}
+
+.veris-dia-card.libre:hover {
+    background: #bbf7d0;
+    border-color: #4ade80;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(22,101,52,0.12);
+}
+
+.veris-dia-card.libre.seleccionado {
+    background: #2f6df6;
+    border-color: #1a56d6;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(47,109,246,0.35);
+}
+
+.veris-dia-card.lleno {
+    background: #fef9c3;
+    border-color: #fde047;
+    color: #854d0e;
+}
+
+.veris-dia-card.no-laboral {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #94a3b8;
+}
+
+.veris-dia-card.pasado {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #cbd5e1;
+}
+
+.pasado-txt { font-size: 0.68rem; }
+
+/* Leyenda */
+.veris-leyenda {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    font-size: 0.75rem;
+}
+
+.veris-leyenda-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.veris-leyenda-item::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.veris-leyenda-libre::before { background: #dcfce7; border: 1px solid #86efac; }
+.veris-leyenda-lleno::before { background: #fef9c3; border: 1px solid #fde047; }
+.veris-leyenda-nolab::before { background: #f1f5f9; border: 1px solid #e2e8f0; }
+.veris-leyenda-pasado::before { background: #f8fafc; border: 1px solid #e2e8f0; }
+
+@media (max-width: 768px) {
+    .veris-agenda-body { grid-template-columns: 1fr; }
+    .veris-agenda-panel-left { border-right: none; border-bottom: 1px solid #e4edf8; }
+}

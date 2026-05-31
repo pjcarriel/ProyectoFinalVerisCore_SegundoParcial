@@ -1,0 +1,58 @@
+﻿@model MoldeMVC_Core.Models.Especialidades
+
+@{
+    ViewData["Title"] = "Eliminar Especialidad";
+}
+
+<h1>Eliminar Especialidad</h1>
+
+<h3>¿Está seguro que desea eliminar este registro?</h3>
+
+<div>
+    <h4>Especialidades</h4>
+    <hr />
+
+    <dl class="row">
+        <dt class="col-sm-3">
+            ID
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model._id)
+        </dd>
+
+        <dt class="col-sm-3">
+            Descripción
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.descripcion)
+        </dd>
+
+        <dt class="col-sm-3">
+            Días
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.dias)
+        </dd>
+
+        <dt class="col-sm-3">
+            Hora Inicio
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.franjaHI)
+        </dd>
+
+        <dt class="col-sm-3">
+            Hora Fin
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.franjaHF)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="_id" />
+
+        <input type="submit" value="Eliminar" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Volver</a>
+    </form>
+</div>

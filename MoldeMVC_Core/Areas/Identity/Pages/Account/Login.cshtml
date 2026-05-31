@@ -1,0 +1,98 @@
+@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+<style>
+    .btn-veris {
+        background-color: #4f84ef;
+        color: white;
+    }
+    .btn-veris:hover {
+        background-color: #34c9d4;
+        color: white;
+    }
+</style>
+
+<main aria-labelledby="title" class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="row align-items-center shadow rounded-4 overflow-hidden bg-white">
+
+                <!-- FORMULARIO (IZQUIERDA) -->
+                <div class="col-md-6 p-4">
+                    <section id="loginForm">
+                        <form id="account" method="post">
+                            <h2 id="title" class="fw-bold" style="color:#4f84ef;">@ViewData["Title"]</h2>
+                            <h6 class="text-muted mb-3">Utilice una cuenta local para iniciar sesión.</h6>
+                            <hr />
+
+                            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                            <div class="mb-3">
+                                <label asp-for="Input.UserName" class="form-label">Nombre de usuario</label>
+                                <input asp-for="Input.UserName" class="form-control" autocomplete="username"
+                                       aria-required="true" placeholder="Ingrese su usuario" />
+                                <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Input.Password" class="form-label">Contraseña</label>
+                                <input asp-for="Input.Password" class="form-control" autocomplete="current-password"
+                                       aria-required="true" placeholder="Ingrese su contraseña" />
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" asp-for="Input.RememberMe" />
+                                    <label class="form-check-label" asp-for="Input.RememberMe">
+                                        @Html.DisplayNameFor(m => m.Input.RememberMe)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <button id="login-submit" type="submit" class="btn btn-veris px-4">
+                                    Iniciar sesión
+                                </button>
+                            </div>
+
+                            <p class="mb-0">
+                                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl"
+                                   class="fw-semibold text-decoration-none" style="color:#4f84ef;">
+                                    Registrarse como usuario nuevo
+                                </a>
+                            </p>
+                        </form>
+                    </section>
+                </div>
+
+                <!-- PANEL DERECHO -->
+                <div class="col-md-6 d-flex justify-content-center align-items-center p-4">
+                    <div class="text-center text-white rounded-4 shadow p-4"
+                         style="max-width:380px; background:linear-gradient(135deg,#4f83f1,#2cc8c8);">
+
+                        <h3 class="mb-3">Bienvenido a VERIS</h3>
+
+                        <img src="~/Imagenes/RegistroVeris.jpeg"
+                             alt="Registro VERIS"
+                             class="img-fluid rounded-4 shadow mb-3"
+                             style="width:180px; height:240px; object-fit:cover; border:6px solid white;" />
+
+                        <p class="mb-0">
+                            Inicia sesión para gestionar tus citas médicas, consultar tus servicios y acceder a tu cuenta de VERIS.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

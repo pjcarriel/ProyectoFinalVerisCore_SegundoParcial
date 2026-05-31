@@ -1,0 +1,56 @@
+@model MoldeMVC_Core.Models.Consultas
+
+@{
+    ViewData["Title"] = "Detalles de Consulta";
+    bool isPendiente = Model.diagnostico?.Trim().ToLower() == "pendiente";
+}
+
+<div class="veris-detail-card veris-detail-card-wide">
+    <div class="veris-detail-header">
+        <div class="veris-form-icon">&#128200;</div>
+        <h1>Detalles de Consulta</h1>
+    </div>
+
+    <div class="veris-detail-body">
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Médico</span>
+            <span class="veris-detail-value">@ViewBag.MedicoNombre</span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Paciente</span>
+            <span class="veris-detail-value">@ViewBag.PacienteNombre</span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Fecha</span>
+            <span class="veris-detail-value">
+                <span class="veris-badge-tipo">@Model.fechaConsulta.ToString("dd/MM/yyyy")</span>
+            </span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Hora de inicio</span>
+            <span class="veris-detail-value"><span class="veris-hora">@(Model.hi?.Length > 5 ? Model.hi.Substring(0, 5) : Model.hi)</span></span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Hora de fin</span>
+            <span class="veris-detail-value"><span class="veris-hora">@(Model.hf?.Length > 5 ? Model.hf.Substring(0, 5) : Model.hf)</span></span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Diagnóstico</span>
+            <span class="veris-detail-value">
+                @if (isPendiente)
+                {
+                    <span class="veris-badge-diagnostico-pill veris-badge-pendiente">Pendiente</span>
+                }
+                else
+                {
+                    <span class="veris-badge-diagnostico-pill veris-badge-atendido">@Html.DisplayFor(m => m.diagnostico)</span>
+                }
+            </span>
+        </div>
+    </div>
+
+    <div class="veris-detail-footer">
+        <a asp-action="Edit" asp-route-id="@Model._id" class="veris-btn-edit">&#9998; Editar</a>
+        <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
+    </div>
+</div>

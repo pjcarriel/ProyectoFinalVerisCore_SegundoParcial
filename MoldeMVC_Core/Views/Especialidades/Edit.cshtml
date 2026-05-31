@@ -1,0 +1,79 @@
+@model MoldeMVC_Core.Models.Especialidades
+
+@{
+    ViewData["Title"] = "Editar Especialidad";
+}
+
+<div class="veris-form-card">
+    <div class="veris-form-header">
+        <div class="veris-form-icon">&#9998;</div>
+        <h1>Editar Especialidad</h1>
+    </div>
+    <form asp-action="Edit" method="post">
+        <div class="veris-form-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="_id" />
+
+            <div class="veris-form-group">
+                <label asp-for="descripcion" class="veris-form-label">Descripción</label>
+                <input asp-for="descripcion" class="veris-form-control" />
+                <span asp-validation-for="descripcion" class="veris-form-error"></span>
+            </div>
+
+            <div class="veris-form-group">
+                <label class="veris-form-label">Días disponibles</label>
+                <input type="hidden" name="dias" id="diasHidden" value="@Model.dias" />
+                <div class="veris-dias-check-grid">
+                    @foreach (var dia in new[] {
+                        ("L","Lunes"), ("M","Martes"), ("X","Miércoles"), ("J","Jueves"), ("V","Viernes")
+                    })
+                    {
+                        bool marcado = Model.dias?.Contains(dia.Item1) ?? false;
+                        <label class="veris-dia-check @(marcado ? "activo" : "")" id="label-@dia.Item1">
+                            <input type="checkbox" value="@dia.Item1" class="veris-dia-checkbox"
+                                   @(marcado ? "checked" : "") onchange="actualizarDias()" />
+                            <span class="veris-dia-check-label">@dia.Item2</span>
+                        </label>
+                    }
+                </div>
+                <span asp-validation-for="dias" class="veris-form-error"></span>
+            </div>
+
+            <div class="veris-form-grid-2">
+                <div class="veris-form-group">
+                    <label asp-for="franjaHI" class="veris-form-label">Hora de inicio</label>
+                    <input asp-for="franjaHI" type="time" class="veris-form-control" />
+                    <span asp-validation-for="franjaHI" class="veris-form-error"></span>
+                </div>
+
+                <div class="veris-form-group">
+                    <label asp-for="franjaHF" class="veris-form-label">Hora de fin</label>
+                    <input asp-for="franjaHF" type="time" class="veris-form-control" />
+                    <span asp-validation-for="franjaHF" class="veris-form-error"></span>
+                </div>
+            </div>
+        </div>
+        <div class="veris-form-footer">
+            <button type="submit" class="veris-btn-submit">&#10003; Guardar Cambios</button>
+            <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+    function actualizarDias() {
+        const checks = document.querySelectorAll('.veris-dia-checkbox:checked');
+        const orden = ['L','M','X','J','V'];
+        const seleccionados = Array.from(checks).map(c => c.value);
+        const ordenados = orden.filter(d => seleccionados.includes(d));
+        document.getElementById('diasHidden').value = ordenados.join('');
+
+        document.querySelectorAll('.veris-dia-check').forEach(lbl => {
+            const cb = lbl.querySelector('input');
+            lbl.classList.toggle('activo', cb.checked);
+        });
+    }
+    </script>
+}

@@ -1,0 +1,30 @@
+@model MoldeMVC_Core.Models.Medicamentos
+
+@{
+    ViewData["Title"] = "Detalles de Medicamento";
+}
+
+<div class="veris-detail-card">
+    <div class="veris-detail-header">
+        <div class="veris-form-icon">&#10010;</div>
+        <h1>Detalles del Medicamento</h1>
+    </div>
+
+    <div class="veris-detail-body">
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Nombre</span>
+            <span class="veris-detail-value">@Html.DisplayFor(m => m.nombre)</span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Tipo / Categoría</span>
+            <span class="veris-detail-value">
+                <span class="veris-badge-tipo">@Html.DisplayFor(m => m.tipo)</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="veris-detail-footer">
+        <a asp-action="Edit" asp-route-id="@Model._id" class="veris-btn-edit">&#9998; Editar</a>
+        <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
+    </div>
+</div>

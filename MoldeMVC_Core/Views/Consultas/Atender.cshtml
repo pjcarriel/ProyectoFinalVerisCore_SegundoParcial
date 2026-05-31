@@ -1,0 +1,105 @@
+@model MoldeMVC_Core.Models.Consultas
+
+@{
+    ViewData["Title"] = "Atender Consulta";
+    string medicoFoto   = ViewBag.MedicoFoto   as string ?? "";
+    string pacienteFoto = ViewBag.PacienteFoto as string ?? "";
+}
+
+<div class="veris-detail-card veris-detail-card-wide">
+
+    <!-- ENCABEZADO -->
+    <div class="veris-detail-header">
+        <div class="veris-form-icon">&#128203;</div>
+        <h1>Atender Consulta</h1>
+    </div>
+
+    <!-- TARJETAS DE MÉDICO Y PACIENTE -->
+    <div class="veris-atender-personas">
+
+        <div class="veris-atender-persona-card">
+            @if (!string.IsNullOrEmpty(medicoFoto))
+            {
+                <img src="~/medicos/@medicoFoto" alt="Médico" class="veris-detail-foto-lg" />
+            }
+            else
+            {
+                <div class="veris-detail-sin-foto-lg">Sin<br/>foto</div>
+            }
+            <div class="veris-atender-persona-rol">Médico</div>
+            <div class="veris-atender-persona-nombre">@ViewBag.MedicoNombre</div>
+        </div>
+
+        <div class="veris-atender-flecha">&#8594;</div>
+
+        <div class="veris-atender-persona-card">
+            @if (!string.IsNullOrEmpty(pacienteFoto))
+            {
+                <img src="~/Usuarios/@pacienteFoto" alt="Paciente" class="veris-detail-foto-lg" />
+            }
+            else
+            {
+                <div class="veris-detail-sin-foto-lg">Sin<br/>foto</div>
+            }
+            <div class="veris-atender-persona-rol">Paciente</div>
+            <div class="veris-atender-persona-nombre">@ViewBag.PacienteNombre</div>
+        </div>
+
+    </div>
+
+    <!-- DATOS DE LA CONSULTA (solo lectura) -->
+    <div class="veris-detail-body">
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Fecha</span>
+            <span class="veris-detail-value">
+                <span class="veris-badge-tipo">@Model.fechaConsulta.ToString("dd/MM/yyyy")</span>
+            </span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Hora de inicio</span>
+            <span class="veris-detail-value"><span class="veris-hora">@(Model.hi?.Length > 5 ? Model.hi.Substring(0, 5) : Model.hi)</span></span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Hora de fin</span>
+            <span class="veris-detail-value"><span class="veris-hora">@(Model.hf?.Length > 5 ? Model.hf.Substring(0, 5) : Model.hf)</span></span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Estado</span>
+            <span class="veris-detail-value">
+                <span class="veris-badge-diagnostico-pill veris-badge-pendiente">Pendiente de atención</span>
+            </span>
+        </div>
+    </div>
+
+    <!-- FORMULARIO: solo el diagnóstico -->
+    <form asp-action="Atender" asp-route-id="@Model._id" method="post">
+        @Html.AntiForgeryToken()
+
+        <div style="padding: 1.2rem 2rem;">
+            <label class="veris-form-label" style="font-size:0.82rem;">
+                Diagnóstico
+                <span style="color:#dc2626; margin-left:0.2rem;">*</span>
+            </label>
+
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ContainsKey("diagnostico"))
+            {
+                <div class="veris-alerta-receta veris-alerta-warn mb-2">
+                    &#9888; @ViewData.ModelState["diagnostico"]!.Errors[0].ErrorMessage
+                </div>
+            }
+
+            <textarea name="diagnostico" class="veris-form-control" rows="5"
+                      placeholder="Describa el diagnóstico clínico del paciente...">@(Model.diagnostico == "Pendiente" ? "" : Model.diagnostico)</textarea>
+
+            <p class="veris-atender-hint">
+                &#8505; Una vez guardado el diagnóstico podrá crear recetas para esta consulta.
+            </p>
+        </div>
+
+        <div class="veris-detail-footer">
+            <button type="submit" class="veris-btn-submit">&#10003; Guardar Diagnóstico</button>
+            <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
+        </div>
+    </form>
+
+</div>

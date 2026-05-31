@@ -1,0 +1,401 @@
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<main>
+
+    <!-- BANNER PRINCIPAL -->
+    <section class="container-fluid px-4 my-4">
+        <div class="row align-items-center rounded-4 p-5 mx-0"
+             style="background: linear-gradient(90deg, #3fa9f5, #5db7f7); min-height: 360px;">
+
+            <div class="col-md-6 ps-md-5">
+                <h4 class="text-white fw-normal mb-3">
+                    Hacemos fácil cuidarte
+                </h4>
+
+                <h1 class="fw-bold text-white" style="font-size:52px;">
+                    Cuidamos tu salud de forma fácil y segura
+                </h1>
+
+                <p class="mt-3 fs-5 text-white">
+                    Agenda tus citas médicas, consulta especialidades y accede a nuestros servicios en línea.
+                </p>
+
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a asp-controller="Consultas" asp-action="Create"
+                       class="btn btn-light btn-lg rounded-3 px-4 mt-3 text-primary fw-bold">
+                        Agendar cita médica
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-page="/Account/Login"
+                       class="btn btn-light btn-lg rounded-3 px-4 mt-3 text-primary fw-bold">
+                        Iniciar sesión
+                    </a>
+                    <a asp-area="Identity" asp-page="/Account/Register"
+                       class="btn btn-outline-light btn-lg rounded-3 px-4 mt-3 ms-2 fw-bold">
+                        Registrarse
+                    </a>
+                }
+            </div>
+
+            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <img src="~/Imagenes/MedicosVeris.jpeg"
+                     alt="Médicos VERIS"
+                     class="img-fluid"
+                     style="width:560px; height:300px; object-fit:cover; border-radius:28px;" />
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ACCESOS RÁPIDOS -->
+    <section id="paquetes" class="container-fluid px-4 my-5">
+        <div class="row g-4">
+
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm p-4 h-100 rounded-4"
+                     style="transition:0.25s; cursor:pointer;"
+                     onmouseover="this.style.transform='translateY(-10px)'; this.style.background='#eef6ff'; this.style.border='2px solid #0d6efd'; this.style.boxShadow='0 18px 35px rgba(0,123,255,0.22)'"
+                     onmouseout="this.style.transform='translateY(0)'; this.style.background='white'; this.style.border='0'; this.style.boxShadow=''">
+                    <h5 class="fw-bold text-primary">Agenda citas médicas</h5>
+                    <p class="text-muted small mb-0">Reserva tu atención médica de manera rápida.</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm p-4 h-100 rounded-4"
+                     style="transition:0.25s; cursor:pointer;"
+                     onmouseover="this.style.transform='translateY(-10px)'; this.style.background='#eef6ff'; this.style.border='2px solid #0d6efd'; this.style.boxShadow='0 18px 35px rgba(0,123,255,0.22)'"
+                     onmouseout="this.style.transform='translateY(0)'; this.style.background='white'; this.style.border='0'; this.style.boxShadow=''">
+                    <h5 class="fw-bold text-primary">Paquetes preventivos</h5>
+                    <p class="text-muted small mb-0">Servicios médicos pensados para cuidar tu salud.</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm p-4 h-100 rounded-4"
+                     style="transition:0.25s; cursor:pointer;"
+                     onmouseover="this.style.transform='translateY(-10px)'; this.style.background='#eef6ff'; this.style.border='2px solid #0d6efd'; this.style.boxShadow='0 18px 35px rgba(0,123,255,0.22)'"
+                     onmouseout="this.style.transform='translateY(0)'; this.style.background='white'; this.style.border='0'; this.style.boxShadow=''">
+                    <h5 class="fw-bold text-primary">Central médica virtual</h5>
+                    <p class="text-muted small mb-0">Atención desde tu computador, tablet o celular.</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm p-4 h-100 rounded-4"
+                     style="transition:0.25s; cursor:pointer;"
+                     onmouseover="this.style.transform='translateY(-10px)'; this.style.background='#eef6ff'; this.style.border='2px solid #0d6efd'; this.style.boxShadow='0 18px 35px rgba(0,123,255,0.22)'"
+                     onmouseout="this.style.transform='translateY(0)'; this.style.background='white'; this.style.border='0'; this.style.boxShadow=''">
+                    <h5 class="fw-bold text-primary">Farmacia</h5>
+                    <p class="text-muted small mb-0">Acceso a tratamientos y servicios complementarios.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ESTADÍSTICAS -->
+    <section id="servicios" class="py-5" style="background: linear-gradient(135deg, #8fb3f8, #8ee3e3);">
+        <div class="container-fluid px-4">
+            <div class="row text-center g-4">
+
+                <div class="col-md-4">
+                    <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                        <h2 class="fw-bold text-primary">+18</h2>
+                        <h5 class="fw-bold mb-0">Años de experiencia</h5>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                        <h2 class="fw-bold text-primary">+1'000.000</h2>
+                        <h5 class="fw-bold mb-0">Pacientes atendidos</h5>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                        <h2 class="fw-bold text-primary">+35</h2>
+                        <h5 class="fw-bold mb-0">Especialidades</h5>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- UBICACIONES -->
+    <section id="ubicaciones" class="container-fluid px-4 my-5">
+        <h3 class="fw-bold text-primary mb-4">Consulta horarios y ubicaciones</h3>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden"
+                     style="transition:0.25s; cursor:pointer;"
+                     onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 18px 35px rgba(0,123,255,0.22)'"
+                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow=''">
+                    <img src="~/Imagenes/CentroGuayaquil.jpeg" class="card-img-top" style="height:220px; object-fit:cover;" />
+                    <div class="card-body text-center">
+                        <h5 class="fw-bold">Guayaquil</h5>
+                        <a href="#" class="btn btn-primary btn-sm rounded-pill px-4">Conocer centrales</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden"
+                     style="transition:0.25s; cursor:pointer;"
+                     onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 18px 35px rgba(0,123,255,0.22)'"
+                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow=''">
+                    <img src="~/Imagenes/CentroQuito.jpeg" class="card-img-top" style="height:220px; object-fit:cover;" />
+                    <div class="card-body text-center">
+                        <h5 class="fw-bold">Quito</h5>
+                        <a href="#" class="btn btn-primary btn-sm rounded-pill px-4">Conocer centrales</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden"
+                     style="transition:0.25s; cursor:pointer;"
+                     onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 18px 35px rgba(0,123,255,0.22)'"
+                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow=''">
+                    <img src="~/Imagenes/CentroCuenca.jpeg" class="card-img-top" style="height:220px; object-fit:cover;" />
+                    <div class="card-body text-center">
+                        <h5 class="fw-bold">Cuenca</h5>
+                        <a href="#" class="btn btn-primary btn-sm rounded-pill px-4">Conocer centrales</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SOBRE NOSOTROS -->
+    <section id="nosotros" class="py-5" style="background:#f4f8ff;">
+        <div class="container-fluid px-4">
+
+            <div class="text-center mb-5">
+                <h2 class="fw-bold" style="color:#003b7a; letter-spacing:1px;">SOBRE NOSOTROS</h2>
+                <p class="text-muted mx-auto" style="max-width:650px;">
+                    En Veris trabajamos para ofrecer una atención médica cercana, confiable y pensada para el bienestar de cada paciente.
+                </p>
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden"
+                         style="transition:0.25s; cursor:pointer;"
+                         onmouseover="this.style.transform='translateY(-10px)'; this.style.background='#eef6ff'; this.style.border='2px solid #0d6efd'; this.style.boxShadow='0 18px 35px rgba(0,123,255,0.22)'"
+                         onmouseout="this.style.transform='translateY(0)'; this.style.background='white'; this.style.border='0'; this.style.boxShadow=''">
+                        <div class="card-body p-4 position-relative">
+                            <div class="position-absolute top-0 start-0 h-100 bg-primary" style="width:6px;"></div>
+                            <h5 class="fw-bold mb-3" style="color:#003b7a;">MISIÓN</h5>
+                            <p class="text-muted mb-0">
+                                Brindar servicios médicos accesibles, eficientes y seguros,
+                                mejorando la calidad de vida de nuestros pacientes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden"
+                         style="transition:0.25s; cursor:pointer;"
+                         onmouseover="this.style.transform='translateY(-10px)'; this.style.background='#eafcff'; this.style.border='2px solid #0dcaf0'; this.style.boxShadow='0 18px 35px rgba(13,202,240,0.22)'"
+                         onmouseout="this.style.transform='translateY(0)'; this.style.background='white'; this.style.border='0'; this.style.boxShadow=''">
+                        <div class="card-body p-4 position-relative">
+                            <div class="position-absolute top-0 start-0 h-100 bg-info" style="width:6px;"></div>
+                            <h5 class="fw-bold mb-3" style="color:#003b7a;">VISIÓN</h5>
+                            <p class="text-muted mb-0">
+                                Ser un sistema integral de salud reconocido por su innovación,
+                                compromiso y excelencia en atención.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- VALORES -->
+    <section class="py-5" style="background:linear-gradient(135deg,#4f83f1,#2cc8c8);">
+        <div class="container-fluid px-4">
+
+            <div class="row align-items-center g-4">
+
+                <div class="col-md-4">
+                    <h2 class="fw-bold text-white mb-2">Hacemos fácil cuidarte</h2>
+                    <p class="text-white mb-0">
+                        Te acompañamos en cada paso para que accedas a tus servicios médicos de forma rápida y segura.
+                    </p>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="row g-3">
+
+                        <div class="col-md-4">
+                            <div class="bg-white text-primary rounded-pill text-center py-3 px-3 fw-bold shadow-sm"
+                                 style="transition:0.25s; cursor:pointer;"
+                                 onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.20)'"
+                                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow=''">
+                                Seguridad y confianza
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="bg-white text-primary rounded-pill text-center py-3 px-3 fw-bold shadow-sm"
+                                 style="transition:0.25s; cursor:pointer;"
+                                 onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.20)'"
+                                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow=''">
+                                Acompañamiento
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="bg-white text-primary rounded-pill text-center py-3 px-3 fw-bold shadow-sm"
+                                 style="transition:0.25s; cursor:pointer;"
+                                 onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.20)'"
+                                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow=''">
+                                Comodidad
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ESPECIALIDADES -->
+    <section id="especialidades" class="py-5" style="background:#eef5ff;">
+        <div class="container-fluid px-4">
+
+            <h2 class="fw-bold text-center mb-5" style="color:#005b7f;">ESPECIALIDADES</h2>
+
+            <div id="carouselEspecialidades"
+                 class="carousel slide"
+                 data-bs-ride="carousel"
+                 data-bs-interval="5000">
+
+                <div class="carousel-inner">
+
+                    <div class="carousel-item active">
+                        <div class="row g-4">
+
+                            <div class="col-md-3">
+                                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                                    <img src="~/Imagenes/Neurologia.jpeg" class="card-img-top" style="height:170px; object-fit:cover;" />
+                                    <div class="card-body text-center">
+                                        <h5 class="fw-bold">Neurología</h5>
+                                        <p class="small text-muted">Diagnóstico y tratamiento de enfermedades del sistema nervioso.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                                    <img src="~/Imagenes/Pedriatria.jpeg" class="card-img-top" style="height:170px; object-fit:cover;" />
+                                    <div class="card-body text-center">
+                                        <h5 class="fw-bold">Pediatría</h5>
+                                        <p class="small text-muted">Atención médica integral para niños y adolescentes.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                                    <img src="~/Imagenes/Traumatologia.jpeg" class="card-img-top" style="height:170px; object-fit:cover;" />
+                                    <div class="card-body text-center">
+                                        <h5 class="fw-bold">Traumatología</h5>
+                                        <p class="small text-muted">Tratamiento de lesiones óseas, musculares y articulares.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                                    <img src="~/Imagenes/Cardiologia.jpeg" class="card-img-top" style="height:170px; object-fit:cover;" />
+                                    <div class="card-body text-center">
+                                        <h5 class="fw-bold">Cardiología</h5>
+                                        <p class="small text-muted">Prevención y tratamiento de enfermedades del corazón.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="carousel-item">
+                        <div class="row g-4">
+
+                            <div class="col-md-3">
+                                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                                    <img src="~/Imagenes/Oftalmologia.jpeg" class="card-img-top" style="height:170px; object-fit:cover;" />
+                                    <div class="card-body text-center">
+                                        <h5 class="fw-bold">Oftalmología</h5>
+                                        <p class="small text-muted">Evaluación, prevención y cuidado de la salud visual.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                                    <img src="~/Imagenes/Odontologia.jpeg" class="card-img-top" style="height:170px; object-fit:cover;" />
+                                    <div class="card-body text-center">
+                                        <h5 class="fw-bold">Odontología</h5>
+                                        <p class="small text-muted">Cuidado, prevención y tratamiento dental integral.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                                    <img src="~/Imagenes/Medicina-General.jpeg" class="card-img-top" style="height:170px; object-fit:cover;" />
+                                    <div class="card-body text-center">
+                                        <h5 class="fw-bold">Medicina General</h5>
+                                        <p class="small text-muted">Atención primaria para diagnóstico y seguimiento médico.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                                    <img src="~/Imagenes/Ginecologia.jpeg" class="card-img-top" style="height:170px; object-fit:cover;" />
+                                    <div class="card-body text-center">
+                                        <h5 class="fw-bold">Ginecología</h5>
+                                        <p class="small text-muted">Cuidado integral de la salud femenina y prevención.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <button class="carousel-control-prev" type="button"
+                        data-bs-target="#carouselEspecialidades" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+
+                <button class="carousel-control-next" type="button"
+                        data-bs-target="#carouselEspecialidades" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+
+            </div>
+
+        </div>
+    </section>
+</main>

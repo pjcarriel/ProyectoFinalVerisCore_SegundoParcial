@@ -1,0 +1,58 @@
+@model MoldeMVC_Core.Models.Pacientes
+
+@{
+    ViewData["Title"] = "Detalles de Paciente";
+}
+
+<div class="veris-detail-card veris-detail-card-wide">
+    <div class="veris-detail-header">
+        <div class="veris-form-icon">&#9786;</div>
+        <h1>Detalles del Paciente</h1>
+    </div>
+
+    <div class="veris-detail-foto-top">
+        @if (!string.IsNullOrEmpty(Model.foto))
+        {
+            <img src="~/Usuarios/@Model.foto" alt="Foto del paciente" class="veris-detail-foto-lg" />
+        }
+        else
+        {
+            <div class="veris-detail-sin-foto-lg">Sin<br />foto</div>
+        }
+        <div class="veris-detail-nombre-top">@Model.nombre</div>
+    </div>
+
+    <div class="veris-detail-body">
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Nombre</span>
+            <span class="veris-detail-value">@Html.DisplayFor(m => m.nombre)</span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Cédula</span>
+            <span class="veris-detail-value">@Html.DisplayFor(m => m.cedula)</span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Edad</span>
+            <span class="veris-detail-value">@Html.DisplayFor(m => m.edad) años</span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Género</span>
+            <span class="veris-detail-value">
+                <span class="veris-badge-tipo">@Html.DisplayFor(m => m.genero)</span>
+            </span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Estatura</span>
+            <span class="veris-detail-value">@Html.DisplayFor(m => m.estatura) cm</span>
+        </div>
+        <div class="veris-detail-row">
+            <span class="veris-detail-label">Peso</span>
+            <span class="veris-detail-value">@Html.DisplayFor(m => m.peso) kg</span>
+        </div>
+    </div>
+
+    <div class="veris-detail-footer">
+        <a asp-action="Edit" asp-route-id="@Model._id" class="veris-btn-edit">&#9998; Editar</a>
+        <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
+    </div>
+</div>

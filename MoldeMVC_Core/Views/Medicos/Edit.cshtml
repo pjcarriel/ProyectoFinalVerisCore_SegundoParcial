@@ -1,0 +1,76 @@
+@model MoldeMVC_Core.Models.Medicos
+
+@{
+    ViewData["Title"] = "Editar Médico";
+    var fotos = ViewBag.Fotos as List<string> ?? new List<string>();
+}
+
+<div class="veris-form-card">
+    <div class="veris-form-header">
+        <div class="veris-form-icon">&#9998;</div>
+        <h1>Editar Médico</h1>
+    </div>
+    <form asp-action="Edit" method="post">
+        <div class="veris-form-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="_id" />
+
+            <div class="veris-form-group">
+                <label asp-for="nombre" class="veris-form-label">Nombre completo</label>
+                <input asp-for="nombre" class="veris-form-control" />
+                <span asp-validation-for="nombre" class="veris-form-error"></span>
+            </div>
+
+            <div class="veris-form-group">
+                <label asp-for="especialidadId" class="veris-form-label">Especialidad</label>
+                <select asp-for="especialidadId" asp-items="ViewBag.Especialidades" class="veris-form-control">
+                    <option value="">-- Seleccione una especialidad --</option>
+                </select>
+                <span asp-validation-for="especialidadId" class="veris-form-error"></span>
+            </div>
+
+            <div class="veris-form-group">
+                <label asp-for="foto" class="veris-form-label">Foto</label>
+                <select asp-for="foto" class="veris-form-control" id="fotoSelectMedico"
+                        onchange="previewFotoEdit('fotoSelectMedico','fotoPreviewMedico','fotoImgMedico','medicos')">
+                    <option value="">-- Sin foto --</option>
+                    @foreach (var f in fotos)
+                    {
+                        <option value="@f">@f</option>
+                    }
+                </select>
+                <span asp-validation-for="foto" class="veris-form-error"></span>
+                <div id="fotoPreviewMedico" class="veris-foto-preview mt-2" style="display:none;">
+                    <img id="fotoImgMedico" src="" alt="Vista previa" class="veris-foto-circle" />
+                    <span class="veris-foto-preview-label" id="fotoLabelMedico"></span>
+                </div>
+            </div>
+        </div>
+        <div class="veris-form-footer">
+            <button type="submit" class="veris-btn-submit">&#10003; Guardar Cambios</button>
+            <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        function previewFotoEdit(selectId, previewId, imgId, carpeta) {
+            var sel = document.getElementById(selectId);
+            var preview = document.getElementById(previewId);
+            var img = document.getElementById(imgId);
+            var label = document.getElementById(selectId.replace('Select', 'Label'));
+            if (sel.value) {
+                img.src = '/' + carpeta + '/' + sel.value;
+                if (label) label.textContent = sel.value;
+                preview.style.display = 'flex';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        window.addEventListener('DOMContentLoaded', function () {
+            previewFotoEdit('fotoSelectMedico', 'fotoPreviewMedico', 'fotoImgMedico', 'medicos');
+        });
+    </script>
+}

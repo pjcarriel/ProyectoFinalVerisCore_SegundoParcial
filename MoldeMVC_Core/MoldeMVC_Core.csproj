@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-MoldeMVC_Core-dbeead96-431b-4805-bf29-edea9cd01b70</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Usuarios\usu01.jpg" />
+    <None Include="wwwroot\Usuarios\usu02.jpg" />
+    <None Include="wwwroot\Usuarios\usu03.jpg" />
+    <None Include="wwwroot\Usuarios\usu04..jpg" />
+    <None Include="wwwroot\Usuarios\usu05.jpg" />
+    <None Include="wwwroot\Usuarios\usu06.jpg" />
+    <None Include="wwwroot\Usuarios\usu07.jpg" />
+    <None Include="wwwroot\Usuarios\usu08.jpg" />
+    <None Include="wwwroot\Usuarios\usu09.jpg" />
+    <None Include="wwwroot\Usuarios\usu10.jpeg" />
+    <None Include="wwwroot\Usuarios\usu11.jpg" />
+    <None Include="wwwroot\Usuarios\usu12.jpg" />
+    <None Include="wwwroot\Usuarios\usu13.jpg" />
+    <None Include="wwwroot\Usuarios\usu14.jpg" />
+    <None Include="wwwroot\Usuarios\usu15.jpg" />
+    <None Include="wwwroot\Usuarios\usu16.jpg" />
+    <None Include="wwwroot\Usuarios\usu17.jpg" />
+    <None Include="wwwroot\Usuarios\usu18.png" />
+    <None Include="wwwroot\Usuarios\usu19.jpg" />
+    <None Include="wwwroot\Usuarios\usu20.jpeg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.15" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.12" />
+    <PackageReference Include="MongoDB.Driver" Version="3.9.0" />
+  </ItemGroup>
+
+</Project>

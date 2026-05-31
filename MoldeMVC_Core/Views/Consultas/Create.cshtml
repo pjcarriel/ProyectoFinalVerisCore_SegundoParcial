@@ -1,0 +1,69 @@
+@model MoldeMVC_Core.Models.Consultas
+
+@{
+    ViewData["Title"] = "Crear Consulta";
+}
+
+<div class="veris-form-card veris-form-card-wide">
+    <div class="veris-form-header">
+        <div class="veris-form-icon">&#128200;</div>
+        <h1>Nueva Consulta</h1>
+    </div>
+    <form asp-action="Create" method="post">
+        <div class="veris-form-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="veris-form-grid-2">
+
+                <div class="veris-form-group">
+                    <label asp-for="medicoId" class="veris-form-label">Médico</label>
+                    <select asp-for="medicoId" asp-items="ViewBag.Medicos" class="veris-form-control">
+                        <option value="">-- Seleccione un médico --</option>
+                    </select>
+                    <span asp-validation-for="medicoId" class="veris-form-error"></span>
+                </div>
+
+                <div class="veris-form-group">
+                    <label asp-for="pacienteId" class="veris-form-label">Paciente</label>
+                    <select asp-for="pacienteId" asp-items="ViewBag.Pacientes" class="veris-form-control">
+                        <option value="">-- Seleccione un paciente --</option>
+                    </select>
+                    <span asp-validation-for="pacienteId" class="veris-form-error"></span>
+                </div>
+
+                <div class="veris-form-group veris-col-full">
+                    <label asp-for="fechaConsulta" class="veris-form-label">Fecha de consulta</label>
+                    <input asp-for="fechaConsulta" type="date" class="veris-form-control" />
+                    <span asp-validation-for="fechaConsulta" class="veris-form-error"></span>
+                </div>
+
+                <div class="veris-form-group">
+                    <label asp-for="hi" class="veris-form-label">Hora de inicio</label>
+                    <input asp-for="hi" type="time" class="veris-form-control" />
+                    <span asp-validation-for="hi" class="veris-form-error"></span>
+                </div>
+
+                <div class="veris-form-group">
+                    <label asp-for="hf" class="veris-form-label">Hora de fin</label>
+                    <input asp-for="hf" type="time" class="veris-form-control" />
+                    <span asp-validation-for="hf" class="veris-form-error"></span>
+                </div>
+
+                <div class="veris-form-group veris-col-full">
+                    <label asp-for="diagnostico" class="veris-form-label">Diagnóstico</label>
+                    <textarea asp-for="diagnostico" class="veris-form-control" placeholder="Describa el diagnóstico del paciente..."></textarea>
+                    <span asp-validation-for="diagnostico" class="veris-form-error"></span>
+                </div>
+
+            </div>
+        </div>
+        <div class="veris-form-footer">
+            <button type="submit" class="veris-btn-submit">Crear Consulta</button>
+            <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

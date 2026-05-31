@@ -1,0 +1,512 @@
+@{
+    ViewData["Title"] = "Agendar Consulta";
+    var especialidades = ViewBag.Especialidades as List<MoldeMVC_Core.Models.Especialidades> ?? new();
+    var pacientes = ViewBag.Pacientes as List<MoldeMVC_Core.Models.Pacientes> ?? new();
+}
+
+<div class="veris-agenda-wrapper">
+
+    <!-- ENCABEZADO -->
+    <div class="veris-agenda-header">
+        <div class="veris-form-icon" style="font-size:1.3rem;">&#128200;</div>
+        <div>
+            <h1 class="veris-agenda-title">Agendar Nueva Consulta</h1>
+            <p class="veris-agenda-subtitle">Selecciona especialidad, médico, semana, día y hora disponible</p>
+        </div>
+        <a asp-controller="Consultas" asp-action="Index" class="veris-btn-back ms-auto">&#8592; Volver</a>
+    </div>
+
+    <!-- ALERTA -->
+    <div id="agendaAlerta" class="veris-agenda-alerta" style="display:none;"></div>
+
+    <!-- CUERPO: dos paneles -->
+    <div class="veris-agenda-body">
+
+        <!-- PANEL IZQUIERDO -->
+        <div class="veris-agenda-panel-left">
+
+            <div class="veris-form-group">
+                <label class="veris-form-label">Paciente</label>
+                <select id="selectPaciente" class="veris-form-control">
+                    <option value="">-- Seleccione un paciente --</option>
+                    @foreach (var p in pacientes)
+                    {
+                        <option value="@p._id">@p.nombre</option>
+                    }
+                </select>
+            </div>
+
+            <div class="veris-form-group">
+                <label class="veris-form-label">Especialidad</label>
+                <select id="selectEspecialidad" class="veris-form-control">
+                    <option value="">-- Seleccione una especialidad --</option>
+                    @foreach (var e in especialidades)
+                    {
+                        <option value="@e._id">@e.descripcion</option>
+                    }
+                </select>
+            </div>
+
+            <div class="veris-form-group">
+                <label class="veris-form-label">Médico</label>
+                <select id="selectMedico" class="veris-form-control" disabled>
+                    <option value="">-- Primero seleccione especialidad --</option>
+                </select>
+            </div>
+
+            <!-- SLOTS DE HORAS -->
+            <div id="seccionHoras" style="display:none;">
+                <div class="veris-agenda-seccion-titulo">
+                    Horas disponibles — <span id="fechaSelLabel" class="veris-hora"></span>
+                </div>
+                <div id="contenedorHoras" class="veris-slots-grid"></div>
+            </div>
+
+            <!-- RESUMEN DE SELECCIÓN -->
+            <div id="resumenCita" class="veris-resumen-cita" style="display:none;">
+                <div class="veris-resumen-titulo">Resumen de la cita</div>
+                <div class="veris-resumen-fila"><span>Paciente:</span> <strong id="res-paciente"></strong></div>
+                <div class="veris-resumen-fila"><span>Médico:</span> <strong id="res-medico"></strong></div>
+                <div class="veris-resumen-fila"><span>Fecha:</span> <strong id="res-fecha"></strong></div>
+                <div class="veris-resumen-fila"><span>Hora:</span> <strong id="res-hora"></strong></div>
+                <div class="veris-resumen-fila"><span>Duración:</span> <strong>1 hora</strong></div>
+            </div>
+
+            <!-- BOTÓN CONFIRMAR -->
+            <div id="seccionConfirmar" style="display:none; margin-top:1rem;">
+                <button id="btnConfirmar" class="veris-btn-submit" style="width:100%; padding:0.75rem;">
+                    &#10003; Confirmar Cita
+                </button>
+            </div>
+
+        </div>
+
+        <!-- PANEL DERECHO: CALENDARIO -->
+        <div class="veris-agenda-panel-right">
+
+            <div id="calendarioPlaceholder" class="veris-calendario-placeholder">
+                <div style="font-size:2.5rem; margin-bottom:0.5rem; opacity:0.4;">&#128197;</div>
+                <p>Selecciona un médico para ver el calendario de disponibilidad</p>
+            </div>
+
+            <div id="calendarioContenido" style="display:none;">
+                <!-- Navegación de semana -->
+                <div class="veris-semana-nav">
+                    <button id="btnSemanaAnterior" class="veris-btn-nav" onclick="cambiarSemana(-1)">&#8592;</button>
+                    <div class="veris-semana-info">
+                        <span class="veris-semana-label">
+                            Semana <span id="semanaNumLabel"></span> —
+                            <span id="anioBtn" class="veris-anio-btn" onclick="toggleAnioPicker()" title="Cambiar año">
+                                <span id="anioLabel"></span>
+                                <span class="veris-anio-caret">&#9660;</span>
+                            </span>
+                        </span>
+                        <!-- Picker de año -->
+                        <div id="anioPicker" class="veris-anio-picker" style="display:none;">
+                            <div class="veris-anio-picker-grid" id="anioGrid"></div>
+                        </div>
+                        <span id="semanaFechas" class="veris-semana-fechas"></span>
+                    </div>
+                    <button id="btnSemanaSiguiente" class="veris-btn-nav" onclick="cambiarSemana(1)">&#8594;</button>
+                </div>
+
+                <!-- Grid de días -->
+                <div class="veris-dias-header">
+                    <div>Lun</div>
+                    <div>Mar</div>
+                    <div>Mié</div>
+                    <div>Jue</div>
+                    <div>Vie</div>
+                </div>
+                <div id="gridDias" class="veris-dias-grid"></div>
+
+                <div class="veris-leyenda">
+                    <span class="veris-leyenda-item veris-leyenda-libre">Disponible</span>
+                    <span class="veris-leyenda-item veris-leyenda-lleno">Sin turnos</span>
+                    <span class="veris-leyenda-item veris-leyenda-nolab">No laboral</span>
+                    <span class="veris-leyenda-item veris-leyenda-pasado">Pasado</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Token CSRF para el POST -->
+@Html.AntiForgeryToken()
+
+@section Scripts {
+<script>
+// ── Estado global ─────────────────────────────────────────────────────────────
+let semanaActual, anioActual, fechaSeleccionada = null, horaSeleccionada = null;
+const ANIO_MIN = 2000, ANIO_MAX = 2030;
+
+// ── ISO Week helpers ──────────────────────────────────────────────────────────
+function getISOWeek(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return { week: Math.ceil((((d - yearStart) / 86400000) + 1) / 7), year: d.getUTCFullYear() };
+}
+function getMondayOfISOWeek(year, week) {
+    const simple = new Date(year, 0, 1 + (week - 1) * 7);
+    const dow = simple.getDay() || 7;
+    if (dow !== 1) simple.setDate(simple.getDate() + (8 - dow));
+    return simple;
+}
+function formatDate(date) {
+    return date.toISOString().split('T')[0];
+}
+function formatDateDisplay(dateStr) {
+    const [y, m, d] = dateStr.split('-');
+    return `${d}/${m}/${y}`;
+}
+const DIAS_ES = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const MESES_ES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+// ── Inicialización ────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function () {
+    const hoy = new Date();
+    const iso = getISOWeek(hoy);
+    semanaActual = iso.week;
+    anioActual = iso.year;
+
+    document.getElementById('selectEspecialidad').addEventListener('change', onEspecialidadChange);
+    document.getElementById('selectMedico').addEventListener('change', onMedicoChange);
+    document.getElementById('btnConfirmar').addEventListener('click', confirmarCita);
+});
+
+// ── Cambio de especialidad → cargar médicos ──────────────────────────────────
+function onEspecialidadChange() {
+    const espId = this.value;
+    const selMedico = document.getElementById('selectMedico');
+    selMedico.innerHTML = '<option value="">-- Cargando médicos... --</option>';
+    selMedico.disabled = true;
+    ocultarCalendario();
+
+    if (!espId) {
+        selMedico.innerHTML = '<option value="">-- Primero seleccione especialidad --</option>';
+        return;
+    }
+
+    fetch(`/AgendarConsulta/GetMedicos?especialidadId=${encodeURIComponent(espId)}`)
+        .then(r => r.json())
+        .then(data => {
+            selMedico.innerHTML = '<option value="">-- Seleccione un médico --</option>';
+            data.forEach(m => {
+                selMedico.innerHTML += `<option value="${m.id}">${m.nombre}</option>`;
+            });
+            selMedico.disabled = false;
+        })
+        .catch(() => {
+            selMedico.innerHTML = '<option value="">-- Error al cargar médicos --</option>';
+        });
+}
+
+// ── Cambio de médico → mostrar calendario ────────────────────────────────────
+function onMedicoChange() {
+    fechaSeleccionada = null;
+    horaSeleccionada = null;
+    ocultarHoras();
+    ocultarResumen();
+
+    if (!this.value) { ocultarCalendario(); return; }
+    mostrarCalendario();
+    cargarCalendario();
+}
+
+function mostrarCalendario() {
+    document.getElementById('calendarioPlaceholder').style.display = 'none';
+    document.getElementById('calendarioContenido').style.display = 'block';
+}
+function ocultarCalendario() {
+    document.getElementById('calendarioPlaceholder').style.display = 'flex';
+    document.getElementById('calendarioContenido').style.display = 'none';
+}
+
+// ── Navegación de semana ─────────────────────────────────────────────────────
+function cambiarSemana(delta) {
+    let lunes = getMondayOfISOWeek(anioActual, semanaActual);
+    lunes.setDate(lunes.getDate() + delta * 7);
+    const iso = getISOWeek(lunes);
+    if (iso.year < ANIO_MIN || iso.year > ANIO_MAX) return;
+    semanaActual = iso.week;
+    anioActual = iso.year;
+    fechaSeleccionada = null;
+    horaSeleccionada = null;
+    ocultarHoras();
+    ocultarResumen();
+    cargarCalendario();
+}
+
+// ── Cargar disponibilidad de la semana ───────────────────────────────────────
+function cargarCalendario() {
+    const medicoId = document.getElementById('selectMedico').value;
+    if (!medicoId) return;
+
+    document.getElementById('semanaNumLabel').textContent = semanaActual;
+    document.getElementById('anioLabel').textContent = anioActual;
+
+    const lunes = getMondayOfISOWeek(anioActual, semanaActual);
+    const viernes = new Date(lunes); viernes.setDate(lunes.getDate() + 4);
+    document.getElementById('semanaFechas').textContent =
+        `${lunes.getDate()} ${MESES_ES[lunes.getMonth()]} al ${viernes.getDate()} ${MESES_ES[viernes.getMonth()]}`;
+
+    // Deshabilitar navegación en límites
+    document.getElementById('btnSemanaAnterior').disabled =
+        (anioActual === ANIO_MIN && semanaActual === 1);
+    document.getElementById('btnSemanaSiguiente').disabled =
+        (anioActual === ANIO_MAX && semanaActual >= 52);
+
+    const grid = document.getElementById('gridDias');
+    grid.innerHTML = '<div class="veris-dias-loading">Cargando...</div>';
+
+    fetch(`/AgendarConsulta/GetCalendario?medicoId=${encodeURIComponent(medicoId)}&anio=${anioActual}&semana=${semanaActual}`)
+        .then(r => r.json())
+        .then(data => renderizarDias(data))
+        .catch(() => {
+            grid.innerHTML = '<div style="color:#dc3545; padding:1rem;">Error al cargar el calendario.</div>';
+        });
+}
+
+// ── Renderizar los 5 días ────────────────────────────────────────────────────
+function renderizarDias(data) {
+    const grid = document.getElementById('gridDias');
+    grid.innerHTML = '';
+    if (data.error) {
+        grid.innerHTML = `<div style="color:#dc3545; padding:1rem;">${data.error}</div>`;
+        return;
+    }
+
+    data.dias.forEach(dia => {
+        const card = document.createElement('div');
+        card.className = 'veris-dia-card';
+
+        const fecha = new Date(dia.fecha + 'T00:00:00');
+        const esSeleccionado = dia.fecha === fechaSeleccionada;
+
+        if (esSeleccionado) card.classList.add('seleccionado');
+
+        if (dia.esPasado) {
+            card.classList.add('pasado');
+            card.innerHTML = `
+                <span class="veris-dia-num">${fecha.getDate()}</span>
+                <span class="veris-dia-estado pasado-txt">Pasado</span>`;
+        } else if (!dia.disponible && dia.slotsLibres === 0 && !dia.esPasado) {
+            card.classList.add('no-laboral');
+            card.innerHTML = `
+                <span class="veris-dia-num">${fecha.getDate()}</span>
+                <span class="veris-dia-estado">No laboral</span>`;
+        } else if (dia.slotsLibres === 0) {
+            card.classList.add('lleno');
+            card.innerHTML = `
+                <span class="veris-dia-num">${fecha.getDate()}</span>
+                <span class="veris-dia-estado">Sin turnos</span>`;
+        } else {
+            card.classList.add('libre');
+            card.innerHTML = `
+                <span class="veris-dia-num">${fecha.getDate()}</span>
+                <span class="veris-dia-slots">${dia.slotsLibres} turno${dia.slotsLibres !== 1 ? 's' : ''}</span>`;
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => seleccionarDia(dia.fecha, card));
+        }
+
+        grid.appendChild(card);
+    });
+}
+
+// ── Seleccionar un día ───────────────────────────────────────────────────────
+function seleccionarDia(fecha, card) {
+    fechaSeleccionada = fecha;
+    horaSeleccionada = null;
+    ocultarResumen();
+
+    document.querySelectorAll('.veris-dia-card').forEach(c => c.classList.remove('seleccionado'));
+    card.classList.add('seleccionado');
+
+    const medicoId = document.getElementById('selectMedico').value;
+    const seccion = document.getElementById('seccionHoras');
+    const contenedor = document.getElementById('contenedorHoras');
+    document.getElementById('fechaSelLabel').textContent = formatDateDisplay(fecha);
+    contenedor.innerHTML = '<span style="color:#7fa8d8; font-size:0.9rem;">Cargando horarios...</span>';
+    seccion.style.display = 'block';
+
+    fetch(`/AgendarConsulta/GetHoras?medicoId=${encodeURIComponent(medicoId)}&fecha=${encodeURIComponent(fecha)}`)
+        .then(r => r.json())
+        .then(horas => renderizarHoras(horas))
+        .catch(() => {
+            contenedor.innerHTML = '<span style="color:#dc3545;">Error al cargar horarios.</span>';
+        });
+}
+
+// ── Renderizar slots de hora ─────────────────────────────────────────────────
+function renderizarHoras(horas) {
+    const contenedor = document.getElementById('contenedorHoras');
+    contenedor.innerHTML = '';
+    if (!horas || horas.length === 0) {
+        contenedor.innerHTML = '<span style="color:#7fa8d8; font-size:0.9rem;">No hay turnos disponibles en este día.</span>';
+        return;
+    }
+    horas.forEach(hora => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'veris-slot-btn';
+        btn.textContent = hora;
+        btn.addEventListener('click', () => seleccionarHora(hora, btn));
+        contenedor.appendChild(btn);
+    });
+}
+
+// ── Seleccionar una hora ─────────────────────────────────────────────────────
+function seleccionarHora(hora, btn) {
+    horaSeleccionada = hora;
+    document.querySelectorAll('.veris-slot-btn').forEach(b => b.classList.remove('activo'));
+    btn.classList.add('activo');
+    mostrarResumen();
+}
+
+// ── Mostrar/ocultar resumen ──────────────────────────────────────────────────
+function mostrarResumen() {
+    const pacienteSelect = document.getElementById('selectPaciente');
+    const medicoSelect = document.getElementById('selectMedico');
+    const pacienteNombre = pacienteSelect.options[pacienteSelect.selectedIndex]?.text || '';
+    const medicoNombre = medicoSelect.options[medicoSelect.selectedIndex]?.text || '';
+
+    document.getElementById('res-paciente').textContent = pacienteNombre;
+    document.getElementById('res-medico').textContent = medicoNombre;
+    document.getElementById('res-fecha').textContent = formatDateDisplay(fechaSeleccionada);
+    document.getElementById('res-hora').textContent = `${horaSeleccionada} – ${calcularHoraFin(horaSeleccionada)}`;
+
+    document.getElementById('resumenCita').style.display = 'block';
+    document.getElementById('seccionConfirmar').style.display = 'block';
+}
+
+function ocultarResumen() {
+    document.getElementById('resumenCita').style.display = 'none';
+    document.getElementById('seccionConfirmar').style.display = 'none';
+}
+
+function ocultarHoras() {
+    document.getElementById('seccionHoras').style.display = 'none';
+    document.getElementById('contenedorHoras').innerHTML = '';
+}
+
+function calcularHoraFin(hora) {
+    const [h, m] = hora.split(':').map(Number);
+    const total = h * 60 + m + 60;
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+}
+
+// ── Confirmar cita (POST AJAX) ────────────────────────────────────────────────
+function confirmarCita() {
+    const pacienteId = document.getElementById('selectPaciente').value;
+    const medicoId = document.getElementById('selectMedico').value;
+
+    if (!pacienteId) { mostrarAlerta('Selecciona un paciente.', 'error'); return; }
+    if (!medicoId) { mostrarAlerta('Selecciona un médico.', 'error'); return; }
+    if (!fechaSeleccionada) { mostrarAlerta('Selecciona una fecha en el calendario.', 'error'); return; }
+    if (!horaSeleccionada) { mostrarAlerta('Selecciona una hora disponible.', 'error'); return; }
+
+    const btn = document.getElementById('btnConfirmar');
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    const body = new URLSearchParams({ medicoId, pacienteId, fecha: fechaSeleccionada, hora: horaSeleccionada });
+
+    fetch('/AgendarConsulta/Confirmar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'RequestVerificationToken': token },
+        body: body.toString()
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.ok) {
+            mostrarAlerta(data.mensaje, 'exito');
+            // Recargar el calendario y limpiar selección
+            horaSeleccionada = null;
+            fechaSeleccionada = null;
+            ocultarHoras();
+            ocultarResumen();
+            cargarCalendario();
+        } else {
+            mostrarAlerta(data.mensaje, 'error');
+        }
+    })
+    .catch(() => mostrarAlerta('Error de conexión. Intenta de nuevo.', 'error'))
+    .finally(() => {
+        btn.disabled = false;
+        btn.textContent = '✓ Confirmar Cita';
+    });
+}
+
+// ── Picker de año ────────────────────────────────────────────────────────────
+function toggleAnioPicker() {
+    const picker = document.getElementById('anioPicker');
+    if (picker.style.display === 'none') {
+        // Construir grid si está vacío
+        const grid = document.getElementById('anioGrid');
+        if (!grid.hasChildNodes()) {
+            for (let y = ANIO_MIN; y <= ANIO_MAX; y++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'veris-anio-opcion';
+                btn.textContent = y;
+                btn.dataset.year = y;
+                btn.addEventListener('click', () => seleccionarAnio(y));
+                grid.appendChild(btn);
+            }
+        }
+        // Marcar el año actual
+        grid.querySelectorAll('.veris-anio-opcion').forEach(b => {
+            b.classList.toggle('activo', parseInt(b.dataset.year) === anioActual);
+        });
+        // Hacer scroll al año actual
+        picker.style.display = 'block';
+        const activo = grid.querySelector('.veris-anio-opcion.activo');
+        if (activo) activo.scrollIntoView({ block: 'center', behavior: 'instant' });
+    } else {
+        picker.style.display = 'none';
+    }
+}
+
+function seleccionarAnio(year) {
+    anioActual = year;
+    // Si la semana actual no existe en el nuevo año, ir a semana 1
+    const maxSemana = getMaxWeek(year);
+    if (semanaActual > maxSemana) semanaActual = 1;
+    document.getElementById('anioPicker').style.display = 'none';
+    fechaSeleccionada = null;
+    horaSeleccionada = null;
+    ocultarHoras();
+    ocultarResumen();
+    cargarCalendario();
+}
+
+function getMaxWeek(year) {
+    // Una semana 53 existe si el 31 dic o el 1 ene cae en jueves
+    const dec31 = new Date(year, 11, 31);
+    const iso = getISOWeek(dec31);
+    return iso.year === year ? iso.week : 52;
+}
+
+// Cerrar el picker si se hace clic fuera
+document.addEventListener('click', function(e) {
+    const picker = document.getElementById('anioPicker');
+    const btn = document.getElementById('anioBtn');
+    if (picker && !picker.contains(e.target) && !btn.contains(e.target)) {
+        picker.style.display = 'none';
+    }
+});
+
+// ── Alerta ────────────────────────────────────────────────────────────────────
+function mostrarAlerta(msg, tipo) {
+    const el = document.getElementById('agendaAlerta');
+    el.className = `veris-agenda-alerta veris-alerta-${tipo}`;
+    el.textContent = msg;
+    el.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => { el.style.display = 'none'; }, 5000);
+}
+</script>
+}

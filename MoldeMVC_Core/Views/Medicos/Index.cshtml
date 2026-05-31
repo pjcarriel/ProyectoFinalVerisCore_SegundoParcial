@@ -1,0 +1,63 @@
+@model IEnumerable<MoldeMVC_Core.Models.Medicos>
+
+@{
+    ViewData["Title"] = "Listado de Médicos";
+    var total = Model.Count();
+}
+
+<div class="veris-table-card">
+    <div class="veris-table-header">
+        <h1>Médicos</h1>
+        <span class="veris-badge-count">@total registro@(total != 1 ? "s" : "")</span>
+    </div>
+    <div class="veris-table-toolbar">
+        <a asp-action="Create" class="btn btn-primary btn-sm">+ Nuevo Médico</a>
+    </div>
+    <div class="veris-table-wrapper">
+        <table class="table veris-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Especialidad</th>
+                    <th>Foto</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.nombre)</td>
+                        <td>
+                            <span class="veris-badge-tipo">
+                                @(ViewBag.EspecialidadesDict != null && ViewBag.EspecialidadesDict.ContainsKey(item.especialidadId)
+                                    ? ViewBag.EspecialidadesDict[item.especialidadId]
+                                    : item.especialidadId)
+                            </span>
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.foto))
+                            {
+                                <img src="~/medicos/@item.foto" alt="Foto del médico" class="veris-foto-circle" />
+                            }
+                            else
+                            {
+                                <span class="veris-sin-foto">Sin<br />foto</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="veris-actions">
+                                <a asp-action="Edit" asp-route-id="@item._id" class="veris-btn-edit">&#9998; Editar</a>
+                                <a asp-action="Details" asp-route-id="@item._id" class="veris-btn-details">&#128269; Detalles</a>
+                                <a asp-action="Delete" asp-route-id="@item._id" class="veris-btn-delete">&#10005; Eliminar</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="veris-table-footer">
+        Total: @total médico@(total != 1 ? "s" : "") registrado@(total != 1 ? "s" : "")
+    </div>
+</div>

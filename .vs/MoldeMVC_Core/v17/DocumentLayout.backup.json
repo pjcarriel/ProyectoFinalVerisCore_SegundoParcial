@@ -1,0 +1,85 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\TEMP\\PROYECTOOOO\\07_ProyectoVeris_ParteI\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{91FA88B3-F64D-43F3-9F07-FA9A8E95474E}|MoldeMVC_Core\\MoldeMVC_Core.csproj|c:\\temp\\proyectoooo\\07_proyectoveris_partei\\moldemvc_core\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{91FA88B3-F64D-43F3-9F07-FA9A8E95474E}|MoldeMVC_Core\\MoldeMVC_Core.csproj|solutionrelative:moldemvc_core\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91FA88B3-F64D-43F3-9F07-FA9A8E95474E}|MoldeMVC_Core\\MoldeMVC_Core.csproj|c:\\temp\\proyectoooo\\07_proyectoveris_partei\\moldemvc_core\\views\\medicamentos\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{91FA88B3-F64D-43F3-9F07-FA9A8E95474E}|MoldeMVC_Core\\MoldeMVC_Core.csproj|solutionrelative:moldemvc_core\\views\\medicamentos\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91FA88B3-F64D-43F3-9F07-FA9A8E95474E}|MoldeMVC_Core\\MoldeMVC_Core.csproj|c:\\temp\\proyectoooo\\07_proyectoveris_partei\\moldemvc_core\\views\\especialidades\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{91FA88B3-F64D-43F3-9F07-FA9A8E95474E}|MoldeMVC_Core\\MoldeMVC_Core.csproj|solutionrelative:moldemvc_core\\views\\especialidades\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91FA88B3-F64D-43F3-9F07-FA9A8E95474E}|MoldeMVC_Core\\MoldeMVC_Core.csproj|c:\\temp\\proyectoooo\\07_proyectoveris_partei\\moldemvc_core\\views\\pacientes\\delete.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{91FA88B3-F64D-43F3-9F07-FA9A8E95474E}|MoldeMVC_Core\\MoldeMVC_Core.csproj|solutionrelative:moldemvc_core\\views\\pacientes\\delete.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\TEMP\\PROYECTOOOO\\07_ProyectoVeris_ParteI\\MoldeMVC_Core\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "MoldeMVC_Core\\Views\\Home\\Index.cshtml",
+              "ToolTip": "C:\\TEMP\\PROYECTOOOO\\07_ProyectoVeris_ParteI\\MoldeMVC_Core\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "MoldeMVC_Core\\Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-29T04:48:40.281Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "C:\\TEMP\\PROYECTOOOO\\07_ProyectoVeris_ParteI\\MoldeMVC_Core\\Views\\Medicamentos\\Details.cshtml",
+              "RelativeDocumentMoniker": "MoldeMVC_Core\\Views\\Medicamentos\\Details.cshtml",
+              "ToolTip": "C:\\TEMP\\PROYECTOOOO\\07_ProyectoVeris_ParteI\\MoldeMVC_Core\\Views\\Medicamentos\\Details.cshtml",
+              "RelativeToolTip": "MoldeMVC_Core\\Views\\Medicamentos\\Details.cshtml",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABoAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-29T04:38:36.369Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "C:\\TEMP\\PROYECTOOOO\\07_ProyectoVeris_ParteI\\MoldeMVC_Core\\Views\\Especialidades\\Details.cshtml",
+              "RelativeDocumentMoniker": "MoldeMVC_Core\\Views\\Especialidades\\Details.cshtml",
+              "ToolTip": "C:\\TEMP\\PROYECTOOOO\\07_ProyectoVeris_ParteI\\MoldeMVC_Core\\Views\\Especialidades\\Details.cshtml",
+              "RelativeToolTip": "MoldeMVC_Core\\Views\\Especialidades\\Details.cshtml",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAwAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-29T04:36:50.134Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Delete.cshtml",
+              "DocumentMoniker": "C:\\TEMP\\PROYECTOOOO\\07_ProyectoVeris_ParteI\\MoldeMVC_Core\\Views\\Pacientes\\Delete.cshtml",
+              "RelativeDocumentMoniker": "MoldeMVC_Core\\Views\\Pacientes\\Delete.cshtml",
+              "ToolTip": "C:\\TEMP\\PROYECTOOOO\\07_ProyectoVeris_ParteI\\MoldeMVC_Core\\Views\\Pacientes\\Delete.cshtml",
+              "RelativeToolTip": "MoldeMVC_Core\\Views\\Pacientes\\Delete.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-29T04:17:34.416Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

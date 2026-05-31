@@ -1,0 +1,37 @@
+@model MoldeMVC_Core.Models.Medicamentos
+
+@{
+    ViewData["Title"] = "Crear Medicamento";
+}
+
+<div class="veris-form-card">
+    <div class="veris-form-header">
+        <div class="veris-form-icon">&#10010;</div>
+        <h1>Nuevo Medicamento</h1>
+    </div>
+    <form asp-action="Create" method="post">
+        <div class="veris-form-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="veris-form-group">
+                <label asp-for="nombre" class="veris-form-label">Nombre del medicamento</label>
+                <input asp-for="nombre" class="veris-form-control" placeholder="Ej: Paracetamol" />
+                <span asp-validation-for="nombre" class="veris-form-error"></span>
+            </div>
+
+            <div class="veris-form-group">
+                <label asp-for="tipo" class="veris-form-label">Tipo / Categoría</label>
+                <input asp-for="tipo" class="veris-form-control" placeholder="Ej: Analgésico, Antibiótico..." />
+                <span asp-validation-for="tipo" class="veris-form-error"></span>
+            </div>
+        </div>
+        <div class="veris-form-footer">
+            <button type="submit" class="veris-btn-submit">Crear Medicamento</button>
+            <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

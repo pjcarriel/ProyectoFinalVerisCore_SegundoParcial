@@ -1,0 +1,103 @@
+@model MoldeMVC_Core.Models.Pacientes
+
+@{
+    ViewData["Title"] = "Crear Paciente";
+    var fotos = ViewBag.Fotos as List<string> ?? new List<string>();
+}
+
+<div class="veris-form-card veris-form-card-wide">
+    <div class="veris-form-header">
+        <div class="veris-form-icon">&#9786;</div>
+        <h1>Nuevo Paciente</h1>
+    </div>
+    <form asp-action="Create" method="post">
+        <div class="veris-form-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="veris-form-grid-2">
+
+                <div class="veris-form-group veris-col-full">
+                    <label asp-for="nombre" class="veris-form-label">Nombre completo</label>
+                    <input asp-for="nombre" class="veris-form-control" placeholder="Ej: María González" />
+                    <span asp-validation-for="nombre" class="veris-form-error"></span>
+                </div>
+
+                <div class="veris-form-group">
+                    <label asp-for="cedula" class="veris-form-label">Cédula</label>
+                    <input asp-for="cedula" class="veris-form-control" placeholder="Ej: 1234567890" />
+                    <span asp-validation-for="cedula" class="veris-form-error"></span>
+                </div>
+
+                <div class="veris-form-group">
+                    <label asp-for="edad" class="veris-form-label">Edad (años)</label>
+                    <input asp-for="edad" type="number" min="0" class="veris-form-control" placeholder="Ej: 35" />
+                    <span asp-validation-for="edad" class="veris-form-error"></span>
+                </div>
+
+                <div class="veris-form-group">
+                    <label asp-for="genero" class="veris-form-label">Género</label>
+                    <select asp-for="genero" class="veris-form-control">
+                        <option value="">-- Seleccione --</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                    <span asp-validation-for="genero" class="veris-form-error"></span>
+                </div>
+
+                <div class="veris-form-group">
+                    <label asp-for="estatura" class="veris-form-label">Estatura (cm)</label>
+                    <input asp-for="estatura" type="number" min="0" class="veris-form-control" placeholder="Ej: 170" />
+                    <span asp-validation-for="estatura" class="veris-form-error"></span>
+                </div>
+
+                <div class="veris-form-group">
+                    <label asp-for="peso" class="veris-form-label">Peso (kg)</label>
+                    <input asp-for="peso" type="number" min="0" class="veris-form-control" placeholder="Ej: 70" />
+                    <span asp-validation-for="peso" class="veris-form-error"></span>
+                </div>
+
+                <div class="veris-form-group veris-col-full">
+                    <label asp-for="foto" class="veris-form-label">Foto</label>
+                    <select asp-for="foto" class="veris-form-control" id="fotoSelectPaciente" onchange="previewFotoPaciente()">
+                        <option value="">-- Sin foto --</option>
+                        @foreach (var f in fotos)
+                        {
+                            <option value="@f">@f</option>
+                        }
+                    </select>
+                    <span asp-validation-for="foto" class="veris-form-error"></span>
+                    <div id="fotoPreviewPaciente" class="veris-foto-preview mt-2" style="display:none;">
+                        <img id="fotoImgPaciente" src="" alt="Vista previa" class="veris-foto-circle" />
+                        <span class="veris-foto-preview-label" id="fotoLabelPaciente"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="veris-form-footer">
+            <button type="submit" class="veris-btn-submit">Crear Paciente</button>
+            <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        function previewFotoPaciente() {
+            var sel = document.getElementById('fotoSelectPaciente');
+            var preview = document.getElementById('fotoPreviewPaciente');
+            var img = document.getElementById('fotoImgPaciente');
+            var label = document.getElementById('fotoLabelPaciente');
+            if (sel.value) {
+                img.src = '/Usuarios/' + sel.value;
+                label.textContent = sel.value;
+                preview.style.display = 'flex';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        window.addEventListener('DOMContentLoaded', previewFotoPaciente);
+    </script>
+}
