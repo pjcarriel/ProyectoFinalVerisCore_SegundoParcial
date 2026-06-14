@@ -10,10 +10,11 @@
         background-color: #4f84ef;
         color: white;
     }
-    .btn-veris:hover {
-        background-color: #34c9d4;
-        color: white;
-    }
+
+        .btn-veris:hover {
+            background-color: #34c9d4;
+            color: white;
+        }
 </style>
 
 <main aria-labelledby="title" class="container py-5">
@@ -59,14 +60,40 @@
                                     Iniciar sesión
                                 </button>
                             </div>
-
-                            <p class="mb-0">
-                                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl"
-                                   class="fw-semibold text-decoration-none" style="color:#4f84ef;">
-                                    Registrarse como usuario nuevo
-                                </a>
-                            </p>
                         </form>
+
+                        @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+                        {
+                            <hr />
+
+                            <div class="mb-3">
+                                <h6 class="text-muted">O inicia sesión con:</h6>
+
+                                <form id="external-account"
+                                      asp-page="./ExternalLogin"
+                                      asp-route-returnUrl="@Model.ReturnUrl"
+                                      method="post">
+
+                                    @foreach (var provider in Model.ExternalLogins!)
+                                    {
+                                        <button type="submit"
+                                                class="btn btn-primary w-100 mb-2"
+                                                name="provider"
+                                                value="@provider.Name"
+                                                title="Iniciar sesión usando @provider.DisplayName">
+                                            Iniciar sesión con @provider.DisplayName
+                                        </button>
+                                    }
+                                </form>
+                            </div>
+                        }
+
+                        <p class="mb-0">
+                            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl"
+                               class="fw-semibold text-decoration-none" style="color:#4f84ef;">
+                                Registrarse como usuario nuevo
+                            </a>
+                        </p>
                     </section>
                 </div>
 

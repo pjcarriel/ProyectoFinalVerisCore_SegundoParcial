@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "zAZPXG3jAMw=",
+  "dgSpecHash": "C+bsUjJD5ps=",
   "success": true,
   "projectFilePath": "E:\\Web3\\Parcial2\\ProyectoFinal\\MoldeMVC_Core\\MoldeMVC_Core.csproj",
   "expectedPackageFiles": [
@@ -57,6 +57,7 @@
     "C:\\Users\\LENOVO\\.nuget\\packages\\humanizer.core.zh-cn\\2.14.1\\humanizer.core.zh-cn.2.14.1.nupkg.sha512",
     "C:\\Users\\LENOVO\\.nuget\\packages\\humanizer.core.zh-hans\\2.14.1\\humanizer.core.zh-hans.2.14.1.nupkg.sha512",
     "C:\\Users\\LENOVO\\.nuget\\packages\\humanizer.core.zh-hant\\2.14.1\\humanizer.core.zh-hant.2.14.1.nupkg.sha512",
+    "C:\\Users\\LENOVO\\.nuget\\packages\\microsoft.aspnetcore.authentication.facebook\\9.0.16\\microsoft.aspnetcore.authentication.facebook.9.0.16.nupkg.sha512",
     "C:\\Users\\LENOVO\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\9.0.15\\microsoft.aspnetcore.cryptography.internal.9.0.15.nupkg.sha512",
     "C:\\Users\\LENOVO\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\9.0.15\\microsoft.aspnetcore.cryptography.keyderivation.9.0.15.nupkg.sha512",
     "C:\\Users\\LENOVO\\.nuget\\packages\\microsoft.aspnetcore.diagnostics.entityframeworkcore\\9.0.15\\microsoft.aspnetcore.diagnostics.entityframeworkcore.9.0.15.nupkg.sha512",

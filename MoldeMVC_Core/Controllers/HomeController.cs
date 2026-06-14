@@ -8,10 +8,12 @@ namespace MoldeMVC_Core.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, SignInManager<IdentityUser> signInManager)
         {
-            _logger = logger;
+            _logger      = logger;
+            _signInManager = signInManager;
         }
 
         public IActionResult Index()
@@ -38,9 +40,12 @@ namespace MoldeMVC_Core.Controllers
             return View("_partial_ValidarCedula", objUser);
         }
 
-        public IActionResult AccesoDenegado()
+        public async Task<IActionResult> AccesoDenegado()
         {
-            return View();
+            await _signInManager.SignOutAsync();
+            HttpContext.Session.Remove("User");
+            TempData["ErrorMessage"] = "No tienes permisos para acceder a ese módulo. Inicia sesión con las credenciales correctas.";
+            return Redirect("/Identity/Account/Login");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

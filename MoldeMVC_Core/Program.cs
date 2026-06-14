@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MoldeMVC_Core.Data;
 using MoldeMVC_Core.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +38,60 @@ builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<RedirectTo>();
 });
+/*
+    Se agrega el servicio de autenticación al proyecto.
+    Esto permite que la aplicación pueda iniciar sesión usando
+    proveedores externos, en este caso Facebook.
+*/
+builder.Services.AddAuthentication()
+    .AddFacebook(opciones =>
+    {
+        /*
+            AppId corresponde al Identificador de la app
+            obtenido desde Meta for Developers.
+        */
+        opciones.AppId = builder.Configuration["FacebookAppId"]!;
+
+        /*
+            AppSecret corresponde a la Clave secreta de la app
+            obtenida desde Meta for Developers.
+        */
+        opciones.AppSecret = builder.Configuration["FacebookAppSecret"]!;
+
+        /*
+            Se eliminan permisos adicionales para evitar el error:
+            Invalid Scopes: email
+        */
+        opciones.Scope.Clear();
+
+        /*
+            Se solicita únicamente el perfil público del usuario.
+            Esto es suficiente para una práctica básica de login.
+        */
+        opciones.Scope.Add("public_profile");
+    });
+
+
+/*
+    Se configuran opciones adicionales para la cookie de autenticación.
+    Identity usa cookies para mantener la sesión iniciada del usuario.
+*/
+builder.Services.PostConfigure<CookieAuthenticationOptions>(
+    IdentityConstants.ApplicationScheme,
+    opciones =>
+    {
+        /*
+            Ruta a la que será enviado el usuario cuando necesite iniciar sesión.
+        */
+        opciones.LoginPath = "/Identity/Account/Login";
+
+        /*
+            Ruta a la que será enviado el usuario si intenta entrar
+            a una página sin permisos suficientes.
+        */
+        opciones.AccessDeniedPath = "/Home/AccesoDenegado";
+    });
+
 
 // Configurar la sesion para mantener el estado del usuario
 builder.Services.AddSession(options =>

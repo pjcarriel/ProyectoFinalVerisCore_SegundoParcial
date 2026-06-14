@@ -2681,3 +2681,4 @@ E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\obj\Debug\net9.0\refint\MoldeMVC_Co
 E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\obj\Debug\net9.0\MoldeMVC_Core.pdb
 E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\obj\Debug\net9.0\MoldeMVC_Core.genruntimeconfig.cache
 E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\obj\Debug\net9.0\ref\MoldeMVC_Core.dll
+E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.Facebook.dll
