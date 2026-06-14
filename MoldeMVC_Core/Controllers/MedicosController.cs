@@ -1,255 +1,231 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using MoldeMVC_Core.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using MoldeMVC_Core.Models;
+using System.Text.Json;
 
 namespace MoldeMVC_Core.Controllers
 {
+    [Authorize(Roles = "Administrador,SuperAdmin,Medico")]
     public class MedicosController : Controller
     {
-        private readonly VerisMongoContext _context;
-        private readonly IWebHostEnvironment _env;
+        private readonly ProyectoVerisMvcBdContext _context;
+        private readonly IWebHostEnvironment        _env;
+        private readonly UserManager<IdentityUser>  _userManager;
 
-        public MedicosController(VerisMongoContext context, IWebHostEnvironment env)
+        public MedicosController(ProyectoVerisMvcBdContext context, IWebHostEnvironment env, UserManager<IdentityUser> userManager)
         {
-            _context = context;
-            _env = env;
+            _context     = context;
+            _env         = env;
+            _userManager = userManager;
         }
 
         // GET: Medicos
         public async Task<IActionResult> Index()
         {
+            if (User.IsInRole("Medico"))
+            {
+                var sesion = HttpContext.Session.GetString("User");
+                var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
+                var userId = objUser?.Id;
+                var misMedicos = await _context.Medicos
+                    .Include(m => m.IdEspecialidadNavigation)
+                    .Where(m => m.IdUsuario == userId)
+                    .ToListAsync();
+                return View(misMedicos);
+            }
+
             var medicos = await _context.Medicos
-                .Find(Builders<Medicos>.Filter.Empty)
+                .Include(m => m.IdEspecialidadNavigation)
                 .ToListAsync();
-
-            var especialidades = await _context.Especialidades
-                .Find(Builders<Especialidades>.Filter.Empty)
-                .ToListAsync();
-
-            ViewBag.EspecialidadesDict = especialidades.ToDictionary(e => e._id, e => e.descripcion);
 
             return View(medicos);
         }
 
         // GET: Medicos/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var medico = await _context.Medicos
+                .Include(m => m.IdEspecialidadNavigation)
+                .FirstOrDefaultAsync(m => m.IdMedico == id);
+
+            if (medico == null)
                 return NotFound();
+
+            if (User.IsInRole("Medico"))
+            {
+                var sesion = HttpContext.Session.GetString("User");
+                var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
+                var userId = objUser?.Id;
+                if (medico.IdUsuario != userId)
+                    return Forbid();
             }
 
-            var medicos = await _context.Medicos
-                .Find(m => m._id == id)
-                .FirstOrDefaultAsync();
+            ViewBag.EspecialidadNombre = medico.IdEspecialidadNavigation?.Descripcion ?? "";
 
-            if (medicos == null)
-            {
-                return NotFound();
-            }
-
-            var especialidad = await _context.Especialidades
-                .Find(e => e._id == medicos.especialidadId)
-                .FirstOrDefaultAsync();
-
-            ViewBag.EspecialidadNombre = especialidad?.descripcion ?? medicos.especialidadId;
-
-            return View(medicos);
+            return View(medico);
         }
 
         // GET: Medicos/Create
+        [Authorize(Roles = "Administrador,SuperAdmin")]
         public async Task<IActionResult> Create()
         {
-            var especialidades = await _context.Especialidades
-                .Find(Builders<Especialidades>.Filter.Empty)
-                .ToListAsync();
-
-            ViewBag.Especialidades = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(
-                especialidades, "_id", "descripcion");
-
+            await CargarEspecialidades();
             CargarFotosMedicos();
-
+            CargarUsuarios();
             return View();
         }
 
         // POST: Medicos/Create
+        [Authorize(Roles = "Administrador,SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("nombre,especialidadId,foto")] Medicos medicos)
+        public async Task<IActionResult> Create([Bind("IdUsuario,Nombre,IdEspecialidad,Foto")] Medico medico)
         {
-            medicos._id = ObjectId.GenerateNewId().ToString();
-
-            ModelState.Remove("_id");
+            ModelState.Remove("IdEspecialidadNavigation");
+            ModelState.Remove("IdUsuarioNavigation");
 
             if (!ModelState.IsValid)
             {
-                await RecargarEspecialidades(medicos.especialidadId);
+                await CargarEspecialidades(medico.IdEspecialidad);
                 CargarFotosMedicos();
-                return View(medicos);
+                CargarUsuarios(medico.IdUsuario);
+                return View(medico);
             }
 
-            if (!ObjectId.TryParse(medicos.especialidadId, out _))
+            var esPaciente = await _context.Pacientes.AnyAsync(p => p.IdUsuario == medico.IdUsuario);
+            if (esPaciente)
             {
-                ModelState.AddModelError("especialidadId", "La especialidad seleccionada no es válida.");
-                await RecargarEspecialidades(medicos.especialidadId);
+                ModelState.AddModelError("IdUsuario", "Este usuario ya está registrado como Paciente. Un usuario no puede tener ambos roles.");
+                await CargarEspecialidades(medico.IdEspecialidad);
                 CargarFotosMedicos();
-                return View(medicos);
+                CargarUsuarios(medico.IdUsuario);
+                return View(medico);
+            }
+
+            var yaesMedico = await _context.Medicos.AnyAsync(m => m.IdUsuario == medico.IdUsuario);
+            if (yaesMedico)
+            {
+                ModelState.AddModelError("IdUsuario", "Este usuario ya tiene un registro de Médico.");
+                await CargarEspecialidades(medico.IdEspecialidad);
+                CargarFotosMedicos();
+                CargarUsuarios(medico.IdUsuario);
+                return View(medico);
             }
 
             try
             {
-                await _context.Medicos.InsertOneAsync(medicos);
-
+                await SincronizarUsuarioLegacy(medico.IdUsuario);
+                _context.Add(medico);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            catch (MongoWriteException ex)
-            {
-                ModelState.AddModelError("", "Error al guardar en MongoDB: " + ex.Message);
-                await RecargarEspecialidades(medicos.especialidadId);
-                CargarFotosMedicos();
-                return View(medicos);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error inesperado: " + ex.Message);
-                await RecargarEspecialidades(medicos.especialidadId);
+                await CargarEspecialidades(medico.IdEspecialidad);
                 CargarFotosMedicos();
-                return View(medicos);
+                CargarUsuarios(medico.IdUsuario);
+                return View(medico);
             }
         }
 
         // GET: Medicos/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        [Authorize(Roles = "Administrador,SuperAdmin")]
+        public async Task<IActionResult> Edit(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var medico = await _context.Medicos
+                .FirstOrDefaultAsync(m => m.IdMedico == id);
+
+            if (medico == null)
                 return NotFound();
-            }
 
-            var medicos = await _context.Medicos
-                .Find(m => m._id == id)
-                .FirstOrDefaultAsync();
-
-            if (medicos == null)
-            {
-                return NotFound();
-            }
-
-            await RecargarEspecialidades(medicos.especialidadId);
+            await CargarEspecialidades(medico.IdEspecialidad);
             CargarFotosMedicos();
-
-            return View(medicos);
+            CargarUsuarios(medico.IdUsuario);
+            return View(medico);
         }
 
         // POST: Medicos/Edit/5
+        [Authorize(Roles = "Administrador,SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("_id,nombre,especialidadId,foto")] Medicos medicos)
+        public async Task<IActionResult> Edit(int id, [Bind("IdMedico,IdUsuario,Nombre,IdEspecialidad,Foto")] Medico medico)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            if (id != medico.IdMedico)
                 return NotFound();
-            }
 
-            if (id != medicos._id)
-            {
-                return NotFound();
-            }
-
-            ModelState.Remove("_id");
+            ModelState.Remove("IdEspecialidadNavigation");
+            ModelState.Remove("IdUsuarioNavigation");
 
             if (!ModelState.IsValid)
             {
-                await RecargarEspecialidades(medicos.especialidadId);
+                await CargarEspecialidades(medico.IdEspecialidad);
                 CargarFotosMedicos();
-                return View(medicos);
-            }
-
-            if (!ObjectId.TryParse(medicos.especialidadId, out _))
-            {
-                ModelState.AddModelError("especialidadId", "La especialidad seleccionada no es válida.");
-                await RecargarEspecialidades(medicos.especialidadId);
-                CargarFotosMedicos();
-                return View(medicos);
+                CargarUsuarios(medico.IdUsuario);
+                return View(medico);
             }
 
             try
             {
-                var resultado = await _context.Medicos
-                    .ReplaceOneAsync(m => m._id == id, medicos);
-
-                if (resultado.MatchedCount == 0)
-                {
-                    return NotFound();
-                }
-
+                await SincronizarUsuarioLegacy(medico.IdUsuario);
+                _context.Update(medico);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            catch (MongoWriteException ex)
+            catch (DbUpdateConcurrencyException)
             {
-                ModelState.AddModelError("", "Error al actualizar en MongoDB: " + ex.Message);
-                await RecargarEspecialidades(medicos.especialidadId);
-                return View(medicos);
+                if (!await _context.Medicos.AnyAsync(m => m.IdMedico == id))
+                    return NotFound();
+                throw;
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error inesperado: " + ex.Message);
-                await RecargarEspecialidades(medicos.especialidadId);
-                return View(medicos);
+                await CargarEspecialidades(medico.IdEspecialidad);
+                CargarFotosMedicos();
+                CargarUsuarios(medico.IdUsuario);
+                return View(medico);
             }
         }
 
         // GET: Medicos/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        [Authorize(Roles = "Administrador,SuperAdmin")]
+        public async Task<IActionResult> Delete(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var medico = await _context.Medicos
+                .Include(m => m.IdEspecialidadNavigation)
+                .FirstOrDefaultAsync(m => m.IdMedico == id);
+
+            if (medico == null)
                 return NotFound();
-            }
 
-            var medicos = await _context.Medicos
-                .Find(m => m._id == id)
-                .FirstOrDefaultAsync();
-
-            if (medicos == null)
-            {
-                return NotFound();
-            }
-
-            return View(medicos);
+            return View(medico);
         }
 
         // POST: Medicos/Delete/5
+        [Authorize(Roles = "Administrador,SuperAdmin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var medico = await _context.Medicos
+                .FirstOrDefaultAsync(m => m.IdMedico == id);
+
+            if (medico == null)
                 return NotFound();
-            }
 
-            var resultado = await _context.Medicos
-                .DeleteOneAsync(m => m._id == id);
-
-            if (resultado.DeletedCount == 0)
-            {
-                return NotFound();
-            }
-
+            _context.Remove(medico);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task RecargarEspecialidades(string? selectedId = null)
+        private async Task CargarEspecialidades(int? selectedId = null)
         {
-            var especialidades = await _context.Especialidades
-                .Find(Builders<Especialidades>.Filter.Empty)
-                .ToListAsync();
-
-            ViewBag.Especialidades = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(
-                especialidades, "_id", "descripcion", selectedId);
+            var especialidades = await _context.Especialidades.ToListAsync();
+            ViewBag.Especialidades = new SelectList(especialidades, "IdEspecialidad", "Descripcion", selectedId);
         }
 
         private void CargarFotosMedicos()
@@ -261,6 +237,44 @@ namespace MoldeMVC_Core.Controllers
                     .OrderBy(f => f)
                     .ToList()
                 : new List<string>();
+        }
+
+        private void CargarUsuarios(string? selectedId = null)
+        {
+            var usuarios = _userManager.Users
+                .OrderBy(u => u.UserName)
+                .Select(u => new { u.Id, u.UserName })
+                .ToList();
+
+            ViewBag.Usuarios = new SelectList(usuarios, "Id", "UserName", selectedId);
+        }
+
+        // Sincroniza el usuario de BDNetCore_Identity en la tabla legacy de ProyectoVeris_MVC_BD
+        // para satisfacer la FK constraint FK_medicos_AspNetUsers
+        private async Task SincronizarUsuarioLegacy(string userId)
+        {
+            var existe = await _context.AspNetUsers.AnyAsync(u => u.Id == userId);
+            if (!existe)
+            {
+                var identityUser = await _userManager.FindByIdAsync(userId);
+                if (identityUser != null)
+                {
+                    _context.AspNetUsers.Add(new AspNetUser
+                    {
+                        Id                   = identityUser.Id,
+                        UserName             = identityUser.UserName ?? identityUser.Email ?? userId,
+                        Email                = identityUser.Email,
+                        EmailConfirmed       = true,
+                        PasswordHash         = null,
+                        SecurityStamp        = null,
+                        PhoneNumberConfirmed = false,
+                        TwoFactorEnabled     = false,
+                        LockoutEnabled       = false,
+                        AccessFailedCount    = 0
+                    });
+                    await _context.SaveChangesAsync();
+                }
+            }
         }
     }
 }

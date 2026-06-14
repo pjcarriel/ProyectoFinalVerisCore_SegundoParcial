@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Recetas
+@model MoldeMVC_Core.Models.Receta
 
 @{
     ViewData["Title"] = "Detalles de Receta";
@@ -23,12 +23,11 @@
         </div>
         <div class="veris-detail-row">
             <span class="veris-detail-label">Cantidad</span>
-            <span class="veris-detail-value">@Html.DisplayFor(m => m.cantidad) unidad@(Model.cantidad != 1 ? "es" : "")</span>
+            <span class="veris-detail-value">@Model.Cantidad unidad@(Model.Cantidad != 1 ? "es" : "")</span>
         </div>
     </div>
 
     <div class="veris-detail-footer">
-        <a asp-action="Edit" asp-route-id="@Model._id" class="veris-btn-edit">&#9998; Editar</a>
         <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
     </div>
 </div>

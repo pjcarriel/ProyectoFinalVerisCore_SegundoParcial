@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Pacientes
+@model MoldeMVC_Core.Models.Paciente
 
 @{
     ViewData["Title"] = "Crear Paciente";
@@ -17,56 +17,73 @@
             <div class="veris-form-grid-2">
 
                 <div class="veris-form-group veris-col-full">
-                    <label asp-for="nombre" class="veris-form-label">Nombre completo</label>
-                    <input asp-for="nombre" class="veris-form-control" placeholder="Ej: María González" />
-                    <span asp-validation-for="nombre" class="veris-form-error"></span>
+                    <label asp-for="IdUsuario" class="veris-form-label">Usuario</label>
+                    <select asp-for="IdUsuario" asp-items="ViewBag.Usuarios" class="veris-form-control">
+                        <option value="">-- Seleccione un usuario --</option>
+                    </select>
+                    <span asp-validation-for="IdUsuario" class="veris-form-error"></span>
+                </div>
+
+                <div class="veris-form-group veris-col-full">
+                    <label asp-for="Nombre" class="veris-form-label">Nombre completo</label>
+                    <input asp-for="Nombre" class="veris-form-control" placeholder="Ej: María González" />
+                    <span asp-validation-for="Nombre" class="veris-form-error"></span>
                 </div>
 
                 <div class="veris-form-group">
-                    <label asp-for="cedula" class="veris-form-label">Cédula</label>
-                    <input asp-for="cedula" class="veris-form-control" placeholder="Ej: 1234567890" />
-                    <span asp-validation-for="cedula" class="veris-form-error"></span>
+                    <label asp-for="Cedula" class="veris-form-label">Cédula</label>
+                    <input asp-for="Cedula" type="text" maxlength="10" pattern="[0-9]{1,10}"
+                           class="veris-form-control" placeholder="Ej: 1234567890"
+                           id="inputCedula"
+                           oninput="this.value=this.value.replace(/[^0-9]/g,''); resetValidacion()" />
+                    <span asp-validation-for="Cedula" class="veris-form-error"></span>
+                    <div class="mt-2 d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="ejecutarValidarCedula()">
+                            Validar Cédula
+                        </button>
+                        <span id="resultadoValidacion" style="font-size:0.85rem;"></span>
+                    </div>
                 </div>
 
                 <div class="veris-form-group">
-                    <label asp-for="edad" class="veris-form-label">Edad (años)</label>
-                    <input asp-for="edad" type="number" min="0" class="veris-form-control" placeholder="Ej: 35" />
-                    <span asp-validation-for="edad" class="veris-form-error"></span>
+                    <label asp-for="Edad" class="veris-form-label">Edad (años)</label>
+                    <input asp-for="Edad" type="number" min="0" class="veris-form-control" placeholder="Ej: 35" />
+                    <span asp-validation-for="Edad" class="veris-form-error"></span>
                 </div>
 
                 <div class="veris-form-group">
-                    <label asp-for="genero" class="veris-form-label">Género</label>
-                    <select asp-for="genero" class="veris-form-control">
+                    <label asp-for="Genero" class="veris-form-label">Género</label>
+                    <select asp-for="Genero" class="veris-form-control">
                         <option value="">-- Seleccione --</option>
                         <option value="Masculino">Masculino</option>
                         <option value="Femenino">Femenino</option>
                         <option value="Otro">Otro</option>
                     </select>
-                    <span asp-validation-for="genero" class="veris-form-error"></span>
+                    <span asp-validation-for="Genero" class="veris-form-error"></span>
                 </div>
 
                 <div class="veris-form-group">
-                    <label asp-for="estatura" class="veris-form-label">Estatura (cm)</label>
-                    <input asp-for="estatura" type="number" min="0" class="veris-form-control" placeholder="Ej: 170" />
-                    <span asp-validation-for="estatura" class="veris-form-error"></span>
+                    <label asp-for="Estatura" class="veris-form-label">Estatura (cm)</label>
+                    <input asp-for="Estatura" type="number" min="0" class="veris-form-control" placeholder="Ej: 170" />
+                    <span asp-validation-for="Estatura" class="veris-form-error"></span>
                 </div>
 
                 <div class="veris-form-group">
-                    <label asp-for="peso" class="veris-form-label">Peso (kg)</label>
-                    <input asp-for="peso" type="number" min="0" class="veris-form-control" placeholder="Ej: 70" />
-                    <span asp-validation-for="peso" class="veris-form-error"></span>
+                    <label asp-for="Peso" class="veris-form-label">Peso (kg)</label>
+                    <input asp-for="Peso" type="number" min="0" class="veris-form-control" placeholder="Ej: 70" />
+                    <span asp-validation-for="Peso" class="veris-form-error"></span>
                 </div>
 
                 <div class="veris-form-group veris-col-full">
-                    <label asp-for="foto" class="veris-form-label">Foto</label>
-                    <select asp-for="foto" class="veris-form-control" id="fotoSelectPaciente" onchange="previewFotoPaciente()">
+                    <label asp-for="Foto" class="veris-form-label">Foto</label>
+                    <select asp-for="Foto" class="veris-form-control" id="fotoSelectPaciente" onchange="previewFotoPaciente()">
                         <option value="">-- Sin foto --</option>
                         @foreach (var f in fotos)
                         {
                             <option value="@f">@f</option>
                         }
                     </select>
-                    <span asp-validation-for="foto" class="veris-form-error"></span>
+                    <span asp-validation-for="Foto" class="veris-form-error"></span>
                     <div id="fotoPreviewPaciente" class="veris-foto-preview mt-2" style="display:none;">
                         <img id="fotoImgPaciente" src="" alt="Vista previa" class="veris-foto-circle" />
                         <span class="veris-foto-preview-label" id="fotoLabelPaciente"></span>
@@ -76,7 +93,7 @@
             </div>
         </div>
         <div class="veris-form-footer">
-            <button type="submit" class="veris-btn-submit">Crear Paciente</button>
+            <button type="submit" id="btnCrear" class="veris-btn-submit" disabled title="Valide la cédula antes de guardar">Crear Paciente</button>
             <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
         </div>
     </form>
@@ -99,5 +116,48 @@
             }
         }
         window.addEventListener('DOMContentLoaded', previewFotoPaciente);
+
+        function validarCedulaJS(cedula) {
+            if (!cedula || cedula.length !== 10 || isNaN(cedula)) {
+                return false;
+            }
+            var sum = 0;
+            for (var i = 0; i < 9; i++) {
+                var digit = parseInt(cedula[i]);
+                if (i % 2 === 0) {
+                    var multiplied = digit * 2;
+                    sum += (multiplied > 9) ? multiplied - 9 : multiplied;
+                } else {
+                    sum += digit;
+                }
+            }
+            var lastDigit = parseInt(cedula[9]);
+            var modulo = sum % 10;
+            return (modulo === 0 && lastDigit === 0) || (10 - modulo === lastDigit);
+        }
+
+        function ejecutarValidarCedula() {
+            var cedula = document.getElementById('inputCedula').value;
+            var resultado = validarCedulaJS(cedula);
+            var span = document.getElementById('resultadoValidacion');
+            var btnCrear = document.getElementById('btnCrear');
+
+            if (resultado) {
+                span.innerHTML = '<span style="color:#198754;">&#10003; Cédula válida</span>';
+                btnCrear.disabled = false;
+                btnCrear.removeAttribute('title');
+            } else {
+                span.innerHTML = '<span style="color:#dc3545;">&#10007; Cédula inválida</span>';
+                btnCrear.disabled = true;
+                btnCrear.title = 'Valide la cédula antes de guardar';
+            }
+        }
+
+        function resetValidacion() {
+            document.getElementById('resultadoValidacion').innerHTML = '';
+            var btn = document.getElementById('btnCrear');
+            btn.disabled = true;
+            btn.title = 'Valide la cédula antes de guardar';
+        }
     </script>
 }

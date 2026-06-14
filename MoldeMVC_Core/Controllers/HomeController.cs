@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MoldeMVC_Core.Models;
 
@@ -19,6 +20,25 @@ namespace MoldeMVC_Core.Controllers
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult ValidarCedula()
+        {
+            var usuario = HttpContext.Session.GetString("User");
+
+            var objUser = System.Text.Json.JsonSerializer.Deserialize<IdentityUser>(usuario!);
+
+            var nombre = objUser!.UserName;
+            var info   = objUser.PhoneNumber;
+
+            ViewBag.Message = "La cédula de " + nombre + " es: " + info;
+
+            return View("_partial_ValidarCedula", objUser);
+        }
+
+        public IActionResult AccesoDenegado()
         {
             return View();
         }

@@ -1,8 +1,8 @@
-@model MoldeMVC_Core.Models.Recetas
+@model MoldeMVC_Core.Models.Receta
 
 @{
     ViewData["Title"] = "Nueva Receta";
-    var pacientes = ViewBag.PacientesList as List<MoldeMVC_Core.Models.Pacientes> ?? new();
+    var pacientes = ViewBag.PacientesList as List<MoldeMVC_Core.Models.Paciente> ?? new();
 }
 
 <div class="veris-form-card veris-form-card-wide">
@@ -24,7 +24,7 @@
                         <option value="">-- Seleccione un paciente --</option>
                         @foreach (var p in pacientes)
                         {
-                            <option value="@p._id">@p.nombre</option>
+                            <option value="@p.IdPaciente">@p.Nombre</option>
                         }
                     </select>
                 </div>
@@ -35,10 +35,10 @@
                 <div class="veris-receta-paso-num">2</div>
                 <div class="veris-receta-paso-body">
                     <label class="veris-form-label">Selecciona la consulta</label>
-                    <select id="selectConsulta" name="consultaId" class="veris-form-control" onchange="cargarDiagnostico()">
+                    <select id="selectConsulta" name="IdConsulta" class="veris-form-control" onchange="cargarDiagnostico()">
                         <option value="">-- Primero seleccione un paciente --</option>
                     </select>
-                    <span asp-validation-for="consultaId" class="veris-form-error"></span>
+                    <span asp-validation-for="IdConsulta" class="veris-form-error"></span>
                 </div>
             </div>
 
@@ -52,7 +52,14 @@
                               placeholder="El diagnóstico aparecerá aquí..."></textarea>
 
                     <div id="alertaPendiente" class="veris-alerta-receta veris-alerta-warn" style="display:none;">
-                        &#9888; Esta consulta aún no tiene diagnóstico registrado. Edite la consulta y registre el diagnóstico antes de crear una receta.
+                        @if (User.IsInRole("SuperAdmin"))
+                        {
+                            <span>&#9888; El médico debe dar un diagnóstico para crear una receta.</span>
+                        }
+                        else
+                        {
+                            <span>&#9888; Esta consulta aún no tiene diagnóstico registrado. Edite la consulta y registre el diagnóstico antes de crear una receta.</span>
+                        }
                     </div>
                     <div id="alertaOk" class="veris-alerta-receta veris-alerta-ok" style="display:none;">
                         &#10003; Diagnóstico registrado. Puede continuar con la receta.
@@ -66,16 +73,16 @@
                 <div class="veris-receta-paso-body">
                     <div class="veris-form-grid-2">
                         <div class="veris-form-group">
-                            <label asp-for="medicamentoId" class="veris-form-label">Medicamento</label>
-                            <select asp-for="medicamentoId" asp-items="ViewBag.Medicamentos" class="veris-form-control">
+                            <label asp-for="IdMedicamento" class="veris-form-label">Medicamento</label>
+                            <select asp-for="IdMedicamento" asp-items="ViewBag.Medicamentos" class="veris-form-control">
                                 <option value="">-- Seleccione un medicamento --</option>
                             </select>
-                            <span asp-validation-for="medicamentoId" class="veris-form-error"></span>
+                            <span asp-validation-for="IdMedicamento" class="veris-form-error"></span>
                         </div>
                         <div class="veris-form-group">
-                            <label asp-for="cantidad" class="veris-form-label">Cantidad</label>
-                            <input asp-for="cantidad" type="number" min="1" class="veris-form-control" placeholder="Ej: 10" />
-                            <span asp-validation-for="cantidad" class="veris-form-error"></span>
+                            <label asp-for="Cantidad" class="veris-form-label">Cantidad</label>
+                            <input asp-for="Cantidad" type="number" min="1" class="veris-form-control" placeholder="Ej: 10" />
+                            <span asp-validation-for="Cantidad" class="veris-form-error"></span>
                         </div>
                     </div>
                 </div>
@@ -99,7 +106,6 @@
         const paso3 = document.getElementById('pasoTresWrapper');
         const paso4 = document.getElementById('pasosCuatroWrapper');
 
-        // Resetear pasos siguientes
         selCon.innerHTML = '<option value="">-- Cargando consultas... --</option>';
         document.getElementById('txtDiagnostico').value = '';
         document.getElementById('alertaPendiente').style.display = 'none';

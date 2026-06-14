@@ -1,222 +1,239 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using MoldeMVC_Core.Data;
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using MoldeMVC_Core.Models;
+using System.Text.Json;
 
 namespace MoldeMVC_Core.Controllers
 {
+    [Authorize(Roles = "Administrador,SuperAdmin,Paciente")]
     public class PacientesController : Controller
     {
-        private readonly VerisMongoContext _context;
-        private readonly IWebHostEnvironment _env;
+        private readonly ProyectoVerisMvcBdContext _context;
+        private readonly IWebHostEnvironment        _env;
+        private readonly UserManager<IdentityUser>  _userManager;
 
-        public PacientesController(VerisMongoContext context, IWebHostEnvironment env)
+        public PacientesController(ProyectoVerisMvcBdContext context, IWebHostEnvironment env, UserManager<IdentityUser> userManager)
         {
-            _context = context;
-            _env = env;
+            _context     = context;
+            _env         = env;
+            _userManager = userManager;
         }
 
         // GET: Pacientes
         public async Task<IActionResult> Index()
         {
-            var pacientes = await _context.Pacientes
-                .Find(Builders<Pacientes>.Filter.Empty)
-                .ToListAsync();
-
+            if (User.IsInRole("Paciente"))
+            {
+                var sesion = HttpContext.Session.GetString("User");
+                var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
+                var userId = objUser?.Id;
+                var misPacientes = await _context.Pacientes
+                    .Where(p => p.IdUsuario == userId)
+                    .ToListAsync();
+                return View(misPacientes);
+            }
+            var pacientes = await _context.Pacientes.ToListAsync();
             return View(pacientes);
         }
 
         // GET: Pacientes/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var paciente = await _context.Pacientes
+                .FirstOrDefaultAsync(p => p.IdPaciente == id);
+
+            if (paciente == null)
                 return NotFound();
+
+            if (User.IsInRole("Paciente"))
+            {
+                var sesion = HttpContext.Session.GetString("User");
+                var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
+                var userId = objUser?.Id;
+                if (paciente.IdUsuario != userId)
+                    return Forbid();
             }
 
-            var pacientes = await _context.Pacientes
-                .Find(p => p._id == id)
-                .FirstOrDefaultAsync();
-
-            if (pacientes == null)
-            {
-                return NotFound();
-            }
-
-            return View(pacientes);
+            return View(paciente);
         }
 
         // GET: Pacientes/Create
+        [Authorize(Roles = "Administrador,SuperAdmin")]
         public IActionResult Create()
         {
             CargarFotosPacientes();
+            CargarUsuarios();
             return View();
         }
 
         // POST: Pacientes/Create
+        [Authorize(Roles = "Administrador,SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("nombre,cedula,edad,genero,estatura,peso,foto")] Pacientes pacientes)
+        public async Task<IActionResult> Create([Bind("IdUsuario,Nombre,Cedula,Edad,Genero,Estatura,Peso,Foto")] Paciente paciente)
         {
-            pacientes._id = ObjectId.GenerateNewId().ToString();
-
-            ModelState.Remove("_id");
+            ModelState.Remove("IdUsuarioNavigation");
 
             if (!ModelState.IsValid)
             {
                 CargarFotosPacientes();
-                return View(pacientes);
+                CargarUsuarios(paciente.IdUsuario);
+                return View(paciente);
+            }
+
+            var esMedico = await _context.Medicos.AnyAsync(m => m.IdUsuario == paciente.IdUsuario);
+            if (esMedico)
+            {
+                ModelState.AddModelError("IdUsuario", "Este usuario ya está registrado como Médico. Un usuario no puede tener ambos roles.");
+                CargarFotosPacientes();
+                CargarUsuarios(paciente.IdUsuario);
+                return View(paciente);
+            }
+
+            var yaEsPaciente = await _context.Pacientes.AnyAsync(p => p.IdUsuario == paciente.IdUsuario);
+            if (yaEsPaciente)
+            {
+                ModelState.AddModelError("IdUsuario", "Este usuario ya tiene un registro de Paciente.");
+                CargarFotosPacientes();
+                CargarUsuarios(paciente.IdUsuario);
+                return View(paciente);
+            }
+
+            var existeCedula = await _context.Pacientes.AnyAsync(p => p.Cedula == paciente.Cedula);
+            if (existeCedula)
+            {
+                ModelState.AddModelError("Cedula", "Ya existe un paciente registrado con esta cédula.");
+                CargarFotosPacientes();
+                CargarUsuarios(paciente.IdUsuario);
+                return View(paciente);
             }
 
             try
             {
-                var existeCedula = await _context.Pacientes
-                    .Find(p => p.cedula == pacientes.cedula)
-                    .AnyAsync();
-
-                if (existeCedula)
-                {
-                    ModelState.AddModelError("cedula", "Ya existe un paciente registrado con esta cédula.");
-                    CargarFotosPacientes();
-                    return View(pacientes);
-                }
-
-                await _context.Pacientes.InsertOneAsync(pacientes);
-
+                await SincronizarUsuarioLegacy(paciente.IdUsuario);
+                _context.Add(paciente);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            catch (MongoWriteException ex)
-            {
-                ModelState.AddModelError("", "Error al guardar en MongoDB: " + ex.Message);
-                CargarFotosPacientes();
-                return View(pacientes);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error inesperado: " + ex.Message);
                 CargarFotosPacientes();
-                return View(pacientes);
+                CargarUsuarios(paciente.IdUsuario);
+                return View(paciente);
             }
         }
 
         // GET: Pacientes/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        [Authorize(Roles = "Administrador,SuperAdmin")]
+        public async Task<IActionResult> Edit(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
-                return NotFound();
-            }
+            var paciente = await _context.Pacientes
+                .FirstOrDefaultAsync(p => p.IdPaciente == id);
 
-            var pacientes = await _context.Pacientes
-                .Find(p => p._id == id)
-                .FirstOrDefaultAsync();
-
-            if (pacientes == null)
-            {
+            if (paciente == null)
                 return NotFound();
-            }
 
             CargarFotosPacientes();
-            return View(pacientes);
+            CargarUsuarios(paciente.IdUsuario);
+            return View(paciente);
         }
 
         // POST: Pacientes/Edit/5
+        [Authorize(Roles = "Administrador,SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("_id,nombre,cedula,edad,genero,estatura,peso,foto")] Pacientes pacientes)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPaciente,IdUsuario,Nombre,Cedula,Edad,Genero,Estatura,Peso,Foto")] Paciente paciente)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            if (id != paciente.IdPaciente)
                 return NotFound();
-            }
 
-            if (id != pacientes._id)
-            {
-                return NotFound();
-            }
-
-            ModelState.Remove("_id");
+            ModelState.Remove("IdUsuarioNavigation");
 
             if (!ModelState.IsValid)
             {
                 CargarFotosPacientes();
-                return View(pacientes);
+                CargarUsuarios(paciente.IdUsuario);
+                return View(paciente);
+            }
+
+            var cedulaUsadaPorOtro = await _context.Pacientes
+                .AnyAsync(p => p.Cedula == paciente.Cedula && p.IdPaciente != paciente.IdPaciente);
+
+            if (cedulaUsadaPorOtro)
+            {
+                ModelState.AddModelError("Cedula", "Ya existe otro paciente registrado con esta cédula.");
+                CargarFotosPacientes();
+                CargarUsuarios(paciente.IdUsuario);
+                return View(paciente);
             }
 
             try
             {
-                var cedulaUsadaPorOtro = await _context.Pacientes
-                    .Find(p => p.cedula == pacientes.cedula && p._id != pacientes._id)
-                    .AnyAsync();
-
-                if (cedulaUsadaPorOtro)
-                {
-                    ModelState.AddModelError("cedula", "Ya existe otro paciente registrado con esta cédula.");
-                    CargarFotosPacientes();
-                    return View(pacientes);
-                }
-
-                var resultado = await _context.Pacientes
-                    .ReplaceOneAsync(p => p._id == id, pacientes);
-
-                if (resultado.MatchedCount == 0)
-                {
-                    return NotFound();
-                }
-
+                await SincronizarUsuarioLegacy(paciente.IdUsuario);
+                _context.Update(paciente);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            catch (MongoWriteException ex)
+            catch (DbUpdateConcurrencyException)
             {
-                ModelState.AddModelError("", "Error al actualizar en MongoDB: " + ex.Message);
-                return View(pacientes);
+                if (!await _context.Pacientes.AnyAsync(p => p.IdPaciente == id))
+                    return NotFound();
+                throw;
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error inesperado: " + ex.Message);
-                return View(pacientes);
+                CargarFotosPacientes();
+                CargarUsuarios(paciente.IdUsuario);
+                return View(paciente);
             }
         }
 
         // GET: Pacientes/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        [Authorize(Roles = "Administrador,SuperAdmin")]
+        public async Task<IActionResult> Delete(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var paciente = await _context.Pacientes
+                .FirstOrDefaultAsync(p => p.IdPaciente == id);
+
+            if (paciente == null)
                 return NotFound();
-            }
 
-            var pacientes = await _context.Pacientes
-                .Find(p => p._id == id)
-                .FirstOrDefaultAsync();
-
-            if (pacientes == null)
-            {
-                return NotFound();
-            }
-
-            return View(pacientes);
+            return View(paciente);
         }
 
         // POST: Pacientes/Delete/5
+        [Authorize(Roles = "Administrador,SuperAdmin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var paciente = await _context.Pacientes
+                .FirstOrDefaultAsync(p => p.IdPaciente == id);
+
+            if (paciente == null)
                 return NotFound();
+
+            // Eliminar recetas y consultas asociadas antes de borrar el paciente
+            // (FK constraints impiden borrar directamente si tiene consultas)
+            var consultas = await _context.Consultas
+                .Include(c => c.Receta)
+                .Where(c => c.IdPaciente == id)
+                .ToListAsync();
+
+            foreach (var consulta in consultas)
+            {
+                _context.RemoveRange(consulta.Receta);
+                _context.Remove(consulta);
             }
 
-            var resultado = await _context.Pacientes
-                .DeleteOneAsync(p => p._id == id);
-
-            if (resultado.DeletedCount == 0)
-            {
-                return NotFound();
-            }
-
+            _context.Remove(paciente);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -229,6 +246,44 @@ namespace MoldeMVC_Core.Controllers
                     .OrderBy(f => f)
                     .ToList()
                 : new List<string>();
+        }
+
+        private void CargarUsuarios(string? selectedId = null)
+        {
+            var usuarios = _userManager.Users
+                .OrderBy(u => u.UserName)
+                .Select(u => new { u.Id, u.UserName })
+                .ToList();
+
+            ViewBag.Usuarios = new SelectList(usuarios, "Id", "UserName", selectedId);
+        }
+
+        // Sincroniza el usuario de BDNetCore_Identity en la tabla legacy de ProyectoVeris_MVC_BD
+        // para satisfacer la FK constraint FK_pacientes_AspNetUsers
+        private async Task SincronizarUsuarioLegacy(string userId)
+        {
+            var existe = await _context.AspNetUsers.AnyAsync(u => u.Id == userId);
+            if (!existe)
+            {
+                var identityUser = await _userManager.FindByIdAsync(userId);
+                if (identityUser != null)
+                {
+                    _context.AspNetUsers.Add(new AspNetUser
+                    {
+                        Id                  = identityUser.Id,
+                        UserName            = identityUser.UserName ?? identityUser.Email ?? userId,
+                        Email               = identityUser.Email,
+                        EmailConfirmed      = true,
+                        PasswordHash        = null,
+                        SecurityStamp       = null,
+                        PhoneNumberConfirmed = false,
+                        TwoFactorEnabled    = false,
+                        LockoutEnabled      = false,
+                        AccessFailedCount   = 0
+                    });
+                    await _context.SaveChangesAsync();
+                }
+            }
         }
     }
 }

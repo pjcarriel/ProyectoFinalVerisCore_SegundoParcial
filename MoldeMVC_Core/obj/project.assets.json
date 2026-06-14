@@ -9371,23 +9371,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\HP OMEN\\.nuget\\packages\\": {},
+    "C:\\Users\\LENOVO\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\TEMP\\PROYECTOOOO\\ProyectoFinalVerisCore_SegundoParcial\\MoldeMVC_Core\\MoldeMVC_Core.csproj",
+      "projectUniqueName": "E:\\Web3\\Parcial2\\ProyectoFinal\\MoldeMVC_Core\\MoldeMVC_Core.csproj",
       "projectName": "MoldeMVC_Core",
-      "projectPath": "C:\\TEMP\\PROYECTOOOO\\ProyectoFinalVerisCore_SegundoParcial\\MoldeMVC_Core\\MoldeMVC_Core.csproj",
-      "packagesPath": "C:\\Users\\HP OMEN\\.nuget\\packages\\",
-      "outputPath": "C:\\TEMP\\PROYECTOOOO\\ProyectoFinalVerisCore_SegundoParcial\\MoldeMVC_Core\\obj\\",
+      "projectPath": "E:\\Web3\\Parcial2\\ProyectoFinal\\MoldeMVC_Core\\MoldeMVC_Core.csproj",
+      "packagesPath": "C:\\Users\\LENOVO\\.nuget\\packages\\",
+      "outputPath": "E:\\Web3\\Parcial2\\ProyectoFinal\\MoldeMVC_Core\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\HP OMEN\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\LENOVO\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -9472,7 +9472,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,71 +1,37 @@
-﻿@model MoldeMVC_Core.Models.Consultas
+@model MoldeMVC_Core.Models.Consulta
 
 @{
     ViewData["Title"] = "Eliminar Consulta";
 }
 
 <h1>Eliminar Consulta</h1>
-
 <h3>¿Está seguro que desea eliminar este registro?</h3>
 
 <div>
-    <h4>Consultas</h4>
+    <h4>Consulta</h4>
     <hr />
-
     <dl class="row">
-        <dt class="col-sm-3">
-            ID
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model._id)
-        </dd>
+        <dt class="col-sm-3">Médico</dt>
+        <dd class="col-sm-9">@(Model.IdMedicoNavigation?.Nombre ?? Model.IdMedico.ToString())</dd>
 
-        <dt class="col-sm-3">
-            ID del Médico
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.medicoId)
-        </dd>
+        <dt class="col-sm-3">Paciente</dt>
+        <dd class="col-sm-9">@(Model.IdPacienteNavigation?.Nombre ?? Model.IdPaciente.ToString())</dd>
 
-        <dt class="col-sm-3">
-            ID del Paciente
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.pacienteId)
-        </dd>
+        <dt class="col-sm-3">Fecha de Consulta</dt>
+        <dd class="col-sm-9">@Model.FechaConsulta.ToString("dd/MM/yyyy")</dd>
 
-        <dt class="col-sm-3">
-            Fecha de Consulta
-        </dt>
-        <dd class="col-sm-9">
-            @Model.fechaConsulta.ToString("dd/MM/yyyy")
-        </dd>
+        <dt class="col-sm-3">Hora Inicio</dt>
+        <dd class="col-sm-9">@Model.Hi.ToString("HH:mm")</dd>
 
-        <dt class="col-sm-3">
-            Hora Inicio
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.hi)
-        </dd>
+        <dt class="col-sm-3">Hora Fin</dt>
+        <dd class="col-sm-9">@Model.Hf.ToString("HH:mm")</dd>
 
-        <dt class="col-sm-3">
-            Hora Fin
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.hf)
-        </dd>
-
-        <dt class="col-sm-3">
-            Diagnóstico
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.diagnostico)
-        </dd>
+        <dt class="col-sm-3">Diagnóstico</dt>
+        <dd class="col-sm-9">@Model.Diagnostico</dd>
     </dl>
 
     <form asp-action="Delete" method="post">
-        <input type="hidden" asp-for="_id" />
-
+        <input type="hidden" asp-for="IdConsulta" />
         <input type="submit" value="Eliminar" class="btn btn-danger" />
         <a asp-action="Index" class="btn btn-secondary">Volver</a>
     </form>

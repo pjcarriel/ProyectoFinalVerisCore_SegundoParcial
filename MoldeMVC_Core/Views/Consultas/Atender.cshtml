@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Consultas
+@model MoldeMVC_Core.Models.Consulta
 
 @{
     ViewData["Title"] = "Atender Consulta";
@@ -8,13 +8,11 @@
 
 <div class="veris-detail-card veris-detail-card-wide">
 
-    <!-- ENCABEZADO -->
     <div class="veris-detail-header">
         <div class="veris-form-icon">&#128203;</div>
         <h1>Atender Consulta</h1>
     </div>
 
-    <!-- TARJETAS DE MÉDICO Y PACIENTE -->
     <div class="veris-atender-personas">
 
         <div class="veris-atender-persona-card">
@@ -47,21 +45,20 @@
 
     </div>
 
-    <!-- DATOS DE LA CONSULTA (solo lectura) -->
     <div class="veris-detail-body">
         <div class="veris-detail-row">
             <span class="veris-detail-label">Fecha</span>
             <span class="veris-detail-value">
-                <span class="veris-badge-tipo">@Model.fechaConsulta.ToString("dd/MM/yyyy")</span>
+                <span class="veris-badge-tipo">@Model.FechaConsulta.ToString("dd/MM/yyyy")</span>
             </span>
         </div>
         <div class="veris-detail-row">
             <span class="veris-detail-label">Hora de inicio</span>
-            <span class="veris-detail-value"><span class="veris-hora">@(Model.hi?.Length > 5 ? Model.hi.Substring(0, 5) : Model.hi)</span></span>
+            <span class="veris-detail-value"><span class="veris-hora">@Model.Hi.ToString("HH:mm")</span></span>
         </div>
         <div class="veris-detail-row">
             <span class="veris-detail-label">Hora de fin</span>
-            <span class="veris-detail-value"><span class="veris-hora">@(Model.hf?.Length > 5 ? Model.hf.Substring(0, 5) : Model.hf)</span></span>
+            <span class="veris-detail-value"><span class="veris-hora">@Model.Hf.ToString("HH:mm")</span></span>
         </div>
         <div class="veris-detail-row">
             <span class="veris-detail-label">Estado</span>
@@ -71,8 +68,7 @@
         </div>
     </div>
 
-    <!-- FORMULARIO: solo el diagnóstico -->
-    <form asp-action="Atender" asp-route-id="@Model._id" method="post">
+    <form asp-action="Atender" asp-route-id="@Model.IdConsulta" method="post">
         @Html.AntiForgeryToken()
 
         <div style="padding: 1.2rem 2rem;">
@@ -89,7 +85,7 @@
             }
 
             <textarea name="diagnostico" class="veris-form-control" rows="5"
-                      placeholder="Describa el diagnóstico clínico del paciente...">@(Model.diagnostico == "Pendiente" ? "" : Model.diagnostico)</textarea>
+                      placeholder="Describa el diagnóstico clínico del paciente...">@(Model.Diagnostico == "Pendiente" ? "" : Model.Diagnostico)</textarea>
 
             <p class="veris-atender-hint">
                 &#8505; Una vez guardado el diagnóstico podrá crear recetas para esta consulta.

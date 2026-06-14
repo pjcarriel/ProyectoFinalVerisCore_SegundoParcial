@@ -1,17 +1,19 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using MoldeMVC_Core.Data;
+using Microsoft.EntityFrameworkCore;
 using MoldeMVC_Core.Models;
+using Microsoft.AspNetCore.Identity;
+using System.Text.Json;
 
 namespace MoldeMVC_Core.Controllers
 {
+    [Authorize(Roles = "Medico,SuperAdmin,Paciente")]
     public class ConsultasController : Controller
     {
-        private readonly VerisMongoContext _context;
+        private readonly ProyectoVerisMvcBdContext _context;
 
-        public ConsultasController(VerisMongoContext context)
+        public ConsultasController(ProyectoVerisMvcBdContext context)
         {
             _context = context;
         }
@@ -19,56 +21,58 @@ namespace MoldeMVC_Core.Controllers
         // GET: Consultas
         public async Task<IActionResult> Index()
         {
+            if (User.IsInRole("Paciente"))
+            {
+                var sesion = HttpContext.Session.GetString("User");
+                var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
+                var userId = objUser?.Id;
+                var paciente = await _context.Pacientes.FirstOrDefaultAsync(p => p.IdUsuario == userId);
+                if (paciente == null) return View(new List<Consulta>());
+
+                var misConsultas = await _context.Consultas
+                    .Include(c => c.IdMedicoNavigation)
+                    .Include(c => c.IdPacienteNavigation)
+                    .Where(c => c.IdPaciente == paciente.IdPaciente)
+                    .ToListAsync();
+                return View(misConsultas);
+            }
+
             var consultas = await _context.Consultas
-                .Find(Builders<Consultas>.Filter.Empty)
+                .Include(c => c.IdMedicoNavigation)
+                .Include(c => c.IdPacienteNavigation)
                 .ToListAsync();
-
-            var medicos = await _context.Medicos
-                .Find(Builders<Medicos>.Filter.Empty)
-                .ToListAsync();
-
-            var pacientes = await _context.Pacientes
-                .Find(Builders<Pacientes>.Filter.Empty)
-                .ToListAsync();
-
-            ViewBag.MedicosDict = medicos.ToDictionary(m => m._id, m => m.nombre);
-            ViewBag.PacientesDict = pacientes.ToDictionary(p => p._id, p => p.nombre);
 
             return View(consultas);
         }
 
         // GET: Consultas/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var consulta = await _context.Consultas
+                .Include(c => c.IdMedicoNavigation)
+                .Include(c => c.IdPacienteNavigation)
+                .FirstOrDefaultAsync(c => c.IdConsulta == id);
+
+            if (consulta == null)
                 return NotFound();
+
+            if (User.IsInRole("Paciente"))
+            {
+                var sesion = HttpContext.Session.GetString("User");
+                var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
+                var userId = objUser?.Id;
+                if (consulta.IdPacienteNavigation?.IdUsuario != userId)
+                    return Forbid();
             }
 
-            var consultas = await _context.Consultas
-                .Find(c => c._id == id)
-                .FirstOrDefaultAsync();
+            ViewBag.MedicoNombre   = consulta.IdMedicoNavigation?.Nombre ?? "";
+            ViewBag.PacienteNombre = consulta.IdPacienteNavigation?.Nombre ?? "";
 
-            if (consultas == null)
-            {
-                return NotFound();
-            }
-
-            var medico = await _context.Medicos
-                .Find(m => m._id == consultas.medicoId)
-                .FirstOrDefaultAsync();
-
-            var paciente = await _context.Pacientes
-                .Find(p => p._id == consultas.pacienteId)
-                .FirstOrDefaultAsync();
-
-            ViewBag.MedicoNombre = medico?.nombre ?? consultas.medicoId;
-            ViewBag.PacienteNombre = paciente?.nombre ?? consultas.pacienteId;
-
-            return View(consultas);
+            return View(consulta);
         }
 
         // GET: Consultas/Create
+        [Authorize(Roles = "Medico,SuperAdmin")]
         public async Task<IActionResult> Create()
         {
             await RecargarSelects();
@@ -76,264 +80,184 @@ namespace MoldeMVC_Core.Controllers
         }
 
         // POST: Consultas/Create
+        [Authorize(Roles = "Medico,SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("medicoId,pacienteId,fechaConsulta,hi,hf,diagnostico")] Consultas consultas)
+        public async Task<IActionResult> Create([Bind("IdMedico,IdPaciente,FechaConsulta,Hi,Hf,Diagnostico")] Consulta consulta)
         {
-            consultas._id = ObjectId.GenerateNewId().ToString();
-
-            ModelState.Remove("_id");
+            ModelState.Remove("IdMedicoNavigation");
+            ModelState.Remove("IdPacienteNavigation");
 
             if (!ModelState.IsValid)
             {
-                await RecargarSelects(consultas.medicoId, consultas.pacienteId);
-                return View(consultas);
-            }
-
-            if (!ObjectId.TryParse(consultas.medicoId, out _))
-            {
-                ModelState.AddModelError("medicoId", "El médico seleccionado no es válido.");
-                await RecargarSelects(consultas.medicoId, consultas.pacienteId);
-                return View(consultas);
-            }
-
-            if (!ObjectId.TryParse(consultas.pacienteId, out _))
-            {
-                ModelState.AddModelError("pacienteId", "El paciente seleccionado no es válido.");
-                await RecargarSelects(consultas.medicoId, consultas.pacienteId);
-                return View(consultas);
+                await RecargarSelects(consulta.IdMedico, consulta.IdPaciente);
+                return View(consulta);
             }
 
             try
             {
-                await _context.Consultas.InsertOneAsync(consultas);
-
+                _context.Add(consulta);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            catch (MongoWriteException ex)
-            {
-                ModelState.AddModelError("", "Error al guardar en MongoDB: " + ex.Message);
-                await RecargarSelects(consultas.medicoId, consultas.pacienteId);
-                return View(consultas);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error inesperado: " + ex.Message);
-                await RecargarSelects(consultas.medicoId, consultas.pacienteId);
-                return View(consultas);
+                await RecargarSelects(consulta.IdMedico, consulta.IdPaciente);
+                return View(consulta);
             }
         }
 
         // GET: Consultas/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        [Authorize(Roles = "Medico,SuperAdmin")]
+        public async Task<IActionResult> Edit(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
-                return NotFound();
-            }
-
-            var consultas = await _context.Consultas
-                .Find(c => c._id == id)
-                .FirstOrDefaultAsync();
-
-            if (consultas == null)
-            {
-                return NotFound();
-            }
-
-            var medico = await _context.Medicos
-                .Find(m => m._id == consultas.medicoId)
-                .FirstOrDefaultAsync();
-
-            var especialidades = await _context.Especialidades
-                .Find(Builders<Especialidades>.Filter.Empty)
-                .ToListAsync();
-
-            var pacientes = await _context.Pacientes
-                .Find(Builders<Pacientes>.Filter.Empty)
-                .SortBy(p => p.nombre)
-                .ToListAsync();
-
-            ViewBag.Especialidades = especialidades;
-            ViewBag.PacientesList = pacientes;
-            ViewBag.MedicoEspecialidadId = medico?.especialidadId ?? "";
-            ViewBag.MedicoNombre = medico?.nombre ?? "";
-
-            return View(consultas);
-        }
-
-        // POST: Consultas/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("_id,medicoId,pacienteId,fechaConsulta,hi,hf,diagnostico")] Consultas consultas)
-        {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
-                return NotFound();
-            }
-
-            if (id != consultas._id)
-            {
-                return NotFound();
-            }
-
-            ModelState.Remove("_id");
-
-            if (!ModelState.IsValid)
-            {
-                await RecargarSelects(consultas.medicoId, consultas.pacienteId);
-                return View(consultas);
-            }
-
-            if (!ObjectId.TryParse(consultas.medicoId, out _))
-            {
-                ModelState.AddModelError("medicoId", "El médico seleccionado no es válido.");
-                await RecargarSelects(consultas.medicoId, consultas.pacienteId);
-                return View(consultas);
-            }
-
-            if (!ObjectId.TryParse(consultas.pacienteId, out _))
-            {
-                ModelState.AddModelError("pacienteId", "El paciente seleccionado no es válido.");
-                await RecargarSelects(consultas.medicoId, consultas.pacienteId);
-                return View(consultas);
-            }
-
-            try
-            {
-                var resultado = await _context.Consultas
-                    .ReplaceOneAsync(c => c._id == id, consultas);
-
-                if (resultado.MatchedCount == 0)
-                {
-                    return NotFound();
-                }
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch (MongoWriteException ex)
-            {
-                ModelState.AddModelError("", "Error al actualizar en MongoDB: " + ex.Message);
-                await RecargarSelects(consultas.medicoId, consultas.pacienteId);
-                return View(consultas);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Error inesperado: " + ex.Message);
-                await RecargarSelects(consultas.medicoId, consultas.pacienteId);
-                return View(consultas);
-            }
-        }
-
-        // GET: Consultas/Atender/5
-        public async Task<IActionResult> Atender(string id)
-        {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-                return NotFound();
-
             var consulta = await _context.Consultas
-                .Find(c => c._id == id)
-                .FirstOrDefaultAsync();
+                .Include(c => c.IdMedicoNavigation)
+                .FirstOrDefaultAsync(c => c.IdConsulta == id);
 
             if (consulta == null)
                 return NotFound();
 
-            var medico = await _context.Medicos
-                .Find(m => m._id == consulta.medicoId)
-                .FirstOrDefaultAsync();
+            var especialidades = await _context.Especialidades.ToListAsync();
+            var pacientes = await _context.Pacientes.OrderBy(p => p.Nombre).ToListAsync();
 
-            var paciente = await _context.Pacientes
-                .Find(p => p._id == consulta.pacienteId)
-                .FirstOrDefaultAsync();
+            ViewBag.Especialidades    = especialidades;
+            ViewBag.PacientesList     = pacientes;
+            ViewBag.MedicoEspecialidadId = consulta.IdMedicoNavigation?.IdEspecialidad ?? 0;
+            ViewBag.MedicoNombre      = consulta.IdMedicoNavigation?.Nombre ?? "";
 
-            ViewBag.MedicoNombre   = medico?.nombre  ?? "—";
-            ViewBag.PacienteNombre = paciente?.nombre ?? "—";
-            ViewBag.MedicoFoto     = medico?.foto ?? "";
-            ViewBag.PacienteFoto   = paciente?.foto ?? "";
+            return View(consulta);
+        }
+
+        // POST: Consultas/Edit/5
+        [Authorize(Roles = "Medico,SuperAdmin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("IdConsulta,IdMedico,IdPaciente,FechaConsulta,Hi,Hf,Diagnostico")] Consulta consulta)
+        {
+            if (id != consulta.IdConsulta)
+                return NotFound();
+
+            ModelState.Remove("IdMedicoNavigation");
+            ModelState.Remove("IdPacienteNavigation");
+
+            if (!ModelState.IsValid)
+            {
+                await RecargarSelects(consulta.IdMedico, consulta.IdPaciente);
+                return View(consulta);
+            }
+
+            try
+            {
+                _context.Update(consulta);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await _context.Consultas.AnyAsync(c => c.IdConsulta == id))
+                    return NotFound();
+                throw;
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error inesperado: " + ex.Message);
+                await RecargarSelects(consulta.IdMedico, consulta.IdPaciente);
+                return View(consulta);
+            }
+        }
+
+        // GET: Consultas/Atender/5
+        [Authorize(Roles = "Medico,SuperAdmin")]
+        public async Task<IActionResult> Atender(int id)
+        {
+            var consulta = await _context.Consultas
+                .Include(c => c.IdMedicoNavigation)
+                .Include(c => c.IdPacienteNavigation)
+                .FirstOrDefaultAsync(c => c.IdConsulta == id);
+
+            if (consulta == null)
+                return NotFound();
+
+            ViewBag.MedicoNombre   = consulta.IdMedicoNavigation?.Nombre ?? "—";
+            ViewBag.PacienteNombre = consulta.IdPacienteNavigation?.Nombre ?? "—";
+            ViewBag.MedicoFoto     = consulta.IdMedicoNavigation?.Foto ?? "";
+            ViewBag.PacienteFoto   = consulta.IdPacienteNavigation?.Foto ?? "";
 
             return View(consulta);
         }
 
         // POST: Consultas/Atender/5
+        [Authorize(Roles = "Medico,SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Atender(string id, string diagnostico)
+        public async Task<IActionResult> Atender(int id, string diagnostico)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-                return NotFound();
-
             if (string.IsNullOrWhiteSpace(diagnostico))
             {
                 ModelState.AddModelError("diagnostico", "El diagnóstico no puede estar vacío.");
-                var consulta = await _context.Consultas.Find(c => c._id == id).FirstOrDefaultAsync();
-                var medico   = await _context.Medicos.Find(m => m._id == consulta!.medicoId).FirstOrDefaultAsync();
-                var paciente = await _context.Pacientes.Find(p => p._id == consulta!.pacienteId).FirstOrDefaultAsync();
-                ViewBag.MedicoNombre   = medico?.nombre  ?? "—";
-                ViewBag.PacienteNombre = paciente?.nombre ?? "—";
-                ViewBag.MedicoFoto     = medico?.foto ?? "";
-                ViewBag.PacienteFoto   = paciente?.foto ?? "";
-                return View(consulta);
+                var c = await _context.Consultas
+                    .Include(c => c.IdMedicoNavigation)
+                    .Include(c => c.IdPacienteNavigation)
+                    .FirstOrDefaultAsync(c => c.IdConsulta == id);
+                ViewBag.MedicoNombre   = c?.IdMedicoNavigation?.Nombre ?? "—";
+                ViewBag.PacienteNombre = c?.IdPacienteNavigation?.Nombre ?? "—";
+                ViewBag.MedicoFoto     = c?.IdMedicoNavigation?.Foto ?? "";
+                ViewBag.PacienteFoto   = c?.IdPacienteNavigation?.Foto ?? "";
+                return View(c);
             }
 
-            var update = Builders<Consultas>.Update.Set(c => c.diagnostico, diagnostico.Trim());
-            await _context.Consultas.UpdateOneAsync(c => c._id == id, update);
+            var consulta = await _context.Consultas.FirstOrDefaultAsync(c => c.IdConsulta == id);
+            if (consulta == null)
+                return NotFound();
+
+            consulta.Diagnostico = diagnostico.Trim();
+            _context.Update(consulta);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
         // GET: Consultas/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> Delete(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var consulta = await _context.Consultas
+                .Include(c => c.IdMedicoNavigation)
+                .Include(c => c.IdPacienteNavigation)
+                .FirstOrDefaultAsync(c => c.IdConsulta == id);
+
+            if (consulta == null)
                 return NotFound();
-            }
 
-            var consultas = await _context.Consultas
-                .Find(c => c._id == id)
-                .FirstOrDefaultAsync();
-
-            if (consultas == null)
-            {
-                return NotFound();
-            }
-
-            return View(consultas);
+            return View(consulta);
         }
 
         // POST: Consultas/Delete/5
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var consulta = await _context.Consultas
+                .FirstOrDefaultAsync(c => c.IdConsulta == id);
+
+            if (consulta == null)
                 return NotFound();
-            }
 
-            var resultado = await _context.Consultas
-                .DeleteOneAsync(c => c._id == id);
-
-            if (resultado.DeletedCount == 0)
-            {
-                return NotFound();
-            }
-
+            _context.Remove(consulta);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task RecargarSelects(string? selectedMedicoId = null, string? selectedPacienteId = null)
+        private async Task RecargarSelects(int selectedMedicoId = 0, int selectedPacienteId = 0)
         {
-            var medicos = await _context.Medicos
-                .Find(Builders<Medicos>.Filter.Empty)
-                .ToListAsync();
+            var medicos   = await _context.Medicos.ToListAsync();
+            var pacientes = await _context.Pacientes.ToListAsync();
 
-            var pacientes = await _context.Pacientes
-                .Find(Builders<Pacientes>.Filter.Empty)
-                .ToListAsync();
-
-            ViewBag.Medicos = new SelectList(medicos, "_id", "nombre", selectedMedicoId);
-            ViewBag.Pacientes = new SelectList(pacientes, "_id", "nombre", selectedPacienteId);
+            ViewBag.Medicos   = new SelectList(medicos,   "IdMedico",   "Nombre", selectedMedicoId);
+            ViewBag.Pacientes = new SelectList(pacientes, "IdPaciente", "Nombre", selectedPacienteId);
         }
     }
 }

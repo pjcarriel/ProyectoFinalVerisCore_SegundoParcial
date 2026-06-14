@@ -130,6 +130,8 @@ namespace MoldeMVC_Core.Areas.Identity.Pages.Account
                     if (result.Succeeded)
                     {
                         _logger.LogInformation("User logged in.");
+                        var userJson = System.Text.Json.JsonSerializer.Serialize(user);
+                        HttpContext.Session.SetString("User", userJson);
                         return LocalRedirect(returnUrl);
                     }
                     if (result.RequiresTwoFactor)

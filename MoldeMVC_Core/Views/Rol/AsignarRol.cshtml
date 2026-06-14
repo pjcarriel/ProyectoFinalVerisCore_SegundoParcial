@@ -1,0 +1,52 @@
+@model Microsoft.AspNetCore.Identity.IdentityUser
+
+@{
+    ViewData["Title"] = "Asignar Rol";
+}
+
+<div class="veris-form-card">
+    <div class="veris-form-header">
+        <div class="veris-form-icon">&#128100;</div>
+        <h1>Asignar Rol</h1>
+    </div>
+
+    <form asp-action="AsignarRol" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <div class="veris-form-body">
+
+            <div class="veris-detail-row">
+                <span class="veris-detail-label">Usuario</span>
+                <span class="veris-detail-value"><strong>@ViewBag.UserName</strong></span>
+            </div>
+
+            <div class="veris-detail-row">
+                <span class="veris-detail-label">Rol actual</span>
+                <span class="veris-detail-value">
+                    @if (!string.IsNullOrEmpty(ViewBag.RolActual as string))
+                    {
+                        <span class="veris-badge-tipo">@ViewBag.RolActual</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Sin rol asignado</span>
+                    }
+                </span>
+            </div>
+
+            <div class="veris-form-group" style="margin-top:1rem;">
+                <label class="veris-form-label">Nuevo rol</label>
+                <select name="rolSeleccionado" asp-items="ViewBag.Roles" class="veris-form-control">
+                    <option value="">-- Seleccione un rol --</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="veris-form-footer">
+            <button type="submit" class="veris-btn-submit">&#10003; Guardar</button>
+            <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
+        </div>
+    </form>
+</div>

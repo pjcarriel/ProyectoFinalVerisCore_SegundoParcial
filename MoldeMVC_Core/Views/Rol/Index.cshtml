@@ -1,0 +1,72 @@
+@model IEnumerable<MoldeMVC_Core.Models.UserRoleViewModel>
+
+@{
+    ViewData["Title"] = "Gestión de Roles";
+    var total = Model.Count();
+}
+
+<div class="veris-table-card">
+    <div class="veris-table-header">
+        <h1>Gestión de Roles</h1>
+        <span class="veris-badge-count">@total usuario@(total != 1 ? "s" : "")</span>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success mx-3 mt-3">@TempData["Mensaje"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger mx-3 mt-3">@TempData["Error"]</div>
+    }
+
+    <div class="veris-table-wrapper">
+        <table class="table veris-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Rol actual</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>@item.UserName</strong></td>
+                        <td>@item.Email</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.Roles))
+                            {
+                                <span class="veris-badge-tipo">@item.Roles</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Sin rol</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="veris-actions">
+                                <a asp-action="AsignarRol" asp-route-id="@item.Id" class="veris-btn-edit">&#9998; Asignar Rol</a>
+
+                                @if (item.Roles != "SuperAdmin")
+                                {
+                                    <form asp-action="QuitarRol" method="post" style="display:inline;"
+                                          onsubmit="return confirm('¿Quitar todos los roles de @item.UserName?')">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="veris-btn-delete">&#10005; Quitar Rol</button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="veris-table-footer">
+        Total: @total usuario@(total != 1 ? "s" : "") registrado@(total != 1 ? "s" : "")
+    </div>
+</div>

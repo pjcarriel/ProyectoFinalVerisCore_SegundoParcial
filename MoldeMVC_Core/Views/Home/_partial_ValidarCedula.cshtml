@@ -1,0 +1,74 @@
+@model Microsoft.AspNetCore.Identity.IdentityUser
+
+@{
+    ViewBag.Title = "Validar Cedula";
+}
+
+<main aria-labelledby="title">
+
+    <h2 id="title">@ViewBag.Title</h2>
+    <p>@ViewBag.Message</p>
+
+    <table class="table">
+        <tr class="table-dark">
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayName("Cedula")
+            </th>
+        </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(model => model.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.PhoneNumber)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button class="btn btn-primary" onclick="validarCedula()">Validar Cédula</button>
+            </td>
+        </tr>
+    </table>
+
+    <p class="mt-4">
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+
+</main>
+
+<script>
+    function validarCedula() {
+        var cedula = "@Model.PhoneNumber";
+
+        var resultado = validarCedulaJS(cedula);
+        alert(resultado ? "Cédula válida " + cedula : "Cédula inválida " + cedula);
+
+        window.location.href = "/Home";
+    }
+
+    function validarCedulaJS(cedula) {
+        if (!cedula || cedula.length !== 10 || isNaN(cedula)) {
+            return false;
+        }
+
+        var sum = 0;
+        for (var i = 0; i < 9; i++) {
+            var digit = parseInt(cedula[i]);
+
+            if (i % 2 === 0) {
+                var multiplied = digit * 2;
+                sum += (multiplied > 9) ? multiplied - 9 : multiplied;
+            } else {
+                sum += digit;
+            }
+        }
+
+        var lastDigit = parseInt(cedula[9]);
+        var modulo = sum % 10;
+
+        return (modulo === 0 && lastDigit === 0) || (10 - modulo === lastDigit);
+    }
+</script>

@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Especialidades
+@model MoldeMVC_Core.Models.Especialidade
 
 @{
     ViewData["Title"] = "Detalles de Especialidad";
@@ -24,30 +24,29 @@
     <div class="veris-detail-body">
         <div class="veris-detail-row">
             <span class="veris-detail-label">Descripción</span>
-            <span class="veris-detail-value">@Html.DisplayFor(m => m.descripcion)</span>
+            <span class="veris-detail-value">@Model.Descripcion</span>
         </div>
         <div class="veris-detail-row">
             <span class="veris-detail-label">Días disponibles</span>
             <span class="veris-detail-value">
-                <span class="veris-badge-tipo">@DiasCompletos(Model.dias)</span>
+                <span class="veris-badge-tipo">@DiasCompletos(Model.Dias)</span>
             </span>
         </div>
         <div class="veris-detail-row">
             <span class="veris-detail-label">Hora de inicio</span>
             <span class="veris-detail-value">
-                <span class="veris-hora">@(Model.franjaHI?.Length > 5 ? Model.franjaHI.Substring(0, 5) : Model.franjaHI)</span>
+                <span class="veris-hora">@Model.FranjaHi.ToString("HH:mm")</span>
             </span>
         </div>
         <div class="veris-detail-row">
             <span class="veris-detail-label">Hora de fin</span>
             <span class="veris-detail-value">
-                <span class="veris-hora">@(Model.franjaHF?.Length > 5 ? Model.franjaHF.Substring(0, 5) : Model.franjaHF)</span>
+                <span class="veris-hora">@Model.FranjaHf.ToString("HH:mm")</span>
             </span>
         </div>
     </div>
 
     <div class="veris-detail-footer">
-        <a asp-action="Edit" asp-route-id="@Model._id" class="veris-btn-edit">&#9998; Editar</a>
         <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
     </div>
 </div>

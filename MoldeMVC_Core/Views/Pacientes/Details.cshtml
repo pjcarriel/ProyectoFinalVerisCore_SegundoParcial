@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Pacientes
+@model MoldeMVC_Core.Models.Paciente
 
 @{
     ViewData["Title"] = "Detalles de Paciente";
@@ -11,48 +11,47 @@
     </div>
 
     <div class="veris-detail-foto-top">
-        @if (!string.IsNullOrEmpty(Model.foto))
+        @if (!string.IsNullOrEmpty(Model.Foto))
         {
-            <img src="~/Usuarios/@Model.foto" alt="Foto del paciente" class="veris-detail-foto-lg" />
+            <img src="~/Usuarios/@Model.Foto" alt="Foto del paciente" class="veris-detail-foto-lg" />
         }
         else
         {
             <div class="veris-detail-sin-foto-lg">Sin<br />foto</div>
         }
-        <div class="veris-detail-nombre-top">@Model.nombre</div>
+        <div class="veris-detail-nombre-top">@Model.Nombre</div>
     </div>
 
     <div class="veris-detail-body">
         <div class="veris-detail-row">
             <span class="veris-detail-label">Nombre</span>
-            <span class="veris-detail-value">@Html.DisplayFor(m => m.nombre)</span>
+            <span class="veris-detail-value">@Model.Nombre</span>
         </div>
         <div class="veris-detail-row">
             <span class="veris-detail-label">Cédula</span>
-            <span class="veris-detail-value">@Html.DisplayFor(m => m.cedula)</span>
+            <span class="veris-detail-value">@Model.Cedula</span>
         </div>
         <div class="veris-detail-row">
             <span class="veris-detail-label">Edad</span>
-            <span class="veris-detail-value">@Html.DisplayFor(m => m.edad) años</span>
+            <span class="veris-detail-value">@Model.Edad años</span>
         </div>
         <div class="veris-detail-row">
             <span class="veris-detail-label">Género</span>
             <span class="veris-detail-value">
-                <span class="veris-badge-tipo">@Html.DisplayFor(m => m.genero)</span>
+                <span class="veris-badge-tipo">@Model.Genero</span>
             </span>
         </div>
         <div class="veris-detail-row">
             <span class="veris-detail-label">Estatura</span>
-            <span class="veris-detail-value">@Html.DisplayFor(m => m.estatura) cm</span>
+            <span class="veris-detail-value">@Model.Estatura cm</span>
         </div>
         <div class="veris-detail-row">
             <span class="veris-detail-label">Peso</span>
-            <span class="veris-detail-value">@Html.DisplayFor(m => m.peso) kg</span>
+            <span class="veris-detail-value">@Model.Peso kg</span>
         </div>
     </div>
 
     <div class="veris-detail-footer">
-        <a asp-action="Edit" asp-route-id="@Model._id" class="veris-btn-edit">&#9998; Editar</a>
         <a asp-action="Index" class="veris-btn-back">&#8592; Volver</a>
     </div>
 </div>

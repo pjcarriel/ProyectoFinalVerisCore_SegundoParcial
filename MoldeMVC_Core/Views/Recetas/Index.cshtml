@@ -1,4 +1,4 @@
-@model IEnumerable<MoldeMVC_Core.Models.Recetas>
+@model IEnumerable<MoldeMVC_Core.Models.Receta>
 
 @{
     ViewData["Title"] = "Listado de Recetas";
@@ -10,9 +10,12 @@
         <h1>Recetas</h1>
         <span class="veris-badge-count">@total registro@(total != 1 ? "s" : "")</span>
     </div>
-    <div class="veris-table-toolbar">
-        <a asp-action="Create" class="btn btn-primary btn-sm">+ Nueva Receta</a>
-    </div>
+    @if (!User.IsInRole("Paciente"))
+    {
+        <div class="veris-table-toolbar">
+            <a asp-action="Create" class="btn btn-primary btn-sm">+ Nueva Receta</a>
+        </div>
+    }
     <div class="veris-table-wrapper">
         <table class="table veris-table">
             <thead>
@@ -28,25 +31,34 @@
                 {
                     <tr>
                         <td>
-                            @(ViewBag.ConsultasDict != null && ViewBag.ConsultasDict.ContainsKey(item.consultaId)
-                                ? ViewBag.ConsultasDict[item.consultaId]
-                                : item.consultaId)
+                            @if (item.IdConsultaNavigation != null)
+                            {
+                                @($"{item.IdConsultaNavigation.FechaConsulta:dd/MM/yyyy} — {item.IdConsultaNavigation.Hi:HH\\:mm}–{item.IdConsultaNavigation.Hf:HH\\:mm}")
+                            }
+                            else
+                            {
+                                @item.IdConsulta
+                            }
                         </td>
                         <td>
                             <span class="veris-badge-tipo">
-                                @(ViewBag.MedicamentosDict != null && ViewBag.MedicamentosDict.ContainsKey(item.medicamentoId)
-                                    ? ViewBag.MedicamentosDict[item.medicamentoId]
-                                    : item.medicamentoId)
+                                @(item.IdMedicamentoNavigation?.Nombre ?? item.IdMedicamento.ToString())
                             </span>
                         </td>
                         <td>
-                            <strong>@Html.DisplayFor(modelItem => item.cantidad)</strong>
+                            <strong>@item.Cantidad</strong>
                         </td>
                         <td>
                             <div class="veris-actions">
-                                <a asp-action="Edit" asp-route-id="@item._id" class="veris-btn-edit">&#9998; Editar</a>
-                                <a asp-action="Details" asp-route-id="@item._id" class="veris-btn-details">&#128269; Detalles</a>
-                                <a asp-action="Delete" asp-route-id="@item._id" class="veris-btn-delete">&#10005; Eliminar</a>
+                                @if (!User.IsInRole("Paciente"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.IdReceta" class="veris-btn-edit">&#9998; Editar</a>
+                                }
+                                <a asp-action="Details" asp-route-id="@item.IdReceta" class="veris-btn-details">&#128269; Detalles</a>
+                                @if (!User.IsInRole("Paciente"))
+                                {
+                                    <a asp-action="Delete" asp-route-id="@item.IdReceta" class="veris-btn-delete">&#10005; Eliminar</a>
+                                }
                             </div>
                         </td>
                     </tr>

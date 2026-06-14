@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Consultas
+@model MoldeMVC_Core.Models.Consulta
 
 @{
     ViewData["Title"] = "Crear Consulta";
@@ -16,43 +16,43 @@
             <div class="veris-form-grid-2">
 
                 <div class="veris-form-group">
-                    <label asp-for="medicoId" class="veris-form-label">Médico</label>
-                    <select asp-for="medicoId" asp-items="ViewBag.Medicos" class="veris-form-control">
+                    <label asp-for="IdMedico" class="veris-form-label">Médico</label>
+                    <select asp-for="IdMedico" asp-items="ViewBag.Medicos" class="veris-form-control">
                         <option value="">-- Seleccione un médico --</option>
                     </select>
-                    <span asp-validation-for="medicoId" class="veris-form-error"></span>
+                    <span asp-validation-for="IdMedico" class="veris-form-error"></span>
                 </div>
 
                 <div class="veris-form-group">
-                    <label asp-for="pacienteId" class="veris-form-label">Paciente</label>
-                    <select asp-for="pacienteId" asp-items="ViewBag.Pacientes" class="veris-form-control">
+                    <label asp-for="IdPaciente" class="veris-form-label">Paciente</label>
+                    <select asp-for="IdPaciente" asp-items="ViewBag.Pacientes" class="veris-form-control">
                         <option value="">-- Seleccione un paciente --</option>
                     </select>
-                    <span asp-validation-for="pacienteId" class="veris-form-error"></span>
+                    <span asp-validation-for="IdPaciente" class="veris-form-error"></span>
                 </div>
 
                 <div class="veris-form-group veris-col-full">
-                    <label asp-for="fechaConsulta" class="veris-form-label">Fecha de consulta</label>
-                    <input asp-for="fechaConsulta" type="date" class="veris-form-control" />
-                    <span asp-validation-for="fechaConsulta" class="veris-form-error"></span>
+                    <label asp-for="FechaConsulta" class="veris-form-label">Fecha de consulta</label>
+                    <input asp-for="FechaConsulta" type="date" class="veris-form-control" />
+                    <span asp-validation-for="FechaConsulta" class="veris-form-error"></span>
                 </div>
 
                 <div class="veris-form-group">
-                    <label asp-for="hi" class="veris-form-label">Hora de inicio</label>
-                    <input asp-for="hi" type="time" class="veris-form-control" />
-                    <span asp-validation-for="hi" class="veris-form-error"></span>
+                    <label asp-for="Hi" class="veris-form-label">Hora de inicio</label>
+                    <input asp-for="Hi" type="time" class="veris-form-control" />
+                    <span asp-validation-for="Hi" class="veris-form-error"></span>
                 </div>
 
                 <div class="veris-form-group">
-                    <label asp-for="hf" class="veris-form-label">Hora de fin</label>
-                    <input asp-for="hf" type="time" class="veris-form-control" />
-                    <span asp-validation-for="hf" class="veris-form-error"></span>
+                    <label asp-for="Hf" class="veris-form-label">Hora de fin</label>
+                    <input asp-for="Hf" type="time" class="veris-form-control" />
+                    <span asp-validation-for="Hf" class="veris-form-error"></span>
                 </div>
 
                 <div class="veris-form-group veris-col-full">
-                    <label asp-for="diagnostico" class="veris-form-label">Diagnóstico</label>
-                    <textarea asp-for="diagnostico" class="veris-form-control" placeholder="Describa el diagnóstico del paciente..."></textarea>
-                    <span asp-validation-for="diagnostico" class="veris-form-error"></span>
+                    <label asp-for="Diagnostico" class="veris-form-label">Diagnóstico</label>
+                    <textarea asp-for="Diagnostico" class="veris-form-control" placeholder="Describa el diagnóstico del paciente..."></textarea>
+                    <span asp-validation-for="Diagnostico" class="veris-form-error"></span>
                 </div>
 
             </div>

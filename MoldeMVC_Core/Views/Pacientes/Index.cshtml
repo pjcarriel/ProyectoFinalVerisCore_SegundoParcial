@@ -1,4 +1,4 @@
-@model IEnumerable<MoldeMVC_Core.Models.Pacientes>
+@model IEnumerable<MoldeMVC_Core.Models.Paciente>
 
 @{
     ViewData["Title"] = "Listado de Pacientes";
@@ -10,14 +10,16 @@
         <h1>Pacientes</h1>
         <span class="veris-badge-count">@total registro@(total != 1 ? "s" : "")</span>
     </div>
-    <div class="veris-table-toolbar">
-        <a asp-action="Create" class="btn btn-primary btn-sm">+ Nuevo Paciente</a>
-    </div>
+    @if (!User.IsInRole("Paciente"))
+    {
+        <div class="veris-table-toolbar">
+            <a asp-action="Create" class="btn btn-primary btn-sm">+ Nuevo Paciente</a>
+        </div>
+    }
     <div class="veris-table-wrapper">
         <table class="table veris-table">
             <thead>
                 <tr>
-                    <th>Foto</th>
                     <th>Nombre</th>
                     <th>Cédula</th>
                     <th>Edad</th>
@@ -31,29 +33,23 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>
-                            @if (!string.IsNullOrEmpty(item.foto))
-                            {
-                                <img src="~/usuarios/@item.foto" alt="Foto del paciente" class="veris-foto-circle" />
-                            }
-                            else
-                            {
-                                <span class="veris-sin-foto">Sin<br />foto</span>
-                            }
-                        </td>
-                        <td><strong>@Html.DisplayFor(modelItem => item.nombre)</strong></td>
-                        <td>@Html.DisplayFor(modelItem => item.cedula)</td>
-                        <td>@Html.DisplayFor(modelItem => item.edad) años</td>
-                        <td>
-                            <span class="veris-badge-tipo">@Html.DisplayFor(modelItem => item.genero)</span>
-                        </td>
-                        <td><span class="veris-hora">@Html.DisplayFor(modelItem => item.estatura) cm</span></td>
-                        <td><span class="veris-hora">@Html.DisplayFor(modelItem => item.peso) kg</span></td>
+                        <td><strong>@item.Nombre</strong></td>
+                        <td>@item.Cedula</td>
+                        <td>@item.Edad años</td>
+                        <td><span class="veris-badge-tipo">@item.Genero</span></td>
+                        <td><span class="veris-hora">@item.Estatura cm</span></td>
+                        <td><span class="veris-hora">@item.Peso kg</span></td>
                         <td>
                             <div class="veris-actions">
-                                <a asp-action="Edit" asp-route-id="@item._id" class="veris-btn-edit">&#9998; Editar</a>
-                                <a asp-action="Details" asp-route-id="@item._id" class="veris-btn-details">&#128269; Detalles</a>
-                                <a asp-action="Delete" asp-route-id="@item._id" class="veris-btn-delete">&#10005; Eliminar</a>
+                                @if (!User.IsInRole("Paciente"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.IdPaciente" class="veris-btn-edit">&#9998; Editar</a>
+                                }
+                                <a asp-action="Details" asp-route-id="@item.IdPaciente" class="veris-btn-details">&#128269; Detalles</a>
+                                @if (!User.IsInRole("Paciente"))
+                                {
+                                    <a asp-action="Delete" asp-route-id="@item.IdPaciente" class="veris-btn-delete">&#10005; Eliminar</a>
+                                }
                             </div>
                         </td>
                     </tr>

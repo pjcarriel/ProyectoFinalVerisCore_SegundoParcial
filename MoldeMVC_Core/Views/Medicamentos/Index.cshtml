@@ -1,4 +1,4 @@
-@model IEnumerable<MoldeMVC_Core.Models.Medicamentos>
+@model IEnumerable<MoldeMVC_Core.Models.Medicamento>
 
 @{
     ViewData["Title"] = "Listado de Medicamentos";
@@ -26,15 +26,13 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td><strong>@Html.DisplayFor(modelItem => item.nombre)</strong></td>
-                        <td>
-                            <span class="veris-badge-tipo">@Html.DisplayFor(modelItem => item.tipo)</span>
-                        </td>
+                        <td><strong>@item.Nombre</strong></td>
+                        <td><span class="veris-badge-tipo">@item.Tipo</span></td>
                         <td>
                             <div class="veris-actions">
-                                <a asp-action="Edit" asp-route-id="@item._id" class="veris-btn-edit">&#9998; Editar</a>
-                                <a asp-action="Details" asp-route-id="@item._id" class="veris-btn-details">&#128269; Detalles</a>
-                                <a asp-action="Delete" asp-route-id="@item._id" class="veris-btn-delete">&#10005; Eliminar</a>
+                                <a asp-action="Edit" asp-route-id="@item.IdMedicamento" class="veris-btn-edit">&#9998; Editar</a>
+                                <a asp-action="Details" asp-route-id="@item.IdMedicamento" class="veris-btn-details">&#128269; Detalles</a>
+                                <a asp-action="Delete" asp-route-id="@item.IdMedicamento" class="veris-btn-delete">&#10005; Eliminar</a>
                             </div>
                         </td>
                     </tr>

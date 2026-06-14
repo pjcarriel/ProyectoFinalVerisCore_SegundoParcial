@@ -1,16 +1,16 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using MoldeMVC_Core.Data;
+using Microsoft.EntityFrameworkCore;
 using MoldeMVC_Core.Models;
 
 namespace MoldeMVC_Core.Controllers
 {
+    [Authorize(Roles = "Administrador,SuperAdmin")]
     public class MedicamentosController : Controller
     {
-        private readonly VerisMongoContext _context;
+        private readonly ProyectoVerisMvcBdContext _context;
 
-        public MedicamentosController(VerisMongoContext context)
+        public MedicamentosController(ProyectoVerisMvcBdContext context)
         {
             _context = context;
         }
@@ -18,31 +18,20 @@ namespace MoldeMVC_Core.Controllers
         // GET: Medicamentos
         public async Task<IActionResult> Index()
         {
-            var medicamentos = await _context.Medicamentos
-                .Find(Builders<Medicamentos>.Filter.Empty)
-                .ToListAsync();
-
+            var medicamentos = await _context.Medicamentos.ToListAsync();
             return View(medicamentos);
         }
 
         // GET: Medicamentos/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var medicamento = await _context.Medicamentos
+                .FirstOrDefaultAsync(m => m.IdMedicamento == id);
+
+            if (medicamento == null)
                 return NotFound();
-            }
 
-            var medicamentos = await _context.Medicamentos
-                .Find(m => m._id == id)
-                .FirstOrDefaultAsync();
-
-            if (medicamentos == null)
-            {
-                return NotFound();
-            }
-
-            return View(medicamentos);
+            return View(medicamento);
         }
 
         // GET: Medicamentos/Create
@@ -54,139 +43,91 @@ namespace MoldeMVC_Core.Controllers
         // POST: Medicamentos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("nombre,tipo")] Medicamentos medicamentos)
+        public async Task<IActionResult> Create([Bind("Nombre,Tipo")] Medicamento medicamento)
         {
-            medicamentos._id = ObjectId.GenerateNewId().ToString();
-
-            ModelState.Remove("_id");
-
             if (!ModelState.IsValid)
-            {
-                return View(medicamentos);
-            }
+                return View(medicamento);
 
             try
             {
-                await _context.Medicamentos.InsertOneAsync(medicamentos);
-
+                _context.Add(medicamento);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            catch (MongoWriteException ex)
-            {
-                ModelState.AddModelError("", "Error al guardar en MongoDB: " + ex.Message);
-                return View(medicamentos);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error inesperado: " + ex.Message);
-                return View(medicamentos);
+                return View(medicamento);
             }
         }
 
         // GET: Medicamentos/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var medicamento = await _context.Medicamentos
+                .FirstOrDefaultAsync(m => m.IdMedicamento == id);
+
+            if (medicamento == null)
                 return NotFound();
-            }
 
-            var medicamentos = await _context.Medicamentos
-                .Find(m => m._id == id)
-                .FirstOrDefaultAsync();
-
-            if (medicamentos == null)
-            {
-                return NotFound();
-            }
-
-            return View(medicamentos);
+            return View(medicamento);
         }
 
         // POST: Medicamentos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("_id,nombre,tipo")] Medicamentos medicamentos)
+        public async Task<IActionResult> Edit(int id, [Bind("IdMedicamento,Nombre,Tipo")] Medicamento medicamento)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            if (id != medicamento.IdMedicamento)
                 return NotFound();
-            }
-
-            if (id != medicamentos._id)
-            {
-                return NotFound();
-            }
-
-            ModelState.Remove("_id");
 
             if (!ModelState.IsValid)
-            {
-                return View(medicamentos);
-            }
+                return View(medicamento);
 
             try
             {
-                var resultado = await _context.Medicamentos
-                    .ReplaceOneAsync(m => m._id == id, medicamentos);
-
-                if (resultado.MatchedCount == 0)
-                {
-                    return NotFound();
-                }
-
+                _context.Update(medicamento);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            catch (MongoWriteException ex)
+            catch (DbUpdateConcurrencyException)
             {
-                ModelState.AddModelError("", "Error al actualizar en MongoDB: " + ex.Message);
-                return View(medicamentos);
+                if (!await _context.Medicamentos.AnyAsync(m => m.IdMedicamento == id))
+                    return NotFound();
+                throw;
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error inesperado: " + ex.Message);
-                return View(medicamentos);
+                return View(medicamento);
             }
         }
 
         // GET: Medicamentos/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var medicamento = await _context.Medicamentos
+                .FirstOrDefaultAsync(m => m.IdMedicamento == id);
+
+            if (medicamento == null)
                 return NotFound();
-            }
 
-            var medicamentos = await _context.Medicamentos
-                .Find(m => m._id == id)
-                .FirstOrDefaultAsync();
-
-            if (medicamentos == null)
-            {
-                return NotFound();
-            }
-
-            return View(medicamentos);
+            return View(medicamento);
         }
 
         // POST: Medicamentos/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-            {
+            var medicamento = await _context.Medicamentos
+                .FirstOrDefaultAsync(m => m.IdMedicamento == id);
+
+            if (medicamento == null)
                 return NotFound();
-            }
 
-            var resultado = await _context.Medicamentos
-                .DeleteOneAsync(m => m._id == id);
-
-            if (resultado.DeletedCount == 0)
-            {
-                return NotFound();
-            }
-
+            _context.Remove(medicamento);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

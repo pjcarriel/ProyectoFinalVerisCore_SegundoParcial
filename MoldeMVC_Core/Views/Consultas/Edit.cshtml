@@ -1,10 +1,10 @@
-@model MoldeMVC_Core.Models.Consultas
+@model MoldeMVC_Core.Models.Consulta
 
 @{
     ViewData["Title"] = "Editar Consulta";
-    var especialidades = ViewBag.Especialidades as List<MoldeMVC_Core.Models.Especialidades> ?? new();
-    var pacientes = ViewBag.PacientesList as List<MoldeMVC_Core.Models.Pacientes> ?? new();
-    var medicoEspId = (string)(ViewBag.MedicoEspecialidadId ?? "");
+    var especialidades = ViewBag.Especialidades as List<MoldeMVC_Core.Models.Especialidade> ?? new();
+    var pacientes = ViewBag.PacientesList as List<MoldeMVC_Core.Models.Paciente> ?? new();
+    var medicoEspId = (int)(ViewBag.MedicoEspecialidadId ?? 0);
 }
 
 <div class="veris-agenda-wrapper">
@@ -20,14 +20,14 @@
 
     <div id="editAlerta" class="veris-agenda-alerta" style="display:none;"></div>
 
-    <form asp-action="Edit" asp-route-id="@Model._id" method="post" id="formEditConsulta">
+    <form asp-action="Edit" asp-route-id="@Model.IdConsulta" method="post" id="formEditConsulta">
         @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="_id" />
-        <input type="hidden" name="medicoId"       id="hiddenMedicoId"   value="@Model.medicoId" />
-        <input type="hidden" name="pacienteId"     id="hiddenPacienteId" value="@Model.pacienteId" />
-        <input type="hidden" name="fechaConsulta"  id="hiddenFecha"      value="@Model.fechaConsulta.ToString("yyyy-MM-dd")" />
-        <input type="hidden" name="hi"             id="hiddenHi"         value="@Model.hi" />
-        <input type="hidden" name="hf"             id="hiddenHf"         value="@Model.hf" />
+        <input type="hidden" asp-for="IdConsulta" />
+        <input type="hidden" name="IdMedico"       id="hiddenMedicoId"   value="@Model.IdMedico" />
+        <input type="hidden" name="IdPaciente"     id="hiddenPacienteId" value="@Model.IdPaciente" />
+        <input type="hidden" name="FechaConsulta"  id="hiddenFecha"      value="@Model.FechaConsulta.ToString("yyyy-MM-dd")" />
+        <input type="hidden" name="Hi"             id="hiddenHi"         value="@Model.Hi.ToString(@"HH\:mm")" />
+        <input type="hidden" name="Hf"             id="hiddenHf"         value="@Model.Hf.ToString(@"HH\:mm")" />
 
         <div class="veris-agenda-body">
 
@@ -40,7 +40,7 @@
                         <option value="">-- Seleccione un paciente --</option>
                         @foreach (var p in pacientes)
                         {
-                            <option value="@p._id">@p.nombre</option>
+                            <option value="@p.IdPaciente">@p.Nombre</option>
                         }
                     </select>
                 </div>
@@ -51,7 +51,7 @@
                         <option value="">-- Seleccione una especialidad --</option>
                         @foreach (var e in especialidades)
                         {
-                            <option value="@e._id">@e.descripcion</option>
+                            <option value="@e.IdEspecialidad">@e.Descripcion</option>
                         }
                     </select>
                 </div>
@@ -84,8 +84,8 @@
                 <!-- Diagnóstico -->
                 <div class="veris-form-group" style="margin-top:1rem;">
                     <label class="veris-form-label">Diagnóstico</label>
-                    <textarea name="diagnostico" class="veris-form-control" rows="3"
-                              placeholder="Ingrese el diagnóstico...">@Model.diagnostico</textarea>
+                    <textarea name="Diagnostico" class="veris-form-control" rows="3"
+                              placeholder="Ingrese el diagnóstico...">@Model.Diagnostico</textarea>
                 </div>
 
                 <div style="margin-top:1rem; display:flex; gap:0.6rem;">
@@ -144,12 +144,12 @@
 <script>
 // ── Datos de la consulta existente ────────────────────────────────────────────
 const consultaExistente = {
-    medicoId:    "@Model.medicoId",
+    medicoId:    "@Model.IdMedico",
     espId:       "@medicoEspId",
-    pacienteId:  "@Model.pacienteId",
-    fecha:       "@Model.fechaConsulta.ToString("yyyy-MM-dd")",
-    hi:          "@Model.hi",
-    hf:          "@Model.hf"
+    pacienteId:  "@Model.IdPaciente",
+    fecha:       "@Model.FechaConsulta.ToString("yyyy-MM-dd")",
+    hi:          "@Model.Hi.ToString(@"HH\:mm")",
+    hf:          "@Model.Hf.ToString(@"HH\:mm")"
 };
 
 let semanaActual, anioActual;
@@ -188,27 +188,22 @@ const MESES_ES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','n
 
 // ── Init: pre-poblar con datos existentes ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function () {
-    // Calcular semana inicial a partir de la fecha de la consulta
     const fechaConsulta = new Date(consultaExistente.fecha + 'T00:00:00');
     const iso = getISOWeek(fechaConsulta);
     semanaActual = iso.week;
     anioActual   = iso.year;
 
-    // Pre-seleccionar paciente
     const selPac = document.getElementById('selectPaciente');
     if (consultaExistente.pacienteId) {
         selPac.value = consultaExistente.pacienteId;
     }
 
-    // Pre-seleccionar especialidad
     const selEsp = document.getElementById('selectEspecialidad');
     if (consultaExistente.espId) {
         selEsp.value = consultaExistente.espId;
-        // Cargar médicos de esa especialidad y luego pre-seleccionar el médico
         cargarMedicosYSeleccionar(consultaExistente.espId, consultaExistente.medicoId);
     }
 
-    // Cerrar picker al clic fuera
     document.addEventListener('click', function(e) {
         const picker = document.getElementById('anioPicker');
         const btn = document.getElementById('anioBtn');
@@ -216,7 +211,6 @@ document.addEventListener('DOMContentLoaded', function () {
             picker.style.display = 'none';
     });
 
-    // Validar antes de enviar
     document.getElementById('formEditConsulta').addEventListener('submit', function(e) {
         if (!document.getElementById('hiddenMedicoId').value) {
             e.preventDefault(); mostrarAlerta('Selecciona un médico.', 'error'); return;
@@ -352,7 +346,6 @@ function renderizarDias(data) {
             card.addEventListener('click', () => seleccionarDia(dia.fecha, card));
         }
 
-        // Si es el día actual de la consulta, marcarlo aunque esté "pasado" (para edición)
         if (dia.fecha === consultaExistente.fecha && esSeleccionado) {
             card.classList.remove('pasado');
             card.classList.add('libre', 'seleccionado');
@@ -361,7 +354,6 @@ function renderizarDias(data) {
         grid.appendChild(card);
     });
 
-    // Si la fecha seleccionada está en esta semana, cargar sus horas automáticamente
     if (fechaSeleccionada) {
         const card = grid.querySelector('.seleccionado');
         if (card) cargarHorasParaFecha(fechaSeleccionada);
@@ -388,11 +380,9 @@ function cargarHorasParaFecha(fecha) {
     contenedor.innerHTML = '<span style="color:#7fa8d8;font-size:0.9rem;">Cargando horarios...</span>';
     seccion.style.display = 'block';
 
-    // Para la consulta existente, necesitamos incluir su hora aunque ya esté ocupada
     fetch(`/AgendarConsulta/GetHoras?medicoId=${encodeURIComponent(medicoId)}&fecha=${encodeURIComponent(fecha)}`)
         .then(r => r.json())
         .then(horas => {
-            // Incluir la hora original si no está en la lista (porque era de esta consulta)
             if (fecha === consultaExistente.fecha && consultaExistente.hi &&
                 !horas.includes(consultaExistente.hi)) {
                 horas.unshift(consultaExistente.hi);

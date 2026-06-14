@@ -1,16 +1,33 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@inject IServiceProvider ServiceProvider
+@inject IHttpContextAccessor HttpContextAccessor
 
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
+    // Obtener el Id del usuario logueado
+    var IdUsuario = UserManager.GetUserId(User);
+
+    // Obtener los datos del usuario logueado
+    var gestorUsuarios = ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var objUser = gestorUsuarios.FindByIdAsync(IdUsuario).Result;
+
+    // Serializar el objeto a JSON para guardar toda la información del usuario en una sola variable de sesión
+    var userJson = System.Text.Json.JsonSerializer.Serialize(objUser);
+
+    // Guardar los datos del usuario en una variable de sesión
+    HttpContextAccessor.HttpContext.Session.SetString("User", userJson);
+
+    var nombre = objUser.UserName;
+
     <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
+        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hola, @nombre!</a>
     </li>
     <li class="nav-item">
-        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
         </form>
     </li>
 }

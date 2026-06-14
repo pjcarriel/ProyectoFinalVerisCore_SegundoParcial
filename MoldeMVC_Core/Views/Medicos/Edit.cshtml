@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Medicos
+@model MoldeMVC_Core.Models.Medico
 
 @{
     ViewData["Title"] = "Editar Médico";
@@ -13,25 +13,33 @@
     <form asp-action="Edit" method="post">
         <div class="veris-form-body">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-            <input type="hidden" asp-for="_id" />
+            <input type="hidden" asp-for="IdMedico" />
 
             <div class="veris-form-group">
-                <label asp-for="nombre" class="veris-form-label">Nombre completo</label>
-                <input asp-for="nombre" class="veris-form-control" />
-                <span asp-validation-for="nombre" class="veris-form-error"></span>
+                <label asp-for="IdUsuario" class="veris-form-label">Usuario</label>
+                <select asp-for="IdUsuario" asp-items="ViewBag.Usuarios" class="veris-form-control">
+                    <option value="">-- Seleccione un usuario --</option>
+                </select>
+                <span asp-validation-for="IdUsuario" class="veris-form-error"></span>
             </div>
 
             <div class="veris-form-group">
-                <label asp-for="especialidadId" class="veris-form-label">Especialidad</label>
-                <select asp-for="especialidadId" asp-items="ViewBag.Especialidades" class="veris-form-control">
+                <label asp-for="Nombre" class="veris-form-label">Nombre completo</label>
+                <input asp-for="Nombre" class="veris-form-control" />
+                <span asp-validation-for="Nombre" class="veris-form-error"></span>
+            </div>
+
+            <div class="veris-form-group">
+                <label asp-for="IdEspecialidad" class="veris-form-label">Especialidad</label>
+                <select asp-for="IdEspecialidad" asp-items="ViewBag.Especialidades" class="veris-form-control">
                     <option value="">-- Seleccione una especialidad --</option>
                 </select>
-                <span asp-validation-for="especialidadId" class="veris-form-error"></span>
+                <span asp-validation-for="IdEspecialidad" class="veris-form-error"></span>
             </div>
 
             <div class="veris-form-group">
-                <label asp-for="foto" class="veris-form-label">Foto</label>
-                <select asp-for="foto" class="veris-form-control" id="fotoSelectMedico"
+                <label asp-for="Foto" class="veris-form-label">Foto</label>
+                <select asp-for="Foto" class="veris-form-control" id="fotoSelectMedico"
                         onchange="previewFotoEdit('fotoSelectMedico','fotoPreviewMedico','fotoImgMedico','medicos')">
                     <option value="">-- Sin foto --</option>
                     @foreach (var f in fotos)
@@ -39,7 +47,7 @@
                         <option value="@f">@f</option>
                     }
                 </select>
-                <span asp-validation-for="foto" class="veris-form-error"></span>
+                <span asp-validation-for="Foto" class="veris-form-error"></span>
                 <div id="fotoPreviewMedico" class="veris-foto-preview mt-2" style="display:none;">
                     <img id="fotoImgMedico" src="" alt="Vista previa" class="veris-foto-circle" />
                     <span class="veris-foto-preview-label" id="fotoLabelMedico"></span>

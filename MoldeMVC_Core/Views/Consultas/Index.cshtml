@@ -1,4 +1,4 @@
-@model IEnumerable<MoldeMVC_Core.Models.Consultas>
+@model IEnumerable<MoldeMVC_Core.Models.Consulta>
 
 @{
     ViewData["Title"] = "Listado de Consultas";
@@ -10,9 +10,12 @@
         <h1>Consultas</h1>
         <span class="veris-badge-count">@total registro@(total != 1 ? "s" : "")</span>
     </div>
-    <div class="veris-table-toolbar">
-        <a asp-controller="AgendarConsulta" asp-action="Index" class="btn btn-primary btn-sm">+ Nueva Consulta</a>
-    </div>
+    @if (!User.IsInRole("Paciente") && !User.IsInRole("Medico"))
+    {
+        <div class="veris-table-toolbar">
+            <a asp-controller="AgendarConsulta" asp-action="Index" class="btn btn-primary btn-sm">+ Nueva Consulta</a>
+        </div>
+    }
     <div class="veris-table-wrapper">
         <table class="table veris-table">
             <thead>
@@ -30,37 +33,33 @@
                 @foreach (var item in Model)
                 {
                     <tr>
+                        <td><strong>@(item.IdMedicoNavigation?.Nombre ?? "—")</strong></td>
+                        <td>@(item.IdPacienteNavigation?.Nombre ?? "—")</td>
                         <td>
-                            <strong>
-                                @(ViewBag.MedicosDict != null && ViewBag.MedicosDict.ContainsKey(item.medicoId)
-                                    ? ViewBag.MedicosDict[item.medicoId]
-                                    : item.medicoId)
-                            </strong>
+                            <span class="veris-badge-tipo">@item.FechaConsulta.ToString("dd/MM/yyyy")</span>
                         </td>
+                        <td><span class="veris-hora">@item.Hi.ToString("HH:mm")</span></td>
+                        <td><span class="veris-hora">@item.Hf.ToString("HH:mm")</span></td>
                         <td>
-                            @(ViewBag.PacientesDict != null && ViewBag.PacientesDict.ContainsKey(item.pacienteId)
-                                ? ViewBag.PacientesDict[item.pacienteId]
-                                : item.pacienteId)
-                        </td>
-                        <td>
-                            <span class="veris-badge-tipo">@item.fechaConsulta.ToString("dd/MM/yyyy")</span>
-                        </td>
-                        <td><span class="veris-hora">@(item.hi?.Length > 5 ? item.hi.Substring(0, 5) : item.hi)</span></td>
-                        <td><span class="veris-hora">@(item.hf?.Length > 5 ? item.hf.Substring(0, 5) : item.hf)</span></td>
-                        <td>
-                            <span class="veris-badge-diagnostico" title="@item.diagnostico">
-                                @Html.DisplayFor(modelItem => item.diagnostico)
+                            <span class="veris-badge-diagnostico" title="@item.Diagnostico">
+                                @item.Diagnostico
                             </span>
                         </td>
                         <td>
                             <div class="veris-actions">
-                                @if (string.IsNullOrWhiteSpace(item.diagnostico) || item.diagnostico.Trim().ToLower() == "pendiente")
+                                @if (!User.IsInRole("SuperAdmin") && !User.IsInRole("Paciente") && (string.IsNullOrWhiteSpace(item.Diagnostico) || item.Diagnostico.Trim().ToLower() == "pendiente"))
                                 {
-                                    <a asp-action="Atender" asp-route-id="@item._id" class="veris-btn-atender">&#128203; Atender</a>
+                                    <a asp-action="Atender" asp-route-id="@item.IdConsulta" class="veris-btn-atender">&#128203; Atender</a>
                                 }
-                                <a asp-action="Edit" asp-route-id="@item._id" class="veris-btn-edit">&#9998; Editar</a>
-                                <a asp-action="Details" asp-route-id="@item._id" class="veris-btn-details">&#128269; Detalles</a>
-                                <a asp-action="Delete" asp-route-id="@item._id" class="veris-btn-delete">&#10005; Eliminar</a>
+                                @if (!User.IsInRole("Paciente") && !User.IsInRole("Medico"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.IdConsulta" class="veris-btn-edit">&#9998; Editar</a>
+                                }
+                                <a asp-action="Details" asp-route-id="@item.IdConsulta" class="veris-btn-details">&#128269; Detalles</a>
+                                @if (User.IsInRole("SuperAdmin"))
+                                {
+                                    <a asp-action="Delete" asp-route-id="@item.IdConsulta" class="veris-btn-delete">&#10005; Eliminar</a>
+                                }
                             </div>
                         </td>
                     </tr>

@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Especialidades
+@model MoldeMVC_Core.Models.Especialidade
 
 @{
     ViewData["Title"] = "Crear Especialidad";
@@ -14,14 +14,14 @@
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="veris-form-group">
-                <label asp-for="descripcion" class="veris-form-label">Descripción</label>
-                <input asp-for="descripcion" class="veris-form-control" placeholder="Ej: Cardiología" />
-                <span asp-validation-for="descripcion" class="veris-form-error"></span>
+                <label asp-for="Descripcion" class="veris-form-label">Descripción</label>
+                <input asp-for="Descripcion" class="veris-form-control" placeholder="Ej: Cardiología" />
+                <span asp-validation-for="Descripcion" class="veris-form-error"></span>
             </div>
 
             <div class="veris-form-group">
                 <label class="veris-form-label">Días disponibles</label>
-                <input type="hidden" name="dias" id="diasHidden" />
+                <input type="hidden" name="Dias" id="diasHidden" />
                 <div class="veris-dias-check-grid">
                     @foreach (var dia in new[] {
                         ("L","Lunes"), ("M","Martes"), ("X","Miércoles"), ("J","Jueves"), ("V","Viernes")
@@ -34,20 +34,20 @@
                         </label>
                     }
                 </div>
-                <span asp-validation-for="dias" class="veris-form-error"></span>
+                <span asp-validation-for="Dias" class="veris-form-error"></span>
             </div>
 
             <div class="veris-form-grid-2">
                 <div class="veris-form-group">
-                    <label asp-for="franjaHI" class="veris-form-label">Hora de inicio</label>
-                    <input asp-for="franjaHI" type="time" class="veris-form-control" />
-                    <span asp-validation-for="franjaHI" class="veris-form-error"></span>
+                    <label asp-for="FranjaHi" class="veris-form-label">Hora de inicio</label>
+                    <input asp-for="FranjaHi" type="time" class="veris-form-control" />
+                    <span asp-validation-for="FranjaHi" class="veris-form-error"></span>
                 </div>
 
                 <div class="veris-form-group">
-                    <label asp-for="franjaHF" class="veris-form-label">Hora de fin</label>
-                    <input asp-for="franjaHF" type="time" class="veris-form-control" />
-                    <span asp-validation-for="franjaHF" class="veris-form-error"></span>
+                    <label asp-for="FranjaHf" class="veris-form-label">Hora de fin</label>
+                    <input asp-for="FranjaHf" type="time" class="veris-form-control" />
+                    <span asp-validation-for="FranjaHf" class="veris-form-error"></span>
                 </div>
             </div>
         </div>

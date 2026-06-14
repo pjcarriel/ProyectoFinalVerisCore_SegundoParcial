@@ -1,50 +1,30 @@
-﻿@model MoldeMVC_Core.Models.Recetas
+@model MoldeMVC_Core.Models.Receta
 
 @{
     ViewData["Title"] = "Eliminar Receta";
 }
 
 <h1>Eliminar Receta</h1>
-
 <h3>¿Está seguro que desea eliminar este registro?</h3>
 
 <div>
-    <h4>Recetas</h4>
+    <h4>Receta</h4>
     <hr />
-
     <dl class="row">
-        <dt class="col-sm-3">
-            ID
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model._id)
-        </dd>
+        <dt class="col-sm-3">Consulta</dt>
+        <dd class="col-sm-9">@(Model.IdConsultaNavigation != null
+            ? $"{Model.IdConsultaNavigation.FechaConsulta:dd/MM/yyyy} — {Model.IdConsultaNavigation.Hi:HH\\:mm}"
+            : Model.IdConsulta.ToString())</dd>
 
-        <dt class="col-sm-3">
-            ID Consulta
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.consultaId)
-        </dd>
+        <dt class="col-sm-3">Medicamento</dt>
+        <dd class="col-sm-9">@(Model.IdMedicamentoNavigation?.Nombre ?? Model.IdMedicamento.ToString())</dd>
 
-        <dt class="col-sm-3">
-            ID Medicamento
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.medicamentoId)
-        </dd>
-
-        <dt class="col-sm-3">
-            Cantidad
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.cantidad)
-        </dd>
+        <dt class="col-sm-3">Cantidad</dt>
+        <dd class="col-sm-9">@Model.Cantidad</dd>
     </dl>
 
     <form asp-action="Delete" method="post">
-        <input type="hidden" asp-for="_id" />
-
+        <input type="hidden" asp-for="IdReceta" />
         <input type="submit" value="Eliminar" class="btn btn-danger" />
         <a asp-action="Index" class="btn btn-secondary">Volver</a>
     </form>

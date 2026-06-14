@@ -1,50 +1,27 @@
-﻿@model MoldeMVC_Core.Models.Medicos
+@model MoldeMVC_Core.Models.Medico
 
 @{
     ViewData["Title"] = "Eliminar Médico";
 }
 
 <h1>Eliminar Médico</h1>
-
 <h3>¿Está seguro que desea eliminar este registro?</h3>
 
 <div>
-    <h4>Medicos</h4>
+    <h4>Médico</h4>
     <hr />
-
     <dl class="row">
-        <dt class="col-sm-3">
-            ID
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model._id)
-        </dd>
+        <dt class="col-sm-3">Nombre</dt>
+        <dd class="col-sm-9">@Model.Nombre</dd>
 
-        <dt class="col-sm-3">
-            Nombre
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.nombre)
-        </dd>
+        <dt class="col-sm-3">Especialidad</dt>
+        <dd class="col-sm-9">@(Model.IdEspecialidadNavigation?.Descripcion ?? Model.IdEspecialidad.ToString())</dd>
 
-        <dt class="col-sm-3">
-            ID Especialidad
-        </dt>
+        <dt class="col-sm-3">Foto</dt>
         <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.especialidadId)
-        </dd>
-
-        <dt class="col-sm-3">
-            Foto
-        </dt>
-        <dd class="col-sm-9">
-            @if (!string.IsNullOrEmpty(Model.foto))
+            @if (!string.IsNullOrEmpty(Model.Foto))
             {
-                <img src="~/usuarios/@Model.foto"
-                     alt="Foto del médico"
-                     width="120"
-                     height="120"
-                     style="object-fit: cover;" />
+                <img src="~/medicos/@Model.Foto" alt="Foto del médico" width="120" height="120" style="object-fit: cover;" />
             }
             else
             {
@@ -54,8 +31,7 @@
     </dl>
 
     <form asp-action="Delete" method="post">
-        <input type="hidden" asp-for="_id" />
-
+        <input type="hidden" asp-for="IdMedico" />
         <input type="submit" value="Eliminar" class="btn btn-danger" />
         <a asp-action="Index" class="btn btn-secondary">Volver</a>
     </form>

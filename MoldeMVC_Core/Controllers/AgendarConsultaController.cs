@@ -1,17 +1,20 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
-using MoldeMVC_Core.Data;
+using Microsoft.EntityFrameworkCore;
 using MoldeMVC_Core.Models;
 using System.Globalization;
+using System.Text.Json;
 
 namespace MoldeMVC_Core.Controllers
 {
+    [Authorize(Roles = "Medico,SuperAdmin,Paciente")]
     public class AgendarConsultaController : Controller
     {
-        private readonly VerisMongoContext _context;
+        private readonly ProyectoVerisMvcBdContext _context;
         private const int DURACION_CITA_MINUTOS = 60;
 
-        public AgendarConsultaController(VerisMongoContext context)
+        public AgendarConsultaController(ProyectoVerisMvcBdContext context)
         {
             _context = context;
         }
@@ -19,87 +22,96 @@ namespace MoldeMVC_Core.Controllers
         // GET: AgendarConsulta
         public async Task<IActionResult> Index()
         {
-            var especialidades = await _context.Especialidades
-                .Find(Builders<Especialidades>.Filter.Empty)
-                .ToListAsync();
+            var especialidades = await _context.Especialidades.ToListAsync();
 
-            var pacientes = await _context.Pacientes
-                .Find(Builders<Pacientes>.Filter.Empty)
-                .SortBy(p => p.nombre)
-                .ToListAsync();
+            List<Paciente> pacientes;
+            if (User.IsInRole("Paciente"))
+            {
+                var sesion  = HttpContext.Session.GetString("User");
+                var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
+                var userId  = objUser?.Id;
+                pacientes = await _context.Pacientes
+                    .Where(p => p.IdUsuario == userId)
+                    .OrderBy(p => p.Nombre)
+                    .ToListAsync();
+            }
+            else
+            {
+                pacientes = await _context.Pacientes.OrderBy(p => p.Nombre).ToListAsync();
+            }
 
             ViewBag.Especialidades = especialidades;
-            ViewBag.Pacientes = pacientes;
+            ViewBag.Pacientes      = pacientes;
             return View();
         }
 
         // AJAX: médicos por especialidad
         [HttpGet]
-        public async Task<IActionResult> GetMedicos(string especialidadId)
+        public async Task<IActionResult> GetMedicos(int especialidadId)
         {
             var medicos = await _context.Medicos
-                .Find(m => m.especialidadId == especialidadId)
-                .SortBy(m => m.nombre)
+                .Where(m => m.IdEspecialidad == especialidadId)
+                .OrderBy(m => m.Nombre)
                 .ToListAsync();
 
-            return Json(medicos.Select(m => new { id = m._id, nombre = m.nombre }));
+            return Json(medicos.Select(m => new { id = m.IdMedico, nombre = m.Nombre }));
         }
 
         // AJAX: disponibilidad semanal del médico
         [HttpGet]
-        public async Task<IActionResult> GetCalendario(string medicoId, int anio, int semana)
+        public async Task<IActionResult> GetCalendario(int medicoId, int anio, int semana)
         {
             if (semana < 1 || semana > 53 || anio < 2000 || anio > 2030)
                 return Json(new { error = "Parámetros inválidos." });
 
-            var medico = await _context.Medicos.Find(m => m._id == medicoId).FirstOrDefaultAsync();
-            if (medico == null) return Json(new { error = "Médico no encontrado." });
+            var medico = await _context.Medicos
+                .Include(m => m.IdEspecialidadNavigation)
+                .FirstOrDefaultAsync(m => m.IdMedico == medicoId);
 
-            var especialidad = await _context.Especialidades.Find(e => e._id == medico.especialidadId).FirstOrDefaultAsync();
-            if (especialidad == null) return Json(new { error = "Especialidad no encontrada." });
+            if (medico == null)
+                return Json(new { error = "Médico no encontrado." });
 
-            var lunes = ISOWeek.ToDateTime(anio, semana, DayOfWeek.Monday);
+            var especialidad = medico.IdEspecialidadNavigation;
+            if (especialidad == null)
+                return Json(new { error = "Especialidad no encontrada." });
+
+            var lunes  = DateOnly.FromDateTime(ISOWeek.ToDateTime(anio, semana, DayOfWeek.Monday));
             var sabado = lunes.AddDays(5);
 
-            if (!TimeSpan.TryParse(especialidad.franjaHI, out var hi) ||
-                !TimeSpan.TryParse(especialidad.franjaHF, out var hf))
-                return Json(new { error = "Horario de especialidad inválido." });
-
-            int totalSlotsDia = (int)((hf - hi).TotalMinutes / DURACION_CITA_MINUTOS);
+            var hi = especialidad.FranjaHi;
+            var hf = especialidad.FranjaHf;
+            int totalSlotsDia = (int)((hf.ToTimeSpan() - hi.ToTimeSpan()).TotalMinutes / DURACION_CITA_MINUTOS);
 
             var consultasSemana = await _context.Consultas
-                .Find(Builders<Consultas>.Filter.And(
-                    Builders<Consultas>.Filter.Eq(c => c.medicoId, medicoId),
-                    Builders<Consultas>.Filter.Gte(c => c.fechaConsulta, lunes),
-                    Builders<Consultas>.Filter.Lt(c => c.fechaConsulta, sabado)))
+                .Where(c => c.IdMedico == medicoId && c.FechaConsulta >= lunes && c.FechaConsulta < sabado)
                 .ToListAsync();
 
-            var diasTrabajo = ParseDias(especialidad.dias);
+            var diasTrabajo = ParseDias(especialidad.Dias);
 
             var diasInfo = new List<object>();
             for (int i = 0; i < 5; i++)
             {
-                var dia = lunes.AddDays(i);
+                var dia         = lunes.AddDays(i);
                 bool esDiaTrabajo = diasTrabajo.Contains(dia.DayOfWeek);
-                bool esPasado = dia.Date < DateTime.Today;
+                bool esPasado   = dia < DateOnly.FromDateTime(DateTime.Today);
 
-                int ocupados = consultasSemana.Count(c => c.fechaConsulta.Date == dia.Date);
-                int libres = esDiaTrabajo ? Math.Max(0, totalSlotsDia - ocupados) : 0;
+                int ocupados = consultasSemana.Count(c => c.FechaConsulta == dia);
+                int libres   = esDiaTrabajo ? Math.Max(0, totalSlotsDia - ocupados) : 0;
 
                 diasInfo.Add(new
                 {
-                    fecha = dia.ToString("yyyy-MM-dd"),
-                    disponible = esDiaTrabajo && !esPasado && libres > 0,
-                    slotsLibres = (esDiaTrabajo && !esPasado) ? libres : 0,
-                    totalSlots = totalSlotsDia,
+                    fecha        = dia.ToString("yyyy-MM-dd"),
+                    disponible   = esDiaTrabajo && !esPasado && libres > 0,
+                    slotsLibres  = (esDiaTrabajo && !esPasado) ? libres : 0,
+                    totalSlots   = totalSlotsDia,
                     esPasado
                 });
             }
 
             return Json(new
             {
-                dias = diasInfo,
-                lunesSemana = lunes.ToString("dd/MM/yyyy"),
+                dias          = diasInfo,
+                lunesSemana   = lunes.ToString("dd/MM/yyyy"),
                 viernesSemana = lunes.AddDays(4).ToString("dd/MM/yyyy"),
                 semana,
                 anio
@@ -108,115 +120,93 @@ namespace MoldeMVC_Core.Controllers
 
         // AJAX: horas disponibles en un día
         [HttpGet]
-        public async Task<IActionResult> GetHoras(string medicoId, string fecha)
+        public async Task<IActionResult> GetHoras(int medicoId, string fecha)
         {
-            if (!DateTime.TryParse(fecha, out var fechaDt))
+            if (!DateOnly.TryParse(fecha, out var fechaDt))
                 return Json(new List<string>());
 
-            // No permitir fines de semana
             if (fechaDt.DayOfWeek == DayOfWeek.Saturday || fechaDt.DayOfWeek == DayOfWeek.Sunday)
                 return Json(new List<string>());
 
-            var medico = await _context.Medicos.Find(m => m._id == medicoId).FirstOrDefaultAsync();
-            if (medico == null) return Json(new List<string>());
+            var medico = await _context.Medicos
+                .Include(m => m.IdEspecialidadNavigation)
+                .FirstOrDefaultAsync(m => m.IdMedico == medicoId);
 
-            var especialidad = await _context.Especialidades.Find(e => e._id == medico.especialidadId).FirstOrDefaultAsync();
-            if (especialidad == null) return Json(new List<string>());
-
-            if (!TimeSpan.TryParse(especialidad.franjaHI, out var hi) ||
-                !TimeSpan.TryParse(especialidad.franjaHF, out var hf))
+            if (medico?.IdEspecialidadNavigation == null)
                 return Json(new List<string>());
 
-            // Generar todos los slots
-            var todosSlots = new List<string>();
+            var especialidad = medico.IdEspecialidadNavigation;
+            var hi = especialidad.FranjaHi;
+            var hf = especialidad.FranjaHf;
+
+            var todosSlots = new List<TimeOnly>();
             var current = hi;
-            while (current.Add(TimeSpan.FromMinutes(DURACION_CITA_MINUTOS)) <= hf)
+            while (current.AddMinutes(DURACION_CITA_MINUTOS) <= hf)
             {
-                todosSlots.Add(current.ToString(@"hh\:mm"));
-                current = current.Add(TimeSpan.FromMinutes(DURACION_CITA_MINUTOS));
+                todosSlots.Add(current);
+                current = current.AddMinutes(DURACION_CITA_MINUTOS);
             }
 
-            // Obtener slots ya reservados
-            var startOfDay = fechaDt.Date;
-            var endOfDay = fechaDt.Date.AddDays(1);
             var reservados = await _context.Consultas
-                .Find(Builders<Consultas>.Filter.And(
-                    Builders<Consultas>.Filter.Eq(c => c.medicoId, medicoId),
-                    Builders<Consultas>.Filter.Gte(c => c.fechaConsulta, startOfDay),
-                    Builders<Consultas>.Filter.Lt(c => c.fechaConsulta, endOfDay)))
-                .Project(c => c.hi)
+                .Where(c => c.IdMedico == medicoId && c.FechaConsulta == fechaDt)
+                .Select(c => c.Hi)
                 .ToListAsync();
 
-            return Json(todosSlots.Except(reservados).ToList());
+            return Json(todosSlots
+                .Except(reservados)
+                .Select(t => t.ToString(@"hh\:mm"))
+                .ToList());
         }
 
         // POST: confirmar cita
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Confirmar(
-            [FromForm] string medicoId,
-            [FromForm] string pacienteId,
+            [FromForm] int medicoId,
+            [FromForm] int pacienteId,
             [FromForm] string fecha,
             [FromForm] string hora)
         {
-            if (string.IsNullOrWhiteSpace(medicoId) || string.IsNullOrWhiteSpace(pacienteId) ||
+            if (medicoId == 0 || pacienteId == 0 ||
                 string.IsNullOrWhiteSpace(fecha) || string.IsNullOrWhiteSpace(hora))
                 return Json(new { ok = false, mensaje = "Todos los campos son obligatorios." });
 
-            if (!DateTime.TryParse(fecha, out var fechaDt))
+            if (!DateOnly.TryParse(fecha, out var fechaDt))
                 return Json(new { ok = false, mensaje = "Fecha inválida." });
 
-            // Regla: no fechas pasadas
-            if (fechaDt.Date < DateTime.Today)
+            if (fechaDt < DateOnly.FromDateTime(DateTime.Today))
                 return Json(new { ok = false, mensaje = "No puedes agendar una cita en una fecha pasada." });
 
-            // Regla: sin fines de semana
             if (fechaDt.DayOfWeek == DayOfWeek.Saturday || fechaDt.DayOfWeek == DayOfWeek.Sunday)
                 return Json(new { ok = false, mensaje = "No hay atención los sábados ni domingos." });
 
-            var startOfDay = fechaDt.Date;
-            var endOfDay = fechaDt.Date.AddDays(1);
+            if (!TimeOnly.TryParse(hora, out var hiTime))
+                return Json(new { ok = false, mensaje = "Hora inválida." });
 
-            // Regla: paciente sin cita doble ese día y hora
             var conflictoPaciente = await _context.Consultas
-                .Find(Builders<Consultas>.Filter.And(
-                    Builders<Consultas>.Filter.Eq(c => c.pacienteId, pacienteId),
-                    Builders<Consultas>.Filter.Gte(c => c.fechaConsulta, startOfDay),
-                    Builders<Consultas>.Filter.Lt(c => c.fechaConsulta, endOfDay),
-                    Builders<Consultas>.Filter.Eq(c => c.hi, hora)))
-                .AnyAsync();
+                .AnyAsync(c => c.IdPaciente == pacienteId && c.FechaConsulta == fechaDt && c.Hi == hiTime);
 
             if (conflictoPaciente)
                 return Json(new { ok = false, mensaje = "El paciente ya tiene una cita agendada a esa hora ese día." });
 
-            // Regla: médico sin cita doble ese día y hora
             var conflictoMedico = await _context.Consultas
-                .Find(Builders<Consultas>.Filter.And(
-                    Builders<Consultas>.Filter.Eq(c => c.medicoId, medicoId),
-                    Builders<Consultas>.Filter.Gte(c => c.fechaConsulta, startOfDay),
-                    Builders<Consultas>.Filter.Lt(c => c.fechaConsulta, endOfDay),
-                    Builders<Consultas>.Filter.Eq(c => c.hi, hora)))
-                .AnyAsync();
+                .AnyAsync(c => c.IdMedico == medicoId && c.FechaConsulta == fechaDt && c.Hi == hiTime);
 
             if (conflictoMedico)
                 return Json(new { ok = false, mensaje = "Ese horario ya fue reservado para este médico. Elige otra hora." });
 
-            // Calcular hora fin (cita de 1 hora)
-            var hiTs = TimeSpan.Parse(hora);
-            var hfStr = hiTs.Add(TimeSpan.FromMinutes(DURACION_CITA_MINUTOS)).ToString(@"hh\:mm");
-
-            var consulta = new Consultas
+            var consulta = new Consulta
             {
-                _id = MongoDB.Bson.ObjectId.GenerateNewId().ToString(),
-                medicoId = medicoId,
-                pacienteId = pacienteId,
-                fechaConsulta = fechaDt,
-                hi = hora,
-                hf = hfStr,
-                diagnostico = "Pendiente"
+                IdMedico      = medicoId,
+                IdPaciente    = pacienteId,
+                FechaConsulta = fechaDt,
+                Hi            = hiTime,
+                Hf            = hiTime.AddMinutes(DURACION_CITA_MINUTOS),
+                Diagnostico   = "Pendiente"
             };
 
-            await _context.Consultas.InsertOneAsync(consulta);
+            _context.Add(consulta);
+            await _context.SaveChangesAsync();
 
             return Json(new { ok = true, mensaje = "¡Cita agendada exitosamente!" });
         }
@@ -229,11 +219,11 @@ namespace MoldeMVC_Core.Controllers
             {
                 switch (c)
                 {
-                    case 'L': result.Add(DayOfWeek.Monday); break;
-                    case 'M': result.Add(DayOfWeek.Tuesday); break;
+                    case 'L': result.Add(DayOfWeek.Monday);    break;
+                    case 'M': result.Add(DayOfWeek.Tuesday);   break;
                     case 'X': result.Add(DayOfWeek.Wednesday); break;
-                    case 'J': result.Add(DayOfWeek.Thursday); break;
-                    case 'V': result.Add(DayOfWeek.Friday); break;
+                    case 'J': result.Add(DayOfWeek.Thursday);  break;
+                    case 'V': result.Add(DayOfWeek.Friday);    break;
                 }
             }
             return result;
