@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Web3\\Parcial2\\ProyectoFinal\\MoldeMVC_Core\\MoldeMVC_Core.csproj": {}
+    "C:\\TEMP\\SEGUNDO PARCIAL\\Proyecto\\MoldeMVC_Core\\MoldeMVC_Core.csproj": {}
   },
   "projects": {
-    "E:\\Web3\\Parcial2\\ProyectoFinal\\MoldeMVC_Core\\MoldeMVC_Core.csproj": {
+    "C:\\TEMP\\SEGUNDO PARCIAL\\Proyecto\\MoldeMVC_Core\\MoldeMVC_Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Web3\\Parcial2\\ProyectoFinal\\MoldeMVC_Core\\MoldeMVC_Core.csproj",
+        "projectUniqueName": "C:\\TEMP\\SEGUNDO PARCIAL\\Proyecto\\MoldeMVC_Core\\MoldeMVC_Core.csproj",
         "projectName": "MoldeMVC_Core",
-        "projectPath": "E:\\Web3\\Parcial2\\ProyectoFinal\\MoldeMVC_Core\\MoldeMVC_Core.csproj",
-        "packagesPath": "C:\\Users\\LENOVO\\.nuget\\packages\\",
-        "outputPath": "E:\\Web3\\Parcial2\\ProyectoFinal\\MoldeMVC_Core\\obj\\",
+        "projectPath": "C:\\TEMP\\SEGUNDO PARCIAL\\Proyecto\\MoldeMVC_Core\\MoldeMVC_Core.csproj",
+        "packagesPath": "C:\\Users\\HP OMEN\\.nuget\\packages\\",
+        "outputPath": "C:\\TEMP\\SEGUNDO PARCIAL\\Proyecto\\MoldeMVC_Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\LENOVO\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\HP OMEN\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -51,6 +51,10 @@
           "targetAlias": "net9.0",
           "dependencies": {
             "Microsoft.AspNetCore.Authentication.Facebook": {
+              "target": "Package",
+              "version": "[9.0.16, )"
+            },
+            "Microsoft.AspNetCore.Authentication.MicrosoftAccount": {
               "target": "Package",
               "version": "[9.0.16, )"
             },
@@ -106,7 +110,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

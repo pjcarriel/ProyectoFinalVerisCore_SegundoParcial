@@ -5,6 +5,7 @@ using MoldeMVC_Core.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -38,14 +39,15 @@ builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<RedirectTo>();
 });
-/*
-    Se agrega el servicio de autenticación al proyecto.
-    Esto permite que la aplicación pueda iniciar sesión usando
-    proveedores externos, en este caso Facebook.
-*/
+
 builder.Services.AddAuthentication()
-    .AddFacebook(opciones =>
-    {
+      .AddMicrosoftAccount(opciones =>
+      {
+          opciones.ClientId = builder.Configuration["MicrosoftClientId"]!;
+          opciones.ClientSecret = builder.Configuration["MicrosoftSecretId"]!;
+      })
+      .AddFacebook(opciones =>
+      {
         /*
             AppId corresponde al Identificador de la app
             obtenido desde Meta for Developers.

@@ -1,5 +1,6 @@
 #nullable disable
 
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -88,8 +89,42 @@ namespace MoldeMVC_Core.Areas.Identity.Pages.Account
             if (result.IsLockedOut)
                 return RedirectToPage("./Lockout");
 
-            // No existe cuenta local vinculada a este proveedor
-            ErrorMessage = "No existe una cuenta local vinculada a este proveedor. Contacte al administrador del sistema.";
+            // No existe cuenta local vinculada — crear nueva cuenta automáticamente
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                     ?? $"{info.ProviderKey}@external.com";
+
+            var userName = (info.Principal.FindFirstValue(ClaimTypes.Name)
+                        ?? email.Split('@')[0])
+                        .Replace(" ", "_")
+                        .Replace("@", "_");
+
+            // Si ya existe un usuario con ese email, solo vincular el proveedor
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+            {
+                await _userManager.AddLoginAsync(existingUser, info);
+                await _signInManager.SignInAsync(existingUser, isPersistent: false);
+                return LocalRedirect(returnUrl);
+            }
+
+            // Crear nuevo usuario con los datos del proveedor externo
+            var newUser = new IdentityUser
+            {
+                UserName = userName,
+                Email = email,
+                EmailConfirmed = true
+            };
+
+            var createResult = await _userManager.CreateAsync(newUser);
+            if (createResult.Succeeded)
+            {
+                await _userManager.AddLoginAsync(newUser, info);
+                await _userManager.AddToRoleAsync(newUser, "Administrador");
+                await _signInManager.SignInAsync(newUser, isPersistent: false);
+                return LocalRedirect(returnUrl);
+            }
+
+            ErrorMessage = "No se pudo crear la cuenta. Intente de nuevo.";
             return RedirectToPage("./Login");
         }
     }

@@ -104,65 +104,65 @@ wwwroot\Usuarios\usu17.jpg
 wwwroot\Usuarios\usu18.png
 wwwroot\Usuarios\usu19.jpg
 wwwroot\Usuarios\usu20.jpeg
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery\LICENSE.txt
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery\dist\jquery.slim.min.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery\dist\jquery.slim.min.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery\dist\jquery.slim.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery\dist\jquery.min.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery\dist\jquery.min.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery\dist\jquery.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery-validation\LICENSE.md
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery-validation\dist\jquery.validate.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery-validation\dist\additional-methods.min.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery-validation\dist\additional-methods.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.js.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\js\site.js
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\favicon.ico
-E:\Web3\Parcial2\ProyectoFinal\MoldeMVC_Core\wwwroot\css\site.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery\LICENSE.txt
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery\dist\jquery.slim.min.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery\dist\jquery.slim.min.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery\dist\jquery.slim.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery\dist\jquery.min.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery\dist\jquery.min.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery\dist\jquery.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery-validation\LICENSE.md
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery-validation\dist\jquery.validate.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery-validation\dist\additional-methods.min.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery-validation\dist\additional-methods.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.js.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\js\site.js
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\favicon.ico
+C:\TEMP\SEGUNDO PARCIAL\Proyecto\MoldeMVC_Core\wwwroot\css\site.css

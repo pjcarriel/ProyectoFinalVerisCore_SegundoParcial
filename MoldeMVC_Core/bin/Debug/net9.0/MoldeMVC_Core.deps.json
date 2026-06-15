@@ -9,6 +9,7 @@
       "MoldeMVC_Core/1.0.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Authentication.Facebook": "9.0.16",
+          "Microsoft.AspNetCore.Authentication.MicrosoftAccount": "9.0.16",
           "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "9.0.15",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "9.0.15",
           "Microsoft.AspNetCore.Identity.UI": "9.0.15",
@@ -611,6 +612,14 @@
       "Microsoft.AspNetCore.Authentication.Facebook/9.0.16": {
         "runtime": {
           "lib/net9.0/Microsoft.AspNetCore.Authentication.Facebook.dll": {
+            "assemblyVersion": "9.0.16.0",
+            "fileVersion": "9.0.1626.23009"
+          }
+        }
+      },
+      "Microsoft.AspNetCore.Authentication.MicrosoftAccount/9.0.16": {
+        "runtime": {
+          "lib/net9.0/Microsoft.AspNetCore.Authentication.MicrosoftAccount.dll": {
             "assemblyVersion": "9.0.16.0",
             "fileVersion": "9.0.1626.23009"
           }
@@ -2985,6 +2994,13 @@
       "sha512": "sha512-RQap3vaOZw7+gDJoScARPvhurh969Epcb64JE3EeMpjB0AxCGWDk4yuLHDqRhC5a4epw62cjR+DJHDdeOs1wbg==",
       "path": "microsoft.aspnetcore.authentication.facebook/9.0.16",
       "hashPath": "microsoft.aspnetcore.authentication.facebook.9.0.16.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Authentication.MicrosoftAccount/9.0.16": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-W5bOAm9t9fzIxOLL0YDHe42QX+fnzJmZeGWLLXqXfmkWQSO7TVzTHDKjrOlaueTFKLpImxhhhuc6L7nS2mYEeQ==",
+      "path": "microsoft.aspnetcore.authentication.microsoftaccount/9.0.16",
+      "hashPath": "microsoft.aspnetcore.authentication.microsoftaccount.9.0.16.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Cryptography.Internal/9.0.15": {
       "type": "package",
