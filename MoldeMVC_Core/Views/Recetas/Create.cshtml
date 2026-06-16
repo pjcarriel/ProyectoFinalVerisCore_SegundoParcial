@@ -1,8 +1,8 @@
-@model MoldeMVC_Core.Models.Receta
+@model MoldeMVC_Core.Models.Recetas
 
 @{
     ViewData["Title"] = "Nueva Receta";
-    var pacientes = ViewBag.PacientesList as List<MoldeMVC_Core.Models.Paciente> ?? new();
+    var pacientes = ViewBag.PacientesList as List<MoldeMVC_Core.Models.Pacientes> ?? new();
 }
 
 <div class="veris-form-card veris-form-card-wide">
@@ -24,7 +24,7 @@
                         <option value="">-- Seleccione un paciente --</option>
                         @foreach (var p in pacientes)
                         {
-                            <option value="@p.IdPaciente">@p.Nombre</option>
+                            <option value="@p.IdStr">@p.Nombre</option>
                         }
                     </select>
                 </div>
@@ -35,10 +35,10 @@
                 <div class="veris-receta-paso-num">2</div>
                 <div class="veris-receta-paso-body">
                     <label class="veris-form-label">Selecciona la consulta</label>
-                    <select id="selectConsulta" name="IdConsulta" class="veris-form-control" onchange="cargarDiagnostico()">
+                    <select id="selectConsulta" name="ConsultaId" class="veris-form-control" onchange="cargarDiagnostico()">
                         <option value="">-- Primero seleccione un paciente --</option>
                     </select>
-                    <span asp-validation-for="IdConsulta" class="veris-form-error"></span>
+                    <span asp-validation-for="ConsultaId" class="veris-form-error"></span>
                 </div>
             </div>
 
@@ -73,11 +73,11 @@
                 <div class="veris-receta-paso-body">
                     <div class="veris-form-grid-2">
                         <div class="veris-form-group">
-                            <label asp-for="IdMedicamento" class="veris-form-label">Medicamento</label>
-                            <select asp-for="IdMedicamento" asp-items="ViewBag.Medicamentos" class="veris-form-control">
+                            <label asp-for="MedicamentoId" class="veris-form-label">Medicamento</label>
+                            <select asp-for="MedicamentoId" asp-items="ViewBag.Medicamentos" class="veris-form-control">
                                 <option value="">-- Seleccione un medicamento --</option>
                             </select>
-                            <span asp-validation-for="IdMedicamento" class="veris-form-error"></span>
+                            <span asp-validation-for="MedicamentoId" class="veris-form-error"></span>
                         </div>
                         <div class="veris-form-group">
                             <label asp-for="Cantidad" class="veris-form-label">Cantidad</label>

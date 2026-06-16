@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Medico
+@model MoldeMVC_Core.Models.Medicos
 
 @{
     ViewData["Title"] = "Crear Médico";
@@ -29,11 +29,11 @@
             </div>
 
             <div class="veris-form-group">
-                <label asp-for="IdEspecialidad" class="veris-form-label">Especialidad</label>
-                <select asp-for="IdEspecialidad" asp-items="ViewBag.Especialidades" class="veris-form-control">
+                <label asp-for="EspecialidadId" class="veris-form-label">Especialidad</label>
+                <select asp-for="EspecialidadId" asp-items="ViewBag.Especialidades" class="veris-form-control">
                     <option value="">-- Seleccione una especialidad --</option>
                 </select>
-                <span asp-validation-for="IdEspecialidad" class="veris-form-error"></span>
+                <span asp-validation-for="EspecialidadId" class="veris-form-error"></span>
             </div>
 
             <div class="veris-form-group">

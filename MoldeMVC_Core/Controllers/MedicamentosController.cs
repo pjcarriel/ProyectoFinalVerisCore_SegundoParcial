@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MoldeMVC_Core.Data;
 using MoldeMVC_Core.Models;
 
 namespace MoldeMVC_Core.Controllers
@@ -8,25 +10,27 @@ namespace MoldeMVC_Core.Controllers
     [Authorize(Roles = "Administrador,SuperAdmin")]
     public class MedicamentosController : Controller
     {
-        private readonly ProyectoVerisMvcBdContext _context;
+        private readonly MongoDbContext _mongo;
 
-        public MedicamentosController(ProyectoVerisMvcBdContext context)
+        public MedicamentosController(MongoDbContext mongo)
         {
-            _context = context;
+            _mongo = mongo;
         }
 
-        // GET: Medicamentos
         public async Task<IActionResult> Index()
         {
-            var medicamentos = await _context.Medicamentos.ToListAsync();
+            var medicamentos = await _mongo.Medicamentos.Find(_ => true).ToListAsync();
             return View(medicamentos);
         }
 
-        // GET: Medicamentos/Details/5
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(string id)
         {
-            var medicamento = await _context.Medicamentos
-                .FirstOrDefaultAsync(m => m.IdMedicamento == id);
+            if (!ObjectId.TryParse(id, out var oid))
+                return NotFound();
+
+            var medicamento = await _mongo.Medicamentos
+                .Find(m => m.Id == oid)
+                .FirstOrDefaultAsync();
 
             if (medicamento == null)
                 return NotFound();
@@ -34,24 +38,21 @@ namespace MoldeMVC_Core.Controllers
             return View(medicamento);
         }
 
-        // GET: Medicamentos/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Medicamentos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nombre,Tipo")] Medicamento medicamento)
+        public async Task<IActionResult> Create([Bind("Nombre,Tipo")] Medicamentos medicamento)
         {
             if (!ModelState.IsValid)
                 return View(medicamento);
 
             try
             {
-                _context.Add(medicamento);
-                await _context.SaveChangesAsync();
+                await _mongo.Medicamentos.InsertOneAsync(medicamento);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -61,11 +62,14 @@ namespace MoldeMVC_Core.Controllers
             }
         }
 
-        // GET: Medicamentos/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(string id)
         {
-            var medicamento = await _context.Medicamentos
-                .FirstOrDefaultAsync(m => m.IdMedicamento == id);
+            if (!ObjectId.TryParse(id, out var oid))
+                return NotFound();
+
+            var medicamento = await _mongo.Medicamentos
+                .Find(m => m.Id == oid)
+                .FirstOrDefaultAsync();
 
             if (medicamento == null)
                 return NotFound();
@@ -73,12 +77,11 @@ namespace MoldeMVC_Core.Controllers
             return View(medicamento);
         }
 
-        // POST: Medicamentos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdMedicamento,Nombre,Tipo")] Medicamento medicamento)
+        public async Task<IActionResult> Edit(string id, [Bind("Nombre,Tipo")] Medicamentos medicamento)
         {
-            if (id != medicamento.IdMedicamento)
+            if (!ObjectId.TryParse(id, out var oid))
                 return NotFound();
 
             if (!ModelState.IsValid)
@@ -86,15 +89,10 @@ namespace MoldeMVC_Core.Controllers
 
             try
             {
-                _context.Update(medicamento);
-                await _context.SaveChangesAsync();
+                medicamento.Id = oid;
+                await _mongo.Medicamentos.ReplaceOneAsync(
+                    m => m.Id == oid, medicamento);
                 return RedirectToAction(nameof(Index));
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await _context.Medicamentos.AnyAsync(m => m.IdMedicamento == id))
-                    return NotFound();
-                throw;
             }
             catch (Exception ex)
             {
@@ -103,11 +101,14 @@ namespace MoldeMVC_Core.Controllers
             }
         }
 
-        // GET: Medicamentos/Delete/5
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var medicamento = await _context.Medicamentos
-                .FirstOrDefaultAsync(m => m.IdMedicamento == id);
+            if (!ObjectId.TryParse(id, out var oid))
+                return NotFound();
+
+            var medicamento = await _mongo.Medicamentos
+                .Find(m => m.Id == oid)
+                .FirstOrDefaultAsync();
 
             if (medicamento == null)
                 return NotFound();
@@ -115,19 +116,14 @@ namespace MoldeMVC_Core.Controllers
             return View(medicamento);
         }
 
-        // POST: Medicamentos/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var medicamento = await _context.Medicamentos
-                .FirstOrDefaultAsync(m => m.IdMedicamento == id);
-
-            if (medicamento == null)
+            if (!ObjectId.TryParse(id, out var oid))
                 return NotFound();
 
-            _context.Remove(medicamento);
-            await _context.SaveChangesAsync();
+            await _mongo.Medicamentos.DeleteOneAsync(m => m.Id == oid);
             return RedirectToAction(nameof(Index));
         }
     }

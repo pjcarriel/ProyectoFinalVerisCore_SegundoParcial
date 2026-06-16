@@ -31,9 +31,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-var proyectoConnection = builder.Configuration.GetConnectionString("ProyectoConnection") ?? throw new InvalidOperationException("Connection string 'ProyectoConnection' not found.");
-builder.Services.AddDbContext<ProyectoVerisMvcBdContext>(options =>
-    options.UseSqlServer(proyectoConnection));
+builder.Services.AddSingleton<MoldeMVC_Core.Data.MongoDbContext>();
 
 builder.Services.AddControllersWithViews(options =>
 {

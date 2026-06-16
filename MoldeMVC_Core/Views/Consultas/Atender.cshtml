@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Consulta
+@model MoldeMVC_Core.Models.Consultas
 
 @{
     ViewData["Title"] = "Atender Consulta";
@@ -68,7 +68,7 @@
         </div>
     </div>
 
-    <form asp-action="Atender" asp-route-id="@Model.IdConsulta" method="post">
+    <form asp-action="Atender" asp-route-id="@Model.IdStr" method="post">
         @Html.AntiForgeryToken()
 
         <div style="padding: 1.2rem 2rem;">

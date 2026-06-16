@@ -1,7 +1,7 @@
 @{
     ViewData["Title"] = "Agendar Consulta";
-    var especialidades = ViewBag.Especialidades as List<MoldeMVC_Core.Models.Especialidade> ?? new();
-    var pacientes = ViewBag.Pacientes as List<MoldeMVC_Core.Models.Paciente> ?? new();
+    var especialidades = ViewBag.Especialidades as List<MoldeMVC_Core.Models.Especialidades> ?? new();
+    var pacientes = ViewBag.Pacientes as List<MoldeMVC_Core.Models.Pacientes> ?? new();
 }
 
 <div class="veris-agenda-wrapper">
@@ -31,7 +31,7 @@
                     <option value="">-- Seleccione un paciente --</option>
                     @foreach (var p in pacientes)
                     {
-                        <option value="@p.IdPaciente">@p.Nombre</option>
+                        <option value="@p.IdStr">@p.Nombre</option>
                     }
                 </select>
             </div>
@@ -42,7 +42,7 @@
                     <option value="">-- Seleccione una especialidad --</option>
                     @foreach (var e in especialidades)
                     {
-                        <option value="@e.IdEspecialidad">@e.Descripcion</option>
+                        <option value="@e.IdStr">@e.Descripcion</option>
                     }
                 </select>
             </div>

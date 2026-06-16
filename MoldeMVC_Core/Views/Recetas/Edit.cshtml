@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Receta
+@model MoldeMVC_Core.Models.Recetas
 
 @{
     ViewData["Title"] = "Editar Receta";
@@ -9,25 +9,24 @@
         <div class="veris-form-icon">&#9998;</div>
         <h1>Editar Receta</h1>
     </div>
-    <form asp-action="Edit" method="post">
+    <form asp-action="Edit" asp-route-id="@Model.IdStr" method="post">
         <div class="veris-form-body">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-            <input type="hidden" asp-for="IdReceta" />
 
             <div class="veris-form-group">
-                <label asp-for="IdConsulta" class="veris-form-label">Consulta</label>
-                <select asp-for="IdConsulta" asp-items="ViewBag.Consultas" class="veris-form-control">
+                <label asp-for="ConsultaId" class="veris-form-label">Consulta</label>
+                <select asp-for="ConsultaId" asp-items="ViewBag.Consultas" class="veris-form-control">
                     <option value="">-- Seleccione una consulta --</option>
                 </select>
-                <span asp-validation-for="IdConsulta" class="veris-form-error"></span>
+                <span asp-validation-for="ConsultaId" class="veris-form-error"></span>
             </div>
 
             <div class="veris-form-group">
-                <label asp-for="IdMedicamento" class="veris-form-label">Medicamento</label>
-                <select asp-for="IdMedicamento" asp-items="ViewBag.Medicamentos" class="veris-form-control">
+                <label asp-for="MedicamentoId" class="veris-form-label">Medicamento</label>
+                <select asp-for="MedicamentoId" asp-items="ViewBag.Medicamentos" class="veris-form-control">
                     <option value="">-- Seleccione un medicamento --</option>
                 </select>
-                <span asp-validation-for="IdMedicamento" class="veris-form-error"></span>
+                <span asp-validation-for="MedicamentoId" class="veris-form-error"></span>
             </div>
 
             <div class="veris-form-group">

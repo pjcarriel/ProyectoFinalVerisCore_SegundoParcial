@@ -1,10 +1,10 @@
-@model MoldeMVC_Core.Models.Consulta
+@model MoldeMVC_Core.Models.Consultas
 
 @{
     ViewData["Title"] = "Editar Consulta";
-    var especialidades = ViewBag.Especialidades as List<MoldeMVC_Core.Models.Especialidade> ?? new();
-    var pacientes = ViewBag.PacientesList as List<MoldeMVC_Core.Models.Paciente> ?? new();
-    var medicoEspId = (int)(ViewBag.MedicoEspecialidadId ?? 0);
+    var especialidades = ViewBag.Especialidades as List<MoldeMVC_Core.Models.Especialidades> ?? new();
+    var pacientes = ViewBag.PacientesList as List<MoldeMVC_Core.Models.Pacientes> ?? new();
+    var medicoEspId = (string)(ViewBag.MedicoEspecialidadId ?? "");
 }
 
 <div class="veris-agenda-wrapper">
@@ -20,11 +20,10 @@
 
     <div id="editAlerta" class="veris-agenda-alerta" style="display:none;"></div>
 
-    <form asp-action="Edit" asp-route-id="@Model.IdConsulta" method="post" id="formEditConsulta">
+    <form asp-action="Edit" asp-route-id="@Model.IdStr" method="post" id="formEditConsulta">
         @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="IdConsulta" />
-        <input type="hidden" name="IdMedico"       id="hiddenMedicoId"   value="@Model.IdMedico" />
-        <input type="hidden" name="IdPaciente"     id="hiddenPacienteId" value="@Model.IdPaciente" />
+        <input type="hidden" name="MedicoId"       id="hiddenMedicoId"   value="@Model.MedicoId" />
+        <input type="hidden" name="PacienteId"     id="hiddenPacienteId" value="@Model.PacienteId" />
         <input type="hidden" name="FechaConsulta"  id="hiddenFecha"      value="@Model.FechaConsulta.ToString("yyyy-MM-dd")" />
         <input type="hidden" name="Hi"             id="hiddenHi"         value="@Model.Hi.ToString(@"HH\:mm")" />
         <input type="hidden" name="Hf"             id="hiddenHf"         value="@Model.Hf.ToString(@"HH\:mm")" />
@@ -40,7 +39,7 @@
                         <option value="">-- Seleccione un paciente --</option>
                         @foreach (var p in pacientes)
                         {
-                            <option value="@p.IdPaciente">@p.Nombre</option>
+                            <option value="@p.IdStr">@p.Nombre</option>
                         }
                     </select>
                 </div>
@@ -51,7 +50,7 @@
                         <option value="">-- Seleccione una especialidad --</option>
                         @foreach (var e in especialidades)
                         {
-                            <option value="@e.IdEspecialidad">@e.Descripcion</option>
+                            <option value="@e.IdStr">@e.Descripcion</option>
                         }
                     </select>
                 </div>
@@ -144,9 +143,9 @@
 <script>
 // ── Datos de la consulta existente ────────────────────────────────────────────
 const consultaExistente = {
-    medicoId:    "@Model.IdMedico",
+    medicoId:    "@Model.MedicoId",
     espId:       "@medicoEspId",
-    pacienteId:  "@Model.IdPaciente",
+    pacienteId:  "@Model.PacienteId",
     fecha:       "@Model.FechaConsulta.ToString("yyyy-MM-dd")",
     hi:          "@Model.Hi.ToString(@"HH\:mm")",
     hf:          "@Model.Hf.ToString(@"HH\:mm")"

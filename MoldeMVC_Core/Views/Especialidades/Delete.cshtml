@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Especialidade
+@model MoldeMVC_Core.Models.Especialidades
 
 @{
     ViewData["Title"] = "Eliminar Especialidad";
@@ -24,8 +24,7 @@
         <dd class="col-sm-9">@Model.FranjaHf.ToString("HH:mm")</dd>
     </dl>
 
-    <form asp-action="Delete" method="post">
-        <input type="hidden" asp-for="IdEspecialidad" />
+    <form asp-action="Delete" asp-route-id="@Model.IdStr" method="post">
         <input type="submit" value="Eliminar" class="btn btn-danger" />
         <a asp-action="Index" class="btn btn-secondary">Volver</a>
     </form>

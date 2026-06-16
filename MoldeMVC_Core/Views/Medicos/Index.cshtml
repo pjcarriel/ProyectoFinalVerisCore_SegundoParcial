@@ -1,4 +1,4 @@
-@model IEnumerable<MoldeMVC_Core.Models.Medico>
+@model IEnumerable<MoldeMVC_Core.Models.Medicos>
 
 @{
     ViewData["Title"] = "Listado de Médicos";
@@ -32,19 +32,19 @@
                         <td>@item.Nombre</td>
                         <td>
                             <span class="veris-badge-tipo">
-                                @(item.IdEspecialidadNavigation?.Descripcion ?? "—")
+                                @(item.EspecialidadNavigation?.Descripcion ?? "—")
                             </span>
                         </td>
                         <td>
                             <div class="veris-actions">
                                 @if (!User.IsInRole("Medico"))
                                 {
-                                    <a asp-action="Edit" asp-route-id="@item.IdMedico" class="veris-btn-edit">&#9998; Editar</a>
+                                    <a asp-action="Edit" asp-route-id="@item.IdStr" class="veris-btn-edit">&#9998; Editar</a>
                                 }
-                                <a asp-action="Details" asp-route-id="@item.IdMedico" class="veris-btn-details">&#128269; Detalles</a>
+                                <a asp-action="Details" asp-route-id="@item.IdStr" class="veris-btn-details">&#128269; Detalles</a>
                                 @if (!User.IsInRole("Medico"))
                                 {
-                                    <a asp-action="Delete" asp-route-id="@item.IdMedico" class="veris-btn-delete">&#10005; Eliminar</a>
+                                    <a asp-action="Delete" asp-route-id="@item.IdStr" class="veris-btn-delete">&#10005; Eliminar</a>
                                 }
                             </div>
                         </td>

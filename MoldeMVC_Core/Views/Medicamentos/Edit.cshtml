@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Medicamento
+@model MoldeMVC_Core.Models.Medicamentos
 
 @{
     ViewData["Title"] = "Editar Medicamento";
@@ -9,10 +9,9 @@
         <div class="veris-form-icon">&#9998;</div>
         <h1>Editar Medicamento</h1>
     </div>
-    <form asp-action="Edit" method="post">
+    <form asp-action="Edit" asp-route-id="@Model.IdStr" method="post">
         <div class="veris-form-body">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-            <input type="hidden" asp-for="IdMedicamento" />
 
             <div class="veris-form-group">
                 <label asp-for="Nombre" class="veris-form-label">Nombre del medicamento</label>

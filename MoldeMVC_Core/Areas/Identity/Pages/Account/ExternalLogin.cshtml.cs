@@ -75,7 +75,7 @@ namespace MoldeMVC_Core.Areas.Identity.Pages.Account
                     if (!roles.Contains("Administrador"))
                     {
                         await _signInManager.SignOutAsync();
-                        ErrorMessage = "El inicio de sesión con Facebook solo está habilitado para el módulo Administrador.";
+                        ErrorMessage = $"El inicio de sesión con {info.LoginProvider} solo está habilitado para el módulo Administrador.";
                         return RedirectToPage("./Login");
                     }
 
@@ -98,10 +98,19 @@ namespace MoldeMVC_Core.Areas.Identity.Pages.Account
                         .Replace(" ", "_")
                         .Replace("@", "_");
 
-            // Si ya existe un usuario con ese email, solo vincular el proveedor
-            var existingUser = await _userManager.FindByEmailAsync(email);
+            // FindByEmailAsync lanza excepción si hay más de un usuario con el mismo email
+            // (RequireUniqueEmail = false), por eso usamos FirstOrDefault directamente.
+            var normalizedEmail = _userManager.NormalizeEmail(email);
+            var existingUser = _userManager.Users.FirstOrDefault(u => u.NormalizedEmail == normalizedEmail);
             if (existingUser != null)
             {
+                var existingRoles = await _userManager.GetRolesAsync(existingUser);
+                if (!existingRoles.Contains("Administrador"))
+                {
+                    ErrorMessage = $"El inicio de sesión con {info.LoginProvider} solo está habilitado para el módulo Administrador.";
+                    return RedirectToPage("./Login");
+                }
+
                 await _userManager.AddLoginAsync(existingUser, info);
                 await _signInManager.SignInAsync(existingUser, isPersistent: false);
                 return LocalRedirect(returnUrl);

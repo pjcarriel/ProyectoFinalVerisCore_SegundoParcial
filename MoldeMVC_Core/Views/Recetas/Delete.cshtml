@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Receta
+@model MoldeMVC_Core.Models.Recetas
 
 @{
     ViewData["Title"] = "Eliminar Receta";
@@ -12,19 +12,18 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-3">Consulta</dt>
-        <dd class="col-sm-9">@(Model.IdConsultaNavigation != null
-            ? $"{Model.IdConsultaNavigation.FechaConsulta:dd/MM/yyyy} — {Model.IdConsultaNavigation.Hi:HH\\:mm}"
-            : Model.IdConsulta.ToString())</dd>
+        <dd class="col-sm-9">@(Model.ConsultaNavigation != null
+            ? $"{Model.ConsultaNavigation.FechaConsulta:dd/MM/yyyy} — {Model.ConsultaNavigation.Hi:HH\\:mm}"
+            : Model.ConsultaId)</dd>
 
         <dt class="col-sm-3">Medicamento</dt>
-        <dd class="col-sm-9">@(Model.IdMedicamentoNavigation?.Nombre ?? Model.IdMedicamento.ToString())</dd>
+        <dd class="col-sm-9">@(Model.MedicamentoNavigation?.Nombre ?? Model.MedicamentoId)</dd>
 
         <dt class="col-sm-3">Cantidad</dt>
         <dd class="col-sm-9">@Model.Cantidad</dd>
     </dl>
 
-    <form asp-action="Delete" method="post">
-        <input type="hidden" asp-for="IdReceta" />
+    <form asp-action="Delete" asp-route-id="@Model.IdStr" method="post">
         <input type="submit" value="Eliminar" class="btn btn-danger" />
         <a asp-action="Index" class="btn btn-secondary">Volver</a>
     </form>

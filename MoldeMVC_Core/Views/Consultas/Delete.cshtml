@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Consulta
+@model MoldeMVC_Core.Models.Consultas
 
 @{
     ViewData["Title"] = "Eliminar Consulta";
@@ -12,10 +12,10 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-3">Médico</dt>
-        <dd class="col-sm-9">@(Model.IdMedicoNavigation?.Nombre ?? Model.IdMedico.ToString())</dd>
+        <dd class="col-sm-9">@(Model.MedicoNavigation?.Nombre ?? Model.MedicoId)</dd>
 
         <dt class="col-sm-3">Paciente</dt>
-        <dd class="col-sm-9">@(Model.IdPacienteNavigation?.Nombre ?? Model.IdPaciente.ToString())</dd>
+        <dd class="col-sm-9">@(Model.PacienteNavigation?.Nombre ?? Model.PacienteId)</dd>
 
         <dt class="col-sm-3">Fecha de Consulta</dt>
         <dd class="col-sm-9">@Model.FechaConsulta.ToString("dd/MM/yyyy")</dd>
@@ -30,8 +30,7 @@
         <dd class="col-sm-9">@Model.Diagnostico</dd>
     </dl>
 
-    <form asp-action="Delete" method="post">
-        <input type="hidden" asp-for="IdConsulta" />
+    <form asp-action="Delete" asp-route-id="@Model.IdStr" method="post">
         <input type="submit" value="Eliminar" class="btn btn-danger" />
         <a asp-action="Index" class="btn btn-secondary">Volver</a>
     </form>

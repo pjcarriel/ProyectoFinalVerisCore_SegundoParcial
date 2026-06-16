@@ -1,4 +1,4 @@
-@model MoldeMVC_Core.Models.Medicamento
+@model MoldeMVC_Core.Models.Medicamentos
 
 @{
     ViewData["Title"] = "Eliminar Medicamento";
@@ -18,8 +18,7 @@
         <dd class="col-sm-9">@Model.Tipo</dd>
     </dl>
 
-    <form asp-action="Delete" method="post">
-        <input type="hidden" asp-for="IdMedicamento" />
+    <form asp-action="Delete" asp-route-id="@Model.IdStr" method="post">
         <input type="submit" value="Eliminar" class="btn btn-danger" />
         <a asp-action="Index" class="btn btn-secondary">Volver</a>
     </form>

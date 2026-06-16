@@ -1,4 +1,4 @@
-@model IEnumerable<MoldeMVC_Core.Models.Paciente>
+@model IEnumerable<MoldeMVC_Core.Models.Pacientes>
 
 @{
     ViewData["Title"] = "Listado de Pacientes";
@@ -43,12 +43,12 @@
                             <div class="veris-actions">
                                 @if (!User.IsInRole("Paciente"))
                                 {
-                                    <a asp-action="Edit" asp-route-id="@item.IdPaciente" class="veris-btn-edit">&#9998; Editar</a>
+                                    <a asp-action="Edit" asp-route-id="@item.IdStr" class="veris-btn-edit">&#9998; Editar</a>
                                 }
-                                <a asp-action="Details" asp-route-id="@item.IdPaciente" class="veris-btn-details">&#128269; Detalles</a>
+                                <a asp-action="Details" asp-route-id="@item.IdStr" class="veris-btn-details">&#128269; Detalles</a>
                                 @if (!User.IsInRole("Paciente"))
                                 {
-                                    <a asp-action="Delete" asp-route-id="@item.IdPaciente" class="veris-btn-delete">&#10005; Eliminar</a>
+                                    <a asp-action="Delete" asp-route-id="@item.IdStr" class="veris-btn-delete">&#10005; Eliminar</a>
                                 }
                             </div>
                         </td>

@@ -1,4 +1,4 @@
-@model IEnumerable<MoldeMVC_Core.Models.Receta>
+@model IEnumerable<MoldeMVC_Core.Models.Recetas>
 
 @{
     ViewData["Title"] = "Listado de Recetas";
@@ -31,18 +31,18 @@
                 {
                     <tr>
                         <td>
-                            @if (item.IdConsultaNavigation != null)
+                            @if (item.ConsultaNavigation != null)
                             {
-                                @($"{item.IdConsultaNavigation.FechaConsulta:dd/MM/yyyy} — {item.IdConsultaNavigation.Hi:HH\\:mm}–{item.IdConsultaNavigation.Hf:HH\\:mm}")
+                                @($"{item.ConsultaNavigation.FechaConsulta:dd/MM/yyyy} — {item.ConsultaNavigation.Hi:HH\\:mm}–{item.ConsultaNavigation.Hf:HH\\:mm}")
                             }
                             else
                             {
-                                @item.IdConsulta
+                                @item.ConsultaId
                             }
                         </td>
                         <td>
                             <span class="veris-badge-tipo">
-                                @(item.IdMedicamentoNavigation?.Nombre ?? item.IdMedicamento.ToString())
+                                @(item.MedicamentoNavigation?.Nombre ?? item.MedicamentoId)
                             </span>
                         </td>
                         <td>
@@ -52,12 +52,12 @@
                             <div class="veris-actions">
                                 @if (!User.IsInRole("Paciente"))
                                 {
-                                    <a asp-action="Edit" asp-route-id="@item.IdReceta" class="veris-btn-edit">&#9998; Editar</a>
+                                    <a asp-action="Edit" asp-route-id="@item.IdStr" class="veris-btn-edit">&#9998; Editar</a>
                                 }
-                                <a asp-action="Details" asp-route-id="@item.IdReceta" class="veris-btn-details">&#128269; Detalles</a>
+                                <a asp-action="Details" asp-route-id="@item.IdStr" class="veris-btn-details">&#128269; Detalles</a>
                                 @if (!User.IsInRole("Paciente"))
                                 {
-                                    <a asp-action="Delete" asp-route-id="@item.IdReceta" class="veris-btn-delete">&#10005; Eliminar</a>
+                                    <a asp-action="Delete" asp-route-id="@item.IdStr" class="veris-btn-delete">&#10005; Eliminar</a>
                                 }
                             </div>
                         </td>

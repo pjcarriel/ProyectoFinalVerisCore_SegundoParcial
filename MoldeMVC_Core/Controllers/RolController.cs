@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
+using MoldeMVC_Core.Data;
 using MoldeMVC_Core.Models;
 
 namespace MoldeMVC_Core.Controllers
@@ -10,18 +11,17 @@ namespace MoldeMVC_Core.Controllers
     [Authorize(Roles = "SuperAdmin")]
     public class RolController : Controller
     {
-        private readonly UserManager<IdentityUser>   _userManager;
-        private readonly RoleManager<IdentityRole>   _roleManager;
-        private readonly ProyectoVerisMvcBdContext   _context;
+        private readonly UserManager<IdentityUser>  _userManager;
+        private readonly RoleManager<IdentityRole>  _roleManager;
+        private readonly MongoDbContext             _mongo;
 
-        public RolController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ProyectoVerisMvcBdContext context)
+        public RolController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, MongoDbContext mongo)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _context     = context;
+            _mongo       = mongo;
         }
 
-        // GET: Rol
         public async Task<IActionResult> Index()
         {
             var users = _userManager.Users.ToList();
@@ -42,7 +42,6 @@ namespace MoldeMVC_Core.Controllers
             return View(viewModel);
         }
 
-        // GET: Rol/AsignarRol/id
         public async Task<IActionResult> AsignarRol(string id)
         {
             if (id == null) return NotFound();
@@ -51,14 +50,13 @@ namespace MoldeMVC_Core.Controllers
             if (user == null) return NotFound();
 
             var rolesActuales = await _userManager.GetRolesAsync(user);
-            ViewBag.UserName   = user.UserName;
-            ViewBag.RolActual  = string.Join(", ", rolesActuales);
-            ViewBag.Roles      = new SelectList(_roleManager.Roles.Select(r => r.Name).ToList());
+            ViewBag.UserName  = user.UserName;
+            ViewBag.RolActual = string.Join(", ", rolesActuales);
+            ViewBag.Roles     = new SelectList(_roleManager.Roles.Select(r => r.Name).ToList());
 
             return View(user);
         }
 
-        // POST: Rol/AsignarRol
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AsignarRol(string id, string rolSeleccionado)
@@ -66,17 +64,15 @@ namespace MoldeMVC_Core.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
-            // Proteger al SuperAdmin
             if (await _userManager.IsInRoleAsync(user, "SuperAdmin"))
             {
                 TempData["Error"] = "No se pueden modificar los roles del usuario SuperAdmin.";
                 return RedirectToAction(nameof(Index));
             }
 
-            // Validar conflicto Médico ↔ Paciente
             if (rolSeleccionado == "Paciente")
             {
-                var esMedico = await _context.Medicos.AnyAsync(m => m.IdUsuario == id);
+                var esMedico = await _mongo.Medicos.CountDocumentsAsync(m => m.IdUsuario == id) > 0;
                 if (esMedico)
                 {
                     TempData["Error"] = $"No se puede asignar el rol Paciente a {user.UserName}: ya tiene un registro de Médico.";
@@ -85,7 +81,7 @@ namespace MoldeMVC_Core.Controllers
             }
             else if (rolSeleccionado == "Medico")
             {
-                var esPaciente = await _context.Pacientes.AnyAsync(p => p.IdUsuario == id);
+                var esPaciente = await _mongo.Pacientes.CountDocumentsAsync(p => p.IdUsuario == id) > 0;
                 if (esPaciente)
                 {
                     TempData["Error"] = $"No se puede asignar el rol Médico a {user.UserName}: ya tiene un registro de Paciente.";
@@ -93,7 +89,6 @@ namespace MoldeMVC_Core.Controllers
                 }
             }
 
-            // Quitar roles actuales y asignar el nuevo
             var rolesActuales = await _userManager.GetRolesAsync(user);
             await _userManager.RemoveFromRolesAsync(user, rolesActuales);
             await _userManager.AddToRoleAsync(user, rolSeleccionado);
@@ -102,7 +97,6 @@ namespace MoldeMVC_Core.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: Rol/QuitarRol
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> QuitarRol(string id)
@@ -110,7 +104,6 @@ namespace MoldeMVC_Core.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
-            // Proteger al SuperAdmin
             if (await _userManager.IsInRoleAsync(user, "SuperAdmin"))
             {
                 TempData["Error"] = "No se pueden modificar los roles del usuario SuperAdmin.";

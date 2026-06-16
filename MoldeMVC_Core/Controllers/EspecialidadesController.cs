@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MoldeMVC_Core.Data;
 using MoldeMVC_Core.Models;
 
 namespace MoldeMVC_Core.Controllers
@@ -8,25 +10,27 @@ namespace MoldeMVC_Core.Controllers
     [Authorize(Roles = "Administrador,SuperAdmin")]
     public class EspecialidadesController : Controller
     {
-        private readonly ProyectoVerisMvcBdContext _context;
+        private readonly MongoDbContext _mongo;
 
-        public EspecialidadesController(ProyectoVerisMvcBdContext context)
+        public EspecialidadesController(MongoDbContext mongo)
         {
-            _context = context;
+            _mongo = mongo;
         }
 
-        // GET: Especialidades
         public async Task<IActionResult> Index()
         {
-            var especialidades = await _context.Especialidades.ToListAsync();
+            var especialidades = await _mongo.Especialidades.Find(_ => true).ToListAsync();
             return View(especialidades);
         }
 
-        // GET: Especialidades/Details/5
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(string id)
         {
-            var especialidad = await _context.Especialidades
-                .FirstOrDefaultAsync(e => e.IdEspecialidad == id);
+            if (!ObjectId.TryParse(id, out var oid))
+                return NotFound();
+
+            var especialidad = await _mongo.Especialidades
+                .Find(e => e.Id == oid)
+                .FirstOrDefaultAsync();
 
             if (especialidad == null)
                 return NotFound();
@@ -34,24 +38,21 @@ namespace MoldeMVC_Core.Controllers
             return View(especialidad);
         }
 
-        // GET: Especialidades/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Especialidades/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Descripcion,Dias,FranjaHi,FranjaHf")] Especialidade especialidad)
+        public async Task<IActionResult> Create([Bind("Descripcion,Dias,FranjaHi,FranjaHf")] Especialidades especialidad)
         {
             if (!ModelState.IsValid)
                 return View(especialidad);
 
             try
             {
-                _context.Add(especialidad);
-                await _context.SaveChangesAsync();
+                await _mongo.Especialidades.InsertOneAsync(especialidad);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -61,11 +62,14 @@ namespace MoldeMVC_Core.Controllers
             }
         }
 
-        // GET: Especialidades/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(string id)
         {
-            var especialidad = await _context.Especialidades
-                .FirstOrDefaultAsync(e => e.IdEspecialidad == id);
+            if (!ObjectId.TryParse(id, out var oid))
+                return NotFound();
+
+            var especialidad = await _mongo.Especialidades
+                .Find(e => e.Id == oid)
+                .FirstOrDefaultAsync();
 
             if (especialidad == null)
                 return NotFound();
@@ -73,12 +77,11 @@ namespace MoldeMVC_Core.Controllers
             return View(especialidad);
         }
 
-        // POST: Especialidades/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdEspecialidad,Descripcion,Dias,FranjaHi,FranjaHf")] Especialidade especialidad)
+        public async Task<IActionResult> Edit(string id, [Bind("Descripcion,Dias,FranjaHi,FranjaHf")] Especialidades especialidad)
         {
-            if (id != especialidad.IdEspecialidad)
+            if (!ObjectId.TryParse(id, out var oid))
                 return NotFound();
 
             if (!ModelState.IsValid)
@@ -86,15 +89,10 @@ namespace MoldeMVC_Core.Controllers
 
             try
             {
-                _context.Update(especialidad);
-                await _context.SaveChangesAsync();
+                especialidad.Id = oid;
+                await _mongo.Especialidades.ReplaceOneAsync(
+                    e => e.Id == oid, especialidad);
                 return RedirectToAction(nameof(Index));
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await _context.Especialidades.AnyAsync(e => e.IdEspecialidad == id))
-                    return NotFound();
-                throw;
             }
             catch (Exception ex)
             {
@@ -103,11 +101,14 @@ namespace MoldeMVC_Core.Controllers
             }
         }
 
-        // GET: Especialidades/Delete/5
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var especialidad = await _context.Especialidades
-                .FirstOrDefaultAsync(e => e.IdEspecialidad == id);
+            if (!ObjectId.TryParse(id, out var oid))
+                return NotFound();
+
+            var especialidad = await _mongo.Especialidades
+                .Find(e => e.Id == oid)
+                .FirstOrDefaultAsync();
 
             if (especialidad == null)
                 return NotFound();
@@ -115,19 +116,14 @@ namespace MoldeMVC_Core.Controllers
             return View(especialidad);
         }
 
-        // POST: Especialidades/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var especialidad = await _context.Especialidades
-                .FirstOrDefaultAsync(e => e.IdEspecialidad == id);
-
-            if (especialidad == null)
+            if (!ObjectId.TryParse(id, out var oid))
                 return NotFound();
 
-            _context.Remove(especialidad);
-            await _context.SaveChangesAsync();
+            await _mongo.Especialidades.DeleteOneAsync(e => e.Id == oid);
             return RedirectToAction(nameof(Index));
         }
     }
