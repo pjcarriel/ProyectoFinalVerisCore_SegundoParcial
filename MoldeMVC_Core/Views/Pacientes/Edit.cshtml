@@ -17,14 +17,6 @@
             <div class="veris-form-grid-2">
 
                 <div class="veris-form-group veris-col-full">
-                    <label asp-for="IdUsuario" class="veris-form-label">Usuario</label>
-                    <select asp-for="IdUsuario" asp-items="ViewBag.Usuarios" class="veris-form-control">
-                        <option value="">-- Seleccione un usuario --</option>
-                    </select>
-                    <span asp-validation-for="IdUsuario" class="veris-form-error"></span>
-                </div>
-
-                <div class="veris-form-group veris-col-full">
                     <label asp-for="Nombre" class="veris-form-label">Nombre completo</label>
                     <input asp-for="Nombre" class="veris-form-control" />
                     <span asp-validation-for="Nombre" class="veris-form-error"></span>

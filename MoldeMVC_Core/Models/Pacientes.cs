@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace MoldeMVC_Core.Models;
 
+[BsonIgnoreExtraElements]
 public partial class Pacientes
 {
     [BsonId]
@@ -31,9 +32,6 @@ public partial class Pacientes
 
     [BsonElement("foto")]
     public string Foto { get; set; } = null!;
-
-    [BsonElement("idUsuario")]
-    public string? IdUsuario { get; set; }
 
     [BsonIgnore]
     public virtual ICollection<Consultas> Consulta { get; set; } = new List<Consultas>();

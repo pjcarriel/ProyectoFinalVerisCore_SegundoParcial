@@ -28,8 +28,10 @@ namespace MoldeMVC_Core.Controllers
             {
                 var sesion = HttpContext.Session.GetString("User");
                 var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
+                if (!int.TryParse(objUser?.PhoneNumber, out var cedula))
+                    return View(new List<Recetas>());
                 var paciente = await _mongo.Pacientes
-                    .Find(p => p.IdUsuario == objUser!.Id)
+                    .Find(p => p.Cedula == cedula)
                     .FirstOrDefaultAsync();
 
                 if (paciente == null) return View(new List<Recetas>());
@@ -51,6 +53,30 @@ namespace MoldeMVC_Core.Controllers
                     if (r.ConsultaNavigation != null)
                         r.ConsultaNavigation.PacienteNavigation = paciente;
                 }
+            }
+            else if (User.IsInRole("Medico"))
+            {
+                var sesion = HttpContext.Session.GetString("User");
+                var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
+                var medico = await _mongo.Medicos
+                    .Find(m => m.Nombre == objUser!.UserName)
+                    .FirstOrDefaultAsync();
+
+                if (medico == null) return View(new List<Recetas>());
+
+                var medicoIdStr = medico.Id.ToString();
+                var consultasMedico = await _mongo.Consultas
+                    .Find(c => c.MedicoId == medicoIdStr)
+                    .ToListAsync();
+
+                var consultaIds = consultasMedico.Select(c => c.Id.ToString()).ToList();
+                recetas = await _mongo.Recetas
+                    .Find(r => consultaIds.Contains(r.ConsultaId))
+                    .ToListAsync();
+
+                var consDict = consultasMedico.ToDictionary(c => c.Id.ToString());
+                foreach (var r in recetas)
+                    r.ConsultaNavigation = consDict.GetValueOrDefault(r.ConsultaId);
             }
             else
             {
@@ -82,7 +108,7 @@ namespace MoldeMVC_Core.Controllers
             {
                 var sesion = HttpContext.Session.GetString("User");
                 var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
-                if (receta.ConsultaNavigation?.PacienteNavigation?.IdUsuario != objUser?.Id)
+                if (receta.ConsultaNavigation?.PacienteNavigation?.Cedula.ToString() != objUser?.PhoneNumber)
                     return Forbid();
             }
 

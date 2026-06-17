@@ -25,6 +25,13 @@
                 <!-- FORMULARIO (IZQUIERDA) -->
                 <div class="col-md-6 p-4">
                     <section id="loginForm">
+                        @if (TempData["RegistroExitoso"] != null)
+                        {
+                            <div class="alert alert-success d-flex align-items-start gap-2 mb-3" role="alert">
+                                <span style="font-size:1.2rem;">&#10003;</span>
+                                <span>@TempData["RegistroExitoso"]</span>
+                            </div>
+                        }
                         <form id="account" method="post">
                             <h2 id="title" class="fw-bold" style="color:#4f84ef;">@ViewData["Title"]</h2>
                             <h6 class="text-muted mb-3">Utilice una cuenta local para iniciar sesión.</h6>

@@ -33,7 +33,7 @@ namespace MoldeMVC_Core.Controllers
                 var sesion = HttpContext.Session.GetString("User");
                 var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
                 medicos = await _mongo.Medicos
-                    .Find(m => m.IdUsuario == objUser!.Id)
+                    .Find(m => m.Nombre == objUser!.UserName)
                     .ToListAsync();
             }
             else
@@ -57,7 +57,7 @@ namespace MoldeMVC_Core.Controllers
             {
                 var sesion = HttpContext.Session.GetString("User");
                 var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
-                if (medico.IdUsuario != objUser?.Id) return Forbid();
+                if (medico.Nombre != objUser?.UserName) return Forbid();
             }
 
             medico.EspecialidadNavigation = await _mongo.Especialidades
@@ -73,14 +73,13 @@ namespace MoldeMVC_Core.Controllers
         {
             await CargarEspecialidades();
             CargarFotosMedicos();
-            CargarUsuarios();
             return View();
         }
 
         [Authorize(Roles = "Administrador,SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdUsuario,Nombre,EspecialidadId,Foto")] Medicos medico)
+        public async Task<IActionResult> Create([Bind("Nombre,EspecialidadId,Foto")] Medicos medico)
         {
             ModelState.Remove("EspecialidadNavigation");
 
@@ -88,27 +87,29 @@ namespace MoldeMVC_Core.Controllers
             {
                 await CargarEspecialidades(medico.EspecialidadId);
                 CargarFotosMedicos();
-                CargarUsuarios(medico.IdUsuario);
                 return View(medico);
             }
 
-            var esPaciente = await _mongo.Pacientes.CountDocumentsAsync(p => p.IdUsuario == medico.IdUsuario) > 0;
-            if (esPaciente)
+            // Verificar que el usuario no sea ya paciente (busca por UserName = Nombre)
+            var usuarioMedico = await _userManager.FindByNameAsync(medico.Nombre);
+            if (usuarioMedico != null && int.TryParse(usuarioMedico.PhoneNumber, out var cedPac))
             {
-                ModelState.AddModelError("IdUsuario", "Este usuario ya está registrado como Paciente.");
-                await CargarEspecialidades(medico.EspecialidadId);
-                CargarFotosMedicos();
-                CargarUsuarios(medico.IdUsuario);
-                return View(medico);
+                var esPaciente = await _mongo.Pacientes.CountDocumentsAsync(p => p.Cedula == cedPac) > 0;
+                if (esPaciente)
+                {
+                    ModelState.AddModelError("Nombre", "El usuario con este nombre ya está registrado como Paciente.");
+                    await CargarEspecialidades(medico.EspecialidadId);
+                    CargarFotosMedicos();
+                    return View(medico);
+                }
             }
 
-            var yaesMedico = await _mongo.Medicos.CountDocumentsAsync(m => m.IdUsuario == medico.IdUsuario) > 0;
+            var yaesMedico = await _mongo.Medicos.CountDocumentsAsync(m => m.Nombre == medico.Nombre) > 0;
             if (yaesMedico)
             {
-                ModelState.AddModelError("IdUsuario", "Este usuario ya tiene un registro de Médico.");
+                ModelState.AddModelError("Nombre", "Ya existe un médico registrado con este nombre.");
                 await CargarEspecialidades(medico.EspecialidadId);
                 CargarFotosMedicos();
-                CargarUsuarios(medico.IdUsuario);
                 return View(medico);
             }
 
@@ -122,7 +123,6 @@ namespace MoldeMVC_Core.Controllers
                 ModelState.AddModelError("", "Error inesperado: " + ex.Message);
                 await CargarEspecialidades(medico.EspecialidadId);
                 CargarFotosMedicos();
-                CargarUsuarios(medico.IdUsuario);
                 return View(medico);
             }
         }
@@ -138,14 +138,13 @@ namespace MoldeMVC_Core.Controllers
 
             await CargarEspecialidades(medico.EspecialidadId);
             CargarFotosMedicos();
-            CargarUsuarios(medico.IdUsuario);
             return View(medico);
         }
 
         [Authorize(Roles = "Administrador,SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("IdUsuario,Nombre,EspecialidadId,Foto")] Medicos medico)
+        public async Task<IActionResult> Edit(string id, [Bind("Nombre,EspecialidadId,Foto")] Medicos medico)
         {
             if (!ObjectId.TryParse(id, out var oid))
                 return NotFound();
@@ -156,7 +155,6 @@ namespace MoldeMVC_Core.Controllers
             {
                 await CargarEspecialidades(medico.EspecialidadId);
                 CargarFotosMedicos();
-                CargarUsuarios(medico.IdUsuario);
                 return View(medico);
             }
 
@@ -171,7 +169,6 @@ namespace MoldeMVC_Core.Controllers
                 ModelState.AddModelError("", "Error inesperado: " + ex.Message);
                 await CargarEspecialidades(medico.EspecialidadId);
                 CargarFotosMedicos();
-                CargarUsuarios(medico.IdUsuario);
                 return View(medico);
             }
         }
@@ -230,13 +227,5 @@ namespace MoldeMVC_Core.Controllers
                 : new List<string>();
         }
 
-        private void CargarUsuarios(string? selectedId = null)
-        {
-            var usuarios = _userManager.Users
-                .OrderBy(u => u.UserName)
-                .Select(u => new { u.Id, u.UserName })
-                .ToList();
-            ViewBag.Usuarios = new SelectList(usuarios, "Id", "UserName", selectedId);
-        }
     }
 }

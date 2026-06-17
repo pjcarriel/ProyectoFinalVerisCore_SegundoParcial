@@ -15,14 +15,6 @@
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="veris-form-group">
-                <label asp-for="IdUsuario" class="veris-form-label">Usuario</label>
-                <select asp-for="IdUsuario" asp-items="ViewBag.Usuarios" class="veris-form-control">
-                    <option value="">-- Seleccione un usuario --</option>
-                </select>
-                <span asp-validation-for="IdUsuario" class="veris-form-error"></span>
-            </div>
-
-            <div class="veris-form-group">
                 <label asp-for="Nombre" class="veris-form-label">Nombre completo</label>
                 <input asp-for="Nombre" class="veris-form-control" placeholder="Ej: Dr. Juan Pérez" />
                 <span asp-validation-for="Nombre" class="veris-form-error"></span>

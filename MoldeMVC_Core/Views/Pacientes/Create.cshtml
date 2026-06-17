@@ -17,11 +17,11 @@
             <div class="veris-form-grid-2">
 
                 <div class="veris-form-group veris-col-full">
-                    <label asp-for="IdUsuario" class="veris-form-label">Usuario</label>
-                    <select asp-for="IdUsuario" asp-items="ViewBag.Usuarios" class="veris-form-control">
-                        <option value="">-- Seleccione un usuario --</option>
+                    <label class="veris-form-label">Usuario del sistema</label>
+                    <select name="usuarioId" asp-items="ViewBag.Usuarios" class="veris-form-control">
+                        <option value="">-- Seleccione el usuario que iniciará sesión --</option>
                     </select>
-                    <span asp-validation-for="IdUsuario" class="veris-form-error"></span>
+                    <small class="text-muted">La cédula se guardará como número de teléfono del usuario seleccionado para vincularlo al sistema.</small>
                 </div>
 
                 <div class="veris-form-group veris-col-full">

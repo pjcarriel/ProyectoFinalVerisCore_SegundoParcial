@@ -72,7 +72,7 @@ namespace MoldeMVC_Core.Controllers
 
             if (rolSeleccionado == "Paciente")
             {
-                var esMedico = await _mongo.Medicos.CountDocumentsAsync(m => m.IdUsuario == id) > 0;
+                var esMedico = await _mongo.Medicos.CountDocumentsAsync(m => m.Nombre == user.UserName) > 0;
                 if (esMedico)
                 {
                     TempData["Error"] = $"No se puede asignar el rol Paciente a {user.UserName}: ya tiene un registro de Médico.";
@@ -81,11 +81,14 @@ namespace MoldeMVC_Core.Controllers
             }
             else if (rolSeleccionado == "Medico")
             {
-                var esPaciente = await _mongo.Pacientes.CountDocumentsAsync(p => p.IdUsuario == id) > 0;
-                if (esPaciente)
+                if (int.TryParse(user.PhoneNumber, out var cedula))
                 {
-                    TempData["Error"] = $"No se puede asignar el rol Médico a {user.UserName}: ya tiene un registro de Paciente.";
-                    return RedirectToAction(nameof(Index));
+                    var esPaciente = await _mongo.Pacientes.CountDocumentsAsync(p => p.Cedula == cedula) > 0;
+                    if (esPaciente)
+                    {
+                        TempData["Error"] = $"No se puede asignar el rol Médico a {user.UserName}: ya tiene un registro de Paciente.";
+                        return RedirectToAction(nameof(Index));
+                    }
                 }
             }
 

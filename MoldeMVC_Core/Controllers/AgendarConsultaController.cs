@@ -30,10 +30,13 @@ namespace MoldeMVC_Core.Controllers
             {
                 var sesion  = HttpContext.Session.GetString("User");
                 var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
-                pacientes = await _mongo.Pacientes
-                    .Find(p => p.IdUsuario == objUser!.Id)
-                    .SortBy(p => p.Nombre)
-                    .ToListAsync();
+                if (!int.TryParse(objUser?.PhoneNumber, out var cedula))
+                    pacientes = new List<Pacientes>();
+                else
+                    pacientes = await _mongo.Pacientes
+                        .Find(p => p.Cedula == cedula)
+                        .SortBy(p => p.Nombre)
+                        .ToListAsync();
             }
             else
             {

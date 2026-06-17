@@ -13,9 +13,9 @@ namespace MoldeMVC_Core.Controllers
     [Authorize(Roles = "Administrador,SuperAdmin,Paciente")]
     public class PacientesController : Controller
     {
-        private readonly MongoDbContext              _mongo;
-        private readonly IWebHostEnvironment         _env;
-        private readonly UserManager<IdentityUser>   _userManager;
+        private readonly MongoDbContext            _mongo;
+        private readonly IWebHostEnvironment       _env;
+        private readonly UserManager<IdentityUser> _userManager;
 
         public PacientesController(MongoDbContext mongo, IWebHostEnvironment env, UserManager<IdentityUser> userManager)
         {
@@ -32,8 +32,10 @@ namespace MoldeMVC_Core.Controllers
             {
                 var sesion = HttpContext.Session.GetString("User");
                 var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
+                if (!int.TryParse(objUser?.PhoneNumber, out var cedula))
+                    return View(new List<Pacientes>());
                 pacientes = await _mongo.Pacientes
-                    .Find(p => p.IdUsuario == objUser!.Id)
+                    .Find(p => p.Cedula == cedula)
                     .ToListAsync();
             }
             else
@@ -56,47 +58,29 @@ namespace MoldeMVC_Core.Controllers
             {
                 var sesion = HttpContext.Session.GetString("User");
                 var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
-                if (paciente.IdUsuario != objUser?.Id) return Forbid();
+                if (paciente.Cedula.ToString() != objUser?.PhoneNumber) return Forbid();
             }
 
             return View(paciente);
         }
 
         [Authorize(Roles = "Administrador,SuperAdmin")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             CargarFotosPacientes();
-            CargarUsuarios();
+            await CargarUsuarios();
             return View();
         }
 
         [Authorize(Roles = "Administrador,SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdUsuario,Nombre,Cedula,Edad,Genero,Estatura,Peso,Foto")] Pacientes paciente)
+        public async Task<IActionResult> Create([Bind("Nombre,Cedula,Edad,Genero,Estatura,Peso,Foto")] Pacientes paciente, string? usuarioId)
         {
             if (!ModelState.IsValid)
             {
                 CargarFotosPacientes();
-                CargarUsuarios(paciente.IdUsuario);
-                return View(paciente);
-            }
-
-            var esMedico = await _mongo.Medicos.CountDocumentsAsync(m => m.IdUsuario == paciente.IdUsuario) > 0;
-            if (esMedico)
-            {
-                ModelState.AddModelError("IdUsuario", "Este usuario ya está registrado como Médico.");
-                CargarFotosPacientes();
-                CargarUsuarios(paciente.IdUsuario);
-                return View(paciente);
-            }
-
-            var yaEsPaciente = await _mongo.Pacientes.CountDocumentsAsync(p => p.IdUsuario == paciente.IdUsuario) > 0;
-            if (yaEsPaciente)
-            {
-                ModelState.AddModelError("IdUsuario", "Este usuario ya tiene un registro de Paciente.");
-                CargarFotosPacientes();
-                CargarUsuarios(paciente.IdUsuario);
+                await CargarUsuarios(usuarioId);
                 return View(paciente);
             }
 
@@ -105,20 +89,32 @@ namespace MoldeMVC_Core.Controllers
             {
                 ModelState.AddModelError("Cedula", "Ya existe un paciente registrado con esta cédula.");
                 CargarFotosPacientes();
-                CargarUsuarios(paciente.IdUsuario);
+                await CargarUsuarios(usuarioId);
                 return View(paciente);
             }
 
             try
             {
                 await _mongo.Pacientes.InsertOneAsync(paciente);
+
+                // Actualizar PhoneNumber del usuario Identity con la cédula
+                if (!string.IsNullOrEmpty(usuarioId))
+                {
+                    var user = await _userManager.FindByIdAsync(usuarioId);
+                    if (user != null)
+                    {
+                        user.PhoneNumber = paciente.Cedula.ToString();
+                        await _userManager.UpdateAsync(user);
+                    }
+                }
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error inesperado: " + ex.Message);
                 CargarFotosPacientes();
-                CargarUsuarios(paciente.IdUsuario);
+                await CargarUsuarios(usuarioId);
                 return View(paciente);
             }
         }
@@ -133,14 +129,13 @@ namespace MoldeMVC_Core.Controllers
             if (paciente == null) return NotFound();
 
             CargarFotosPacientes();
-            CargarUsuarios(paciente.IdUsuario);
             return View(paciente);
         }
 
         [Authorize(Roles = "Administrador,SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("IdUsuario,Nombre,Cedula,Edad,Genero,Estatura,Peso,Foto")] Pacientes paciente)
+        public async Task<IActionResult> Edit(string id, [Bind("Nombre,Cedula,Edad,Genero,Estatura,Peso,Foto")] Pacientes paciente)
         {
             if (!ObjectId.TryParse(id, out var oid))
                 return NotFound();
@@ -148,7 +143,6 @@ namespace MoldeMVC_Core.Controllers
             if (!ModelState.IsValid)
             {
                 CargarFotosPacientes();
-                CargarUsuarios(paciente.IdUsuario);
                 return View(paciente);
             }
 
@@ -159,12 +153,24 @@ namespace MoldeMVC_Core.Controllers
             {
                 ModelState.AddModelError("Cedula", "Ya existe otro paciente registrado con esta cédula.");
                 CargarFotosPacientes();
-                CargarUsuarios(paciente.IdUsuario);
                 return View(paciente);
             }
 
             try
             {
+                // Si cambió la cédula, actualizar PhoneNumber del usuario Identity vinculado
+                var existing = await _mongo.Pacientes.Find(p => p.Id == oid).FirstOrDefaultAsync();
+                if (existing != null && existing.Cedula != paciente.Cedula)
+                {
+                    var oldCedStr = existing.Cedula.ToString();
+                    var user = _userManager.Users.FirstOrDefault(u => u.PhoneNumber == oldCedStr);
+                    if (user != null)
+                    {
+                        user.PhoneNumber = paciente.Cedula.ToString();
+                        await _userManager.UpdateAsync(user);
+                    }
+                }
+
                 paciente.Id = oid;
                 await _mongo.Pacientes.ReplaceOneAsync(p => p.Id == oid, paciente);
                 return RedirectToAction(nameof(Index));
@@ -173,7 +179,6 @@ namespace MoldeMVC_Core.Controllers
             {
                 ModelState.AddModelError("", "Error inesperado: " + ex.Message);
                 CargarFotosPacientes();
-                CargarUsuarios(paciente.IdUsuario);
                 return View(paciente);
             }
         }
@@ -220,9 +225,9 @@ namespace MoldeMVC_Core.Controllers
                 : new List<string>();
         }
 
-        private void CargarUsuarios(string? selectedId = null)
+        private async Task CargarUsuarios(string? selectedId = null)
         {
-            var usuarios = _userManager.Users
+            var usuarios = (await _userManager.GetUsersInRoleAsync("Paciente"))
                 .OrderBy(u => u.UserName)
                 .Select(u => new { u.Id, u.UserName })
                 .ToList();

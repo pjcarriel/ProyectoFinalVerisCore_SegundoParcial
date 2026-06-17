@@ -28,8 +28,10 @@ namespace MoldeMVC_Core.Controllers
             {
                 var sesion = HttpContext.Session.GetString("User");
                 var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
+                if (!int.TryParse(objUser?.PhoneNumber, out var cedula))
+                    return View(new List<Consultas>());
                 var paciente = await _mongo.Pacientes
-                    .Find(p => p.IdUsuario == objUser!.Id)
+                    .Find(p => p.Cedula == cedula)
                     .FirstOrDefaultAsync();
 
                 if (paciente == null) return View(new List<Consultas>());
@@ -37,6 +39,21 @@ namespace MoldeMVC_Core.Controllers
                 var pacienteIdStr = paciente.Id.ToString();
                 consultas = await _mongo.Consultas
                     .Find(c => c.PacienteId == pacienteIdStr)
+                    .ToListAsync();
+            }
+            else if (User.IsInRole("Medico"))
+            {
+                var sesion = HttpContext.Session.GetString("User");
+                var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
+                var medico = await _mongo.Medicos
+                    .Find(m => m.Nombre == objUser!.UserName)
+                    .FirstOrDefaultAsync();
+
+                if (medico == null) return View(new List<Consultas>());
+
+                var medicoIdStr = medico.Id.ToString();
+                consultas = await _mongo.Consultas
+                    .Find(c => c.MedicoId == medicoIdStr)
                     .ToListAsync();
             }
             else
@@ -63,7 +80,7 @@ namespace MoldeMVC_Core.Controllers
             {
                 var sesion = HttpContext.Session.GetString("User");
                 var objUser = JsonSerializer.Deserialize<IdentityUser>(sesion!);
-                if (consulta.PacienteNavigation?.IdUsuario != objUser?.Id)
+                if (consulta.PacienteNavigation?.Cedula.ToString() != objUser?.PhoneNumber)
                     return Forbid();
             }
 
